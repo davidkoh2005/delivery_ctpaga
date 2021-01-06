@@ -1,4 +1,6 @@
+import 'package:delivery_ctpaga/views/googleMapsPage.dart';
 import 'package:delivery_ctpaga/views/mainPage.dart';
+import 'package:delivery_ctpaga/views/profilePage.dart';
 import 'package:delivery_ctpaga/providers/provider.dart';
 import 'package:delivery_ctpaga/env.dart';
 
@@ -15,9 +17,9 @@ class _MainMenuBarState extends State<MainMenuBar> {
   int _statusButton = 2;
 
   final _pageOptions = [
-    Container(child: Center(child: Text("Google Maps"),),),
+    GoogleMapsPage(),
     MainPage(),
-    Container(child: Center(child: Text("Confirguracion"),),),
+    ProfilePage()
   ];
   
   @override
@@ -70,7 +72,7 @@ class _MainMenuBarState extends State<MainMenuBar> {
         children: <Widget>[
           _buildNavItem("Mapa", "assets/icons/mapa.png", _statusButton, 1),
           _buildNavItem("Inicio" ,"assets/icons/home.png",_statusButton, 2),
-          _buildNavItem("Confirguración", "assets/icons/configuracion.png", _statusButton, 3),
+          _buildNavItem("Perfil", "assets/icons/perfil.png", _statusButton, 3),
         ]
       ),
     );

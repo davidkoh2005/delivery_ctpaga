@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider( 
       create: (_) => MyProvider(),
       child: MaterialApp(
-        title: 'Ctpaga',
+        title: 'Delivery ctpaga',
         theme: ThemeData(
           primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity,

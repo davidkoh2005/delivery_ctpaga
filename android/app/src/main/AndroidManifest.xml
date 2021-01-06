@@ -6,10 +6,15 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="Delivery ctpaga"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyC-WxWDG_nZxRBE9vQsKgzK5DHhaE4k1T8"/>
+               
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
