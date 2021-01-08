@@ -36,7 +36,7 @@ class _NavbarMainState extends State<NavbarMain> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(top:20, right:20),
+                padding: EdgeInsets.only(top:30, right:20),
                 child: IconButton(
                   iconSize: size.width / 10,
                   icon: ImageIcon(

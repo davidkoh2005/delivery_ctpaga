@@ -92,8 +92,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   autofocus: false,
                   textCapitalization:TextCapitalization.sentences,
                   inputFormatters: [
-                    WhitelistingTextInputFormatter(RegExp("[a-zA-Z\ áéíóúÁÉÍÓÚñÑ\s]")),
-                    BlacklistingTextInputFormatter(RegExp("[/\\\\]")),
+                    FilteringTextInputFormatter.allow(RegExp("[a-zA-Z\ áéíóúÁÉÍÓÚñÑ\s]")),
+                    FilteringTextInputFormatter.allow(RegExp("[/\\\\]")),
                   ], 
                   decoration: InputDecoration(
                     labelText: 'Nombre y Apellido',
