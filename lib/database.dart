@@ -44,7 +44,7 @@ class DBctpaga{
     await db.execute('CREATE TABLE IF NOT EXISTS deliveries (id INTEGER PRIMARY KEY AUTOINCREMENT, email Text, name VARCHAR(100), phone VARCHAR(20), status INTEGER )');
     await db.execute('CREATE TABLE IF NOT EXISTS commerces (id INTEGER PRIMARY KEY AUTOINCREMENT, rif VARCHAR(15), name Text, address Text, phone VARCHAR(20), userUrl VARCHAR(20))');
     await db.execute('CREATE TABLE IF NOT EXISTS paids (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), nameClient VARCHAR(50), total text, coin INTEGER, email text, nameShipping VARCHAR(50), numberShipping VARCHAR(50), addressShipping text, detailsShipping text, selectShipping text, priceShipping text, statusShipping INTEGER, percentage INTEGER, nameCompanyPayments VARCHAR(10), date text)');
-
+    await db.execute('CREATE TABLE IF NOT EXISTS sales (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), productService_id INTEGER, name VARCHAR(50), price text, nameClient VARCHAR(50), coinClient INTEGER, coin INTEGER, type INTEGER, quantity INTEGER, statusSale INTEGER, rate text, descriptionShipping text, statusShipping INTEGER)');
   }
 
   /*
@@ -57,6 +57,7 @@ class DBctpaga{
     await dbConnection.execute('DROP TABLE IF EXISTS deliveries');
     await dbConnection.execute('DROP TABLE IF EXISTS commerces');
     await dbConnection.execute('DROP TABLE IF EXISTS paids');
+    await dbConnection.execute('DROP TABLE IF EXISTS sales');
   
     onCreateFunc(dbConnection, versionDB);
   }
@@ -119,9 +120,7 @@ class DBctpaga{
   }
 
   // Get Commerces
-  Future <List<dynamic>> getCommerces() async{
-    List listCommerces = new List();
-    listCommerces = [];
+  Future <Commerce> getCommerce() async{
     var dbConnection = await db;
 
     List<Map> list = await dbConnection.rawQuery('SELECT * FROM commerces');
@@ -130,7 +129,6 @@ class DBctpaga{
     for(int i = 0; i< list.length; i++)
     {
       commerce = Commerce(
-        id : list[i]['id'],
         rif : list[i]['rif'],
         name : list[i]['name'],
         address : list[i]['address'],
@@ -138,27 +136,25 @@ class DBctpaga{
         userUrl : list[i]['userUrl'],
       );
 
-      listCommerces.add(commerce);
 
     }
 
-    return listCommerces;
+    return commerce;
   }
 
   // Create or update commerces
-  void createOrUpdateCommerces (Commerce commerce) async{
+  void createOrUpdateCommerces(Commerce commerce) async{
     var dbConnection = await db;
 
-    String query = 'INSERT OR REPLACE INTO commerces (id, rif, name, address, phone, userUrl) VALUES ( (SELECT id FROM commerces WHERE rif = \'${commerce.rif}\'), \'${commerce.rif}\', \'${commerce.name}\',\'${commerce.address}\',\'${commerce.phone}\',\'${commerce.userUrl}\')';
+    String query = 'INSERT OR REPLACE INTO commerces (id, rif, name, address, phone, userUrl) VALUES ( 1, \'${commerce.rif}\', \'${commerce.name}\',\'${commerce.address}\',\'${commerce.phone}\',\'${commerce.userUrl}\')';
     await dbConnection.transaction((transaction) async{
       return await transaction.rawInsert(query);
     });
   }
 
   // Get Paids 
-  Future <List<dynamic>> getPaids() async{
-    List listPaids = new List();
-    listPaids = [];
+  Future <Paid> getPaid() async{
+
     var dbConnection = await db;
 
     List<Map> list = await dbConnection.rawQuery('SELECT * FROM paids');
@@ -167,7 +163,6 @@ class DBctpaga{
     for(int i = 0; i< list.length; i++)
     {
       paid = Paid(
-        id: list[i]['id'],
         user_id: list[i]['user_id'],
         commerce_id: list[i]['commerce_id'],
         codeUrl: list[i]['codeUrl'],
@@ -187,30 +182,53 @@ class DBctpaga{
         date: list[i]['date'],
       );
 
-      listPaids.add(paid);
-
     }
 
-    return listPaids;
+    return paid;
   }
 
   // Create or update Paid
-  void createOrUpdatePaid (Paid paid) async{
+  void createOrUpdatePaid(Paid paid) async{
     var dbConnection = await db;
 
-    List<Map> list = await dbConnection.rawQuery('SELECT * FROM paids WHERE id = \'${paid.id}\' ');
+    List<Map> list = await dbConnection.rawQuery('SELECT * FROM paids WHERE id = 1 ');
     
     if(list.length == 0){
-      String query = 'INSERT INTO paids (id, user_id, commerce_id, codeUrl, nameClient, total, coin, email, nameShipping, numberShipping, addressShipping, detailsShipping, selectShipping, priceShipping, statusShipping, percentage, nameCompanyPayments, date) VALUES ( \'${paid.id}\', \'${paid.user_id}\',\'${paid.commerce_id}\',\'${paid.codeUrl}\',\'${paid.nameClient}\',\'${paid.total}\',\'${paid.coin}\',\'${paid.email}\',\'${paid.nameShipping}\',\'${paid.numberShipping}\',\'${paid.addressShipping}\',\'${paid.detailsShipping}\',\'${paid.selectShipping}\',\'${paid.priceShipping}\',\'${paid.statusShipping}\',\'${paid.percentage}\',\'${paid.nameCompanyPayments}\',\'${paid.date}\')';
+      String query = 'INSERT INTO paids (id, user_id, commerce_id, codeUrl, nameClient, total, coin, email, nameShipping, numberShipping, addressShipping, detailsShipping, selectShipping, priceShipping, statusShipping, percentage, nameCompanyPayments, date) VALUES ( 1, \'${paid.user_id}\',\'${paid.commerce_id}\',\'${paid.codeUrl}\',\'${paid.nameClient}\',\'${paid.total}\',\'${paid.coin}\',\'${paid.email}\',\'${paid.nameShipping}\',\'${paid.numberShipping}\',\'${paid.addressShipping}\',\'${paid.detailsShipping}\',\'${paid.selectShipping}\',\'${paid.priceShipping}\',\'${paid.statusShipping}\',\'${paid.percentage}\',\'${paid.nameCompanyPayments}\',\'${paid.date}\')';
       await dbConnection.transaction((transaction) async{
         return await transaction.rawInsert(query);
     });
     }else{
-      String query = 'UPDATE paids SET user_id=\'${paid.user_id}\', commerce_id=\'${paid.commerce_id}\', codeUrl=\'${paid.codeUrl}\', nameClient=\'${paid.nameClient}\', total=\'${paid.total}\', coin=\'${paid.coin}\', email=\'${paid.email}\', nameShipping=\'${paid.nameShipping}\', numberShipping=\'${paid.numberShipping}\', addressShipping=\'${paid.addressShipping}\', detailsShipping=\'${paid.detailsShipping}\', selectShipping=\'${paid.selectShipping}\', priceShipping=\'${paid.priceShipping}\', statusShipping=\'${paid.statusShipping}\', percentage=\'${paid.percentage}\', nameCompanyPayments=\'${paid.nameCompanyPayments}\', date=\'${paid.date}\' WHERE id= \'${paid.id}\'';
+      String query = 'UPDATE paids SET user_id=\'${paid.user_id}\', commerce_id=\'${paid.commerce_id}\', codeUrl=\'${paid.codeUrl}\', nameClient=\'${paid.nameClient}\', total=\'${paid.total}\', coin=\'${paid.coin}\', email=\'${paid.email}\', nameShipping=\'${paid.nameShipping}\', numberShipping=\'${paid.numberShipping}\', addressShipping=\'${paid.addressShipping}\', detailsShipping=\'${paid.detailsShipping}\', selectShipping=\'${paid.selectShipping}\', priceShipping=\'${paid.priceShipping}\', statusShipping=\'${paid.statusShipping}\', percentage=\'${paid.percentage}\', nameCompanyPayments=\'${paid.nameCompanyPayments}\', date=\'${paid.date}\' WHERE id= 1';
       await dbConnection.transaction((transaction) async{
         return await transaction.rawInsert(query);
       });
     }
+  }
+
+  // Get Sales 
+  Future <List<dynamic>> getSales() async{
+    var dbConnection = await db;
+
+    List<Map> list = await dbConnection.rawQuery('SELECT * FROM sales');
+    
+    return list;
+  }
+
+  // Create or update Sales
+  void createOrUpdateSales(List listsales) async{
+    var dbConnection = await db;
+
+    await dbConnection.rawQuery('DROP TABLE IF EXISTS sales');
+    await dbConnection.rawQuery('CREATE TABLE IF NOT EXISTS sales (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), productService_id INTEGER, name VARCHAR(50), price text, nameClient VARCHAR(50), coinClient INTEGER, coin INTEGER, type INTEGER, quantity INTEGER, statusSale INTEGER, rate text, descriptionShipping text, statusShipping INTEGER)');
+    
+    for (var item in listsales) {
+      String query = 'INSERT INTO sales (user_id, commerce_id, codeUrl, productService_id, name, price, nameClient, coinClient, coin, type, quantity, statusSale, rate, descriptionShipping, statusShipping) VALUES (\'${item['user_id']}\', \'${item['commerce_id']}\',\'${item['codeUrl']}\',\'${item['productService_id']}\',\'${item['name']}\',\'${item['price']}\',\'${item['nameClient']}\',\'${item['coinClient']}\',\'${item['coin']}\',\'${item['type']}\',\'${item['quantity']}\',\'${item['statusSale']}\',\'${item['rate']}\',\'${item['descriptionShipping']}\',\'${item['statusShipping']?1:0}\')';
+      await dbConnection.transaction((transaction) async{
+        return await transaction.rawInsert(query);
+      });
+    }
+
   }
 
 }

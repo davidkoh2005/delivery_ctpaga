@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 //TODO: Url Api (LocalHost)
-String url = "192.168.1.106:8000";
+//String url = "192.168.1.115:8000";
 
 //TODO: Url Api (AWS)
-//String url = "54.196.181.42";
+String url = "54.196.181.42";
 
 String urlApi = "http://$url/api/auth/";
 

@@ -1,4 +1,5 @@
 import 'package:delivery_ctpaga/animation/slideRoute.dart';
+import 'package:delivery_ctpaga/models/commerce.dart';
 import 'package:delivery_ctpaga/models/delivery.dart';
 import 'package:delivery_ctpaga/models/paid.dart';
 import 'package:delivery_ctpaga/views/loginPage.dart';
@@ -26,7 +27,6 @@ class MyProvider with ChangeNotifier {
     notifyListeners(); 
   }
 
-
   Delivery _delivery = Delivery();
   Delivery get dataDelivery =>_delivery;
 
@@ -35,22 +35,12 @@ class MyProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-  List _commerces = new List();
-  List get dataCommercesUser =>_commerces;
-
-  set dataCommercesUser(List newCommercesUser){
-    _commerces = newCommercesUser;
-    notifyListeners();
-  }
-
+  String _codeUrl;
+  String get codeUrl =>_codeUrl; 
   
-  List _paid = new List();
-  List get dataPaids =>_paid;
-
-  set dataPaids(List newPaid){
-    _paid = newPaid;
-    notifyListeners();
+  set codeUrl(String newcode) {
+    _codeUrl = newcode; 
+    notifyListeners(); 
   }
 
   Paid _selectPaid = Paid();
@@ -59,6 +49,22 @@ class MyProvider with ChangeNotifier {
   set selectPaid(Paid newItem) {
     _selectPaid = newItem; 
     notifyListeners(); 
+  }
+
+  Commerce _commerce = new Commerce();
+  Commerce get dataCommerce =>_commerce;
+
+  set dataCommerce(Commerce newCommerce){
+    _commerce = newCommerce;
+    notifyListeners();
+  }
+
+  List _listSales = new List();
+  List get dataListSales =>_listSales;
+
+  set dataListSales(List newListSales){
+    _listSales = newListSales;
+    notifyListeners();
   }
   
   
@@ -80,7 +86,7 @@ class MyProvider with ChangeNotifier {
             'authorization': 'Bearer $accessTokenDelivery',
           },
         ); 
-
+        print("bearer $accessTokenDelivery");
         jsonResponse = jsonDecode(response.body);
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
@@ -117,8 +123,6 @@ class MyProvider with ChangeNotifier {
     } on SocketException catch (_) {
       if(accessTokenDelivery != null){
         dataDelivery = await dbctpaga.getDelivery();
-        dataCommercesUser = await dbctpaga.getCommerces();
-        dataPaids = await dbctpaga.getPaids();
       }
 
       if(status){

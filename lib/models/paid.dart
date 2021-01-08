@@ -1,13 +1,12 @@
 class Paid{
   // ignore: non_constant_identifier_names
-  int id, user_id, commerce_id, coin, percentage, statusShipping;
+  int user_id, commerce_id, coin, percentage, statusShipping;
   // ignore: non_constant_identifier_names
   String codeUrl, nameClient,total, email, nameShipping, numberShipping, addressShipping, detailsShipping, selectShipping, priceShipping, nameCompanyPayments, date;
   // ignore: non_constant_identifier_names
-  Paid({this.id, this.user_id, this.commerce_id, this.codeUrl, this.nameClient, this.total, this.coin, this.email, this.nameShipping, this.numberShipping, this.addressShipping, this.detailsShipping, this.statusShipping, this.selectShipping, this.priceShipping, this.percentage, this.nameCompanyPayments, this.date});
+  Paid({this.user_id, this.commerce_id, this.codeUrl, this.nameClient, this.total, this.coin, this.email, this.nameShipping, this.numberShipping, this.addressShipping, this.detailsShipping, this.statusShipping, this.selectShipping, this.priceShipping, this.percentage, this.nameCompanyPayments, this.date});
 
   factory Paid.fromMap(dynamic data) => Paid(
-    id: data['id'],
     user_id: data['user_id'],
     commerce_id: data['commerce_id'],
     codeUrl: data['codeUrl'],
@@ -28,7 +27,6 @@ class Paid{
   );
 
   Map<String, dynamic> toJson()=> {
-    'id': id,
     'user_id': user_id,
     'commerce_id': commerce_id,
     'codeUrl': codeUrl,
