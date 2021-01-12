@@ -68,10 +68,6 @@ class _RegisterPageState extends State<RegisterPage> {
               focusNode: _nameFocus,
               onEditingComplete: () => FocusScope.of(context).requestFocus(_phoneFocus),
               textCapitalization:TextCapitalization.words,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp("[a-zA-Z\ áéíóúÁÉÍÓÚñÑ\s]")),
-                FilteringTextInputFormatter.allow(RegExp("[/\\\\]")),
-              ], 
               decoration: InputDecoration(
                 icon: Icon(Icons.person, color: colorGreen),
                 labelText: 'Nombre y Apellido',

@@ -90,11 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: new TextFormField(
                   initialValue: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.name,
                   autofocus: false,
-                  textCapitalization:TextCapitalization.sentences,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp("[a-zA-Z\ áéíóúÁÉÍÓÚñÑ\s]")),
-                    FilteringTextInputFormatter.allow(RegExp("[/\\\\]")),
-                  ], 
+                  textCapitalization:TextCapitalization.sentences, 
                   decoration: InputDecoration(
                     labelText: 'Nombre y Apellido',
                     labelStyle: TextStyle(
