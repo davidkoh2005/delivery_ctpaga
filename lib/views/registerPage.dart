@@ -72,7 +72,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 icon: Icon(Icons.person, color: colorGreen),
                 labelText: 'Nombre y Apellido',
                 labelStyle: TextStyle(
-                  color: colorGreen
+                  color: colorGreen,
+                  fontFamily: 'MontserratExtraBold',
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: colorGreen),
@@ -82,6 +83,9 @@ class _RegisterPageState extends State<RegisterPage> {
               validator: _validateName,
               textInputAction: TextInputAction.next,
               cursorColor: colorGreen,
+              style: TextStyle(
+                fontFamily: 'MontserratExtraBold',
+              ),
             ),
           ),
           Padding(
@@ -96,7 +100,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 icon: Icon(Icons.phone, color: colorGreen),
                 labelText: 'Teléfono',
                 labelStyle: TextStyle(
-                  color: colorGreen
+                  color: colorGreen,
+                  fontFamily: 'MontserratExtraBold',
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: colorGreen),
@@ -106,6 +111,9 @@ class _RegisterPageState extends State<RegisterPage> {
               validator: _validatePhone,
               textInputAction: TextInputAction.next,
               cursorColor: colorGreen,
+              style: TextStyle(
+                fontFamily: 'MontserratExtraBold',
+              ),
             ),
           ),
           Padding(
@@ -119,7 +127,8 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: new InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(
-                    color: colorGreen
+                    color: colorGreen,
+                    fontFamily: 'MontserratExtraBold',
                   ),
                   icon: new Icon(
                     Icons.mail,
@@ -133,6 +142,9 @@ class _RegisterPageState extends State<RegisterPage> {
               onSaved: (String value) => _email = value.toLowerCase().trim(),
               textInputAction: TextInputAction.next,
               cursorColor: colorGreen,
+              style: TextStyle(
+                fontFamily: 'MontserratExtraBold',
+              ),
             ),
           ),
           Padding(
@@ -147,7 +159,8 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: new InputDecoration(
                   labelText: 'Contraseña',
                   labelStyle: TextStyle(
-                    color: colorGreen
+                    color: colorGreen,
+                    fontFamily: 'MontserratExtraBold',
                   ),
                   icon: new Icon(
                     Icons.lock,
@@ -174,6 +187,9 @@ class _RegisterPageState extends State<RegisterPage> {
               onSaved: (String value) => _password = value,
               textInputAction: TextInputAction.next,
               cursorColor: colorGreen,
+              style: TextStyle(
+                fontFamily: 'MontserratExtraBold',
+              ),
             ),
           ),
           Padding(
@@ -187,7 +203,8 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: new InputDecoration(
                   labelText: 'Confirmar Contraseña',
                   labelStyle: TextStyle(
-                    color: colorGreen
+                    color: colorGreen,
+                    fontFamily: 'MontserratExtraBold',
                   ),
                   icon: new Icon(
                     Icons.lock,
@@ -218,6 +235,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 _clickButtonRegister(); //process that will be carried out when you press the register button
               },
               cursorColor: colorGreen,
+              style: TextStyle(
+                fontFamily: 'MontserratExtraBold',
+              ),
             ),
           ),
 
@@ -227,7 +247,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Text(
                   _messageError == null? '' : _messageError,
                   style: TextStyle(
-                    color: Colors.red
+                    color: Colors.red,
+                    fontFamily: 'MontserratExtraBold',
                   ),
                 ),
               ),
@@ -278,6 +299,7 @@ class _RegisterPageState extends State<RegisterPage> {
               color: Colors.white,
               fontSize: 15 * scaleFactor,
               fontWeight: FontWeight.w500,
+              fontFamily: 'MontserratExtraBold',
             ),
           ),
         ),
@@ -377,6 +399,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                         TextSpan(
@@ -384,6 +407,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           style: TextStyle(
                             color: colorGreen,
                             fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                       ]

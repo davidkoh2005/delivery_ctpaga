@@ -101,7 +101,7 @@ class _MainMenuBarState extends State<MainMenuBar> {
                   _icon,
                   width: size.width / 15,
                   height: size.width / 15,
-                  color: _status == code? colorGreen : Colors.black,
+                  color: _status == code? colorGreen : colorGreyLogo,
                 )
               )
             ),
@@ -112,7 +112,8 @@ class _MainMenuBarState extends State<MainMenuBar> {
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 10 * scaleFactor,
-                  fontWeight: _status == code? FontWeight.bold: FontWeight.normal
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'MontserratExtraBold',
                 ),
               ),
             )

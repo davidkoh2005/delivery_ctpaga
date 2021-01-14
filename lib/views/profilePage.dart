@@ -94,7 +94,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   decoration: InputDecoration(
                     labelText: 'Nombre y Apellido',
                     labelStyle: TextStyle(
-                      color: colorText
+                      color: colorText,
+                      fontFamily: 'MontserratExtraBold',
                     ),
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: colorGreen),
@@ -106,6 +107,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   focusNode: _nameFocus,
                   onEditingComplete: () => FocusScope.of(context).requestFocus(_phoneFocus),
                   cursorColor: colorGreen,
+                  style: TextStyle(
+                    fontFamily: 'MontserratExtraBold',
+                  ),
                 ),
               ),
 
@@ -119,7 +123,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   decoration: InputDecoration(
                     labelText: 'Teléfono',
                     labelStyle: TextStyle(
-                      color: colorText
+                      color: colorText,
+                      fontFamily: 'MontserratExtraBold',
                     ),
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: colorGreen),
@@ -131,6 +136,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   textInputAction: TextInputAction.done,
                   onEditingComplete: () => FocusScope.of(context).requestFocus(_emailFocus),
                   cursorColor: colorGreen,
+                  style: TextStyle(
+                    fontFamily: 'MontserratExtraBold',
+                  ),
                 ),
               ),
               Padding(
@@ -144,7 +152,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   decoration: new InputDecoration(
                       labelText: 'Email',
                       labelStyle: TextStyle(
-                        color: colorText
+                        color: colorText,
+                        fontFamily: 'MontserratExtraBold',
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: colorGreen),
@@ -158,6 +167,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     buttonClickSave();
                   },
                   cursorColor: colorGreen,
+                  style: TextStyle(
+                    fontFamily: 'MontserratExtraBold',
+                  ),
                 ),
               ),
 
@@ -172,6 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       color: Colors.black87,
                       fontSize: 15 * scaleFactor,
                       decoration: TextDecoration.underline,
+                      fontFamily: 'MontserratExtraBold',
                     )
                   ),
                 ),
@@ -215,6 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: Colors.white,
                 fontSize: 15 * scaleFactor,
                 fontWeight: FontWeight.w500,
+                fontFamily: 'MontserratExtraBold',
               ),
             ),
           ),
@@ -294,6 +308,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                         TextSpan(
@@ -301,6 +316,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: TextStyle(
                             color: colorGreen,
                             fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                       ]
@@ -353,6 +369,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 15 * scaleFactor,
+                    fontFamily: 'MontserratExtraBold',
                   )
                 ),
               ),

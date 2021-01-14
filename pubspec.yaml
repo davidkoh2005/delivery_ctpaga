@@ -39,6 +39,17 @@ flutter:
   assets:
     - assets/logo/
     - assets/icons/
+  
+  fonts:
+    - family: MontserratExtraBold     
+      fonts:
+        - asset: assets/Fonts/Montserrat-SemiBold.ttf
+    - family: MontserratExtraBold     
+      fonts:
+        - asset: assets/Fonts/Montserrat-ExtraBold.ttf
+    - family: MontserratExtraBold     
+      fonts:
+        - asset: assets/Fonts/Montserrat-Italic.ttf
 
 flutter_icons:
   image_path: 'assets/logo/logoctpaga.png'

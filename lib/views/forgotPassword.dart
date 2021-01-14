@@ -75,6 +75,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 FocusScope.of(context).requestFocus(new FocusNode()); //save the keyboard
                 clickButtonSend(); //process to be performed when you press the submit button
               },
+              style: TextStyle(
+                fontFamily: 'MontserratExtraBold',
+              ),
             ),
           ),
         ],
@@ -122,6 +125,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               color: Colors.white,
               fontSize: 15 * scaleFactor,
               fontWeight: FontWeight.w500,
+              fontFamily: 'MontserratExtraBold',
             ),
           ),
         ),
@@ -196,6 +200,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                         TextSpan(
@@ -203,6 +208,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           style: TextStyle(
                             color: colorGreen,
                             fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                       ]
@@ -255,6 +261,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 15 * scaleFactor,
+                    fontFamily: 'MontserratExtraBold',
                   )
                 ),
               ),

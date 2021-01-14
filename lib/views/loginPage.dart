@@ -75,7 +75,8 @@ class _LoginPageState extends State<LoginPage> {
               decoration: new InputDecoration(
                 labelText: "Email",
                 labelStyle: TextStyle(
-                  color: colorGreen
+                  color: colorGreen,
+                  fontFamily: 'MontserratExtraBold',
                 ),
                 icon: new Icon(
                   Icons.mail,
@@ -89,6 +90,9 @@ class _LoginPageState extends State<LoginPage> {
               onSaved: (value) => _email = value.toLowerCase().trim(),
               textInputAction: TextInputAction.next,
               cursorColor: colorGreen,
+              style: TextStyle(
+                fontFamily: 'MontserratExtraBold',
+              ),
             ),
           ),
           Padding(
@@ -103,7 +107,8 @@ class _LoginPageState extends State<LoginPage> {
               decoration: new InputDecoration(
                   labelText: "Contraseña",
                   labelStyle: TextStyle(
-                    color: colorGreen
+                    color: colorGreen,
+                    fontFamily: 'MontserratExtraBold',
                   ),
                   icon: new Icon(
                     Icons.lock,
@@ -134,6 +139,9 @@ class _LoginPageState extends State<LoginPage> {
                 clickButtonLogin(); //process that will be carried out when you press the login button
               },
               cursorColor: colorGreen,
+              style: TextStyle(
+                fontFamily: 'MontserratExtraBold',
+              ),
             ),
           ),
           Visibility(
@@ -144,7 +152,8 @@ class _LoginPageState extends State<LoginPage> {
                 child: Text(
                   _messageError == null? '' : _messageError,
                   style: TextStyle(
-                    color: Colors.red
+                    color: Colors.red,
+                    fontFamily: 'MontserratExtraBold',
                   ),
                 ),
               ),
@@ -164,6 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                 "Olvidé mi contraseña?",
                 style: TextStyle(
                   color: colorGreen,
+                  fontFamily: 'MontserratExtraBold',
                 ),
               )
             )
@@ -213,6 +223,7 @@ class _LoginPageState extends State<LoginPage> {
               color: Colors.white,
               fontSize: 15 * scaleFactor,
               fontWeight: FontWeight.w500,
+              fontFamily: 'MontserratExtraBold',
             ),
           ),
         ),
@@ -263,6 +274,7 @@ class _LoginPageState extends State<LoginPage> {
               color: Colors.white,
               fontSize: 15 * scaleFactor,
               fontWeight: FontWeight.w500,
+              fontFamily: 'MontserratExtraBold',
             ),
           ),
         ),
@@ -382,6 +394,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                         TextSpan(
@@ -389,6 +402,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                             color: colorGreen,
                             fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                       ]

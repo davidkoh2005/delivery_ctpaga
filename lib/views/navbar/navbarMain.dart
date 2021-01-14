@@ -139,6 +139,7 @@ class _NavbarMainState extends State<NavbarMain> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: size.width / 20,
+                    fontFamily: 'MontserratExtraBold',
                   )
                 ),
               ),
@@ -150,7 +151,7 @@ class _NavbarMainState extends State<NavbarMain> {
   }
 
   Future<void> _onLoading() async {
-    var size = MediaQuery.of(context).size;
+    var scaleFactor = MediaQuery.of(context).textScaleFactor;
 
     return showDialog(
       context: context,
@@ -180,14 +181,16 @@ class _NavbarMainState extends State<NavbarMain> {
                           text: "Cargando ",
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: size.width / 20,
+                            fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                         TextSpan(
                           text: "...",
                           style: TextStyle(
                             color: colorGreen,
-                            fontSize: size.width / 20,
+                            fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                       ]

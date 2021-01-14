@@ -108,7 +108,8 @@ class _MainPageState extends State<MainPage> {
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 25 * scaleFactor,
-                                            fontWeight: FontWeight.bold
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'MontserratExtraBold',
                                           )
                                         ),
                                       ),
@@ -122,6 +123,7 @@ class _MainPageState extends State<MainPage> {
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 15 * scaleFactor,
                                                 color: Colors.black,
+                                                fontFamily: 'MontserratExtraBold',
                                               ),
                                               children: <TextSpan>[
                                                 TextSpan(
@@ -130,6 +132,7 @@ class _MainPageState extends State<MainPage> {
                                                     fontSize: 15 * scaleFactor,
                                                     color: Colors.black,
                                                     fontWeight: FontWeight.normal,
+                                                    fontFamily: 'MontserratExtraBold',
                                                   ),
                                                 ),
                                               ],
@@ -192,7 +195,8 @@ class _MainPageState extends State<MainPage> {
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 20 * scaleFactor,
-                  fontWeight: FontWeight.bold
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'MontserratExtraBold',
                 )
               ),
             ) 
@@ -205,7 +209,8 @@ class _MainPageState extends State<MainPage> {
               decoration: InputDecoration(
                 labelText: 'código',
                 labelStyle: TextStyle(
-                  color: colorText
+                  color: colorText,
+                  fontFamily: 'MontserratExtraBold',
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: colorGreen),
@@ -227,6 +232,9 @@ class _MainPageState extends State<MainPage> {
                 }
               },
               cursorColor: colorGreen,
+              style: TextStyle(
+                fontFamily: 'MontserratExtraBold',
+              ),
             ),
           ),
           buttonSearch(),
@@ -265,6 +273,7 @@ class _MainPageState extends State<MainPage> {
                 color: Colors.white,
                 fontSize: 15 * scaleFactor,
                 fontWeight: FontWeight.w500,
+                fontFamily: 'MontserratExtraBold',
               ),
             ),
           ),
@@ -413,6 +422,7 @@ class _MainPageState extends State<MainPage> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 15 * scaleFactor,
+                    fontFamily: 'MontserratExtraBold',
                   )
                 ),
               ),
@@ -456,6 +466,7 @@ class _MainPageState extends State<MainPage> {
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                         TextSpan(
@@ -463,6 +474,7 @@ class _MainPageState extends State<MainPage> {
                           style: TextStyle(
                             color: colorGreen,
                             fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratExtraBold',
                           )
                         ),
                       ]

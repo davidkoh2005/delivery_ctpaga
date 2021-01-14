@@ -113,7 +113,10 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
                             onFieldSubmitted: (term){
                               FocusScope.of(context).requestFocus(new FocusNode());
                               searchNavigate();
-                            } 
+                            }, 
+                            style: TextStyle(
+                              fontFamily: 'MontserratExtraBold',
+                            ),
                           )
                         ),
                       ),
