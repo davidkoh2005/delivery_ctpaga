@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   
   cupertino_icons: ^0.1.3
+  direct_select: ^1.1.0
   flutter_localizations:
     sdk: flutter
   flutter_masked_text: ^0.8.0
@@ -41,15 +42,37 @@ flutter:
     - assets/icons/
   
   fonts:
-    - family: MontserratExtraBold     
+    - family: MontserratMedium   
+      fonts:
+        - asset: assets/Fonts/Montserrat-Medium.ttf
+
+    - family: MontserratBold     
+      fonts:
+        - asset: assets/Fonts/Montserrat-Bold.ttf
+
+    - family: MontserratBlack     
+      fonts:
+        - asset: assets/Fonts/Montserrat-Black.ttf
+
+    - family: MontserratSemiBold     
       fonts:
         - asset: assets/Fonts/Montserrat-SemiBold.ttf
-    - family: MontserratExtraBold     
+
+    - family: MontserratExtraBold    
       fonts:
         - asset: assets/Fonts/Montserrat-ExtraBold.ttf
-    - family: MontserratExtraBold     
+
+    - family: MontserratItalic     
       fonts:
         - asset: assets/Fonts/Montserrat-Italic.ttf
+
+    - family: MontserratLight     
+      fonts:
+        - asset: assets/Fonts/Montserrat-Light.ttf
+
+    - family: MontserratExtraLight     
+      fonts:
+        - asset: assets/Fonts/Montserrat-ExtraLight.ttf
 
 flutter_icons:
   image_path: 'assets/logo/logoctpaga.png'

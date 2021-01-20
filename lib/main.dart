@@ -150,6 +150,9 @@ class _MyHomePageState extends State<MyHomePage> {
     await Future.delayed(Duration(seconds: 2));
     if(prefs.containsKey('access_token')){
       myProvider.accessTokenDelivery = prefs.getString('access_token');
+      myProvider.searchAddress = prefs.getString('searchAddress');
+      myProvider.statusButton = 2;
+      myProvider.statusInitGoogle = false;
       myProvider.getDataDelivery(true, false, context);
     }else{
       Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));

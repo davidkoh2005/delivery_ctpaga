@@ -62,7 +62,7 @@ class _NavbarState extends State<Navbar> {
                         color: Colors.black,
                         fontSize: 20 * scaleFactor,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'MontserratExtraBold',
+                        fontFamily: 'MontserratSemiBold',
                       ),
                     ),
                   ],

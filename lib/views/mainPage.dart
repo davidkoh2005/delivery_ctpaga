@@ -7,6 +7,7 @@ import 'package:delivery_ctpaga/models/paid.dart';
 import 'package:delivery_ctpaga/database.dart';
 import 'package:delivery_ctpaga/env.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -14,8 +15,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 class MainPage extends StatefulWidget {
@@ -109,7 +108,7 @@ class _MainPageState extends State<MainPage> {
                                             color: Colors.black,
                                             fontSize: 25 * scaleFactor,
                                             fontWeight: FontWeight.bold,
-                                            fontFamily: 'MontserratExtraBold',
+                                            fontFamily: 'MontserratSemiBold',
                                           )
                                         ),
                                       ),
@@ -123,7 +122,7 @@ class _MainPageState extends State<MainPage> {
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 15 * scaleFactor,
                                                 color: Colors.black,
-                                                fontFamily: 'MontserratExtraBold',
+                                                fontFamily: 'MontserratSemiBold',
                                               ),
                                               children: <TextSpan>[
                                                 TextSpan(
@@ -132,7 +131,7 @@ class _MainPageState extends State<MainPage> {
                                                     fontSize: 15 * scaleFactor,
                                                     color: Colors.black,
                                                     fontWeight: FontWeight.normal,
-                                                    fontFamily: 'MontserratExtraBold',
+                                                    fontFamily: 'MontserratSemiBold',
                                                   ),
                                                 ),
                                               ],
@@ -175,6 +174,8 @@ class _MainPageState extends State<MainPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("codeUrl");
     prefs.remove("date_codeUrl");
+    prefs.remove("searchAddress");
+    myProvider.searchAddress = "";
     myProvider.codeUrl = null;
   }
 
@@ -196,7 +197,7 @@ class _MainPageState extends State<MainPage> {
                   color: Colors.black,
                   fontSize: 20 * scaleFactor,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'MontserratExtraBold',
+                  fontFamily: 'MontserratSemiBold',
                 )
               ),
             ) 
@@ -210,7 +211,7 @@ class _MainPageState extends State<MainPage> {
                 labelText: 'código',
                 labelStyle: TextStyle(
                   color: colorText,
-                  fontFamily: 'MontserratExtraBold',
+                  fontFamily: 'MontserratSemiBold',
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: colorGreen),
@@ -233,7 +234,7 @@ class _MainPageState extends State<MainPage> {
               },
               cursorColor: colorGreen,
               style: TextStyle(
-                fontFamily: 'MontserratExtraBold',
+                fontFamily: 'MontserratSemiBold',
               ),
             ),
           ),
@@ -273,7 +274,7 @@ class _MainPageState extends State<MainPage> {
                 color: Colors.white,
                 fontSize: 15 * scaleFactor,
                 fontWeight: FontWeight.w500,
-                fontFamily: 'MontserratExtraBold',
+                fontFamily: 'MontserratSemiBold',
               ),
             ),
           ),
@@ -306,7 +307,6 @@ class _MainPageState extends State<MainPage> {
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
           _listSales = [];
-          print("print ${jsonResponse['data']['sales']}");
           for (var item in jsonResponse['data']['sales']) {
             setState(() {
               _listSales.add(item);
@@ -371,7 +371,6 @@ class _MainPageState extends State<MainPage> {
     myProvider.selectPaid = await dbctpaga.getPaid();
     myProvider.dataCommerce = await dbctpaga.getCommerce();
     myProvider.dataListSales = await dbctpaga.getSales();
-    print("print ${myProvider.selectPaid.codeUrl}");
     if(myProvider.selectPaid.codeUrl != myProvider.codeUrl){
       myProvider.selectPaid = null;
       myProvider.dataCommerce = null;
@@ -422,7 +421,7 @@ class _MainPageState extends State<MainPage> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 15 * scaleFactor,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   )
                 ),
               ),
@@ -466,7 +465,7 @@ class _MainPageState extends State<MainPage> {
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 15 * scaleFactor,
-                            fontFamily: 'MontserratExtraBold',
+                            fontFamily: 'MontserratSemiBold',
                           )
                         ),
                         TextSpan(
@@ -474,7 +473,7 @@ class _MainPageState extends State<MainPage> {
                           style: TextStyle(
                             color: colorGreen,
                             fontSize: 15 * scaleFactor,
-                            fontFamily: 'MontserratExtraBold',
+                            fontFamily: 'MontserratSemiBold',
                           )
                         ),
                       ]

@@ -43,6 +43,30 @@ class MyProvider with ChangeNotifier {
     notifyListeners(); 
   }
 
+  String _searchAddress;
+  String get searchAddress =>_searchAddress; 
+  
+  set searchAddress(String newAddress) {
+    _searchAddress = newAddress; 
+    notifyListeners(); 
+  }
+
+  int _statusButton;
+  int get statusButton =>_statusButton; 
+  
+  set statusButton(int newStatus) {
+    _statusButton = newStatus; 
+    notifyListeners(); 
+  }
+
+  bool _statusInitGoogle;
+  bool get statusInitGoogle =>_statusInitGoogle; 
+  
+  set statusInitGoogle(bool newStatus) {
+    _statusInitGoogle = newStatus; 
+    notifyListeners(); 
+  }
+
   Paid _selectPaid = Paid();
   Paid get selectPaid =>_selectPaid; 
   

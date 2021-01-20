@@ -139,7 +139,7 @@ class _NavbarMainState extends State<NavbarMain> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: size.width / 20,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   )
                 ),
               ),
@@ -182,7 +182,7 @@ class _NavbarMainState extends State<NavbarMain> {
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 15 * scaleFactor,
-                            fontFamily: 'MontserratExtraBold',
+                            fontFamily: 'MontserratSemiBold',
                           )
                         ),
                         TextSpan(
@@ -190,7 +190,7 @@ class _NavbarMainState extends State<NavbarMain> {
                           style: TextStyle(
                             color: colorGreen,
                             fontSize: 15 * scaleFactor,
-                            fontFamily: 'MontserratExtraBold',
+                            fontFamily: 'MontserratSemiBold',
                           )
                         ),
                       ]

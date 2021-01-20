@@ -1,11 +1,20 @@
 
 import 'package:delivery_ctpaga/views/navbar/navbar.dart';
 import 'package:delivery_ctpaga/providers/provider.dart';
+import 'package:delivery_ctpaga/models/paid.dart';
+import 'package:delivery_ctpaga/database.dart';
 import 'package:delivery_ctpaga/env.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
 
+import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:direct_select/direct_select.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:io';
 
 
 
@@ -16,7 +25,13 @@ class ShowDataPaidPage extends StatefulWidget {
 }
 
 class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
+  var dbctpaga = DBctpaga();
   String codeUrl;
+  final elements = [
+    "PRODUCTOS NO RETIRADO",
+    "PRODUCTOS RETIRADO",
+    "PRODUCTOS ENTREGADO",
+  ];
 
   void initState() {
     super.initState();
@@ -71,89 +86,129 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   fontSize: 15 * scaleFactor,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'MontserratExtraBold',
+                  fontFamily: 'MontserratSemiBold',
                 ),
               ),
             )
           )
         ),
-        Container(
-          padding: EdgeInsets.fromLTRB(30,0,30,5),
-          alignment: Alignment.centerLeft,
-          child: RichText(
-            text: TextSpan(
-              text: 'Nombre: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15 * scaleFactor,
-                color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
-              ),
-              children: <TextSpan>[
-                TextSpan(
-                  text: myProvider.dataCommerce.name,
-                  style: TextStyle(
-                    fontSize: 15 * scaleFactor,
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.fromLTRB(30,0,30,5),
+                  alignment: Alignment.centerLeft,
+                  width: size.width - 100,
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Nombre: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15 * scaleFactor,
+                        color: Colors.black,
+                        fontFamily: 'MontserratSemiBold',
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: myProvider.dataCommerce.name,
+                          style: TextStyle(
+                            fontSize: 15 * scaleFactor,
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            fontFamily: 'MontserratSemiBold',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(30,0,30,5),
+                  alignment: Alignment.centerLeft,
+                  width: size.width - 100,
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Dirección: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15 * scaleFactor,
+                        color: Colors.black,
+                        fontFamily: 'MontserratSemiBold',
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: myProvider.dataCommerce.address,
+                          style: TextStyle(
+                            fontSize: 15 * scaleFactor,
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            fontFamily: 'MontserratSemiBold',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(30,0,30,5),
+                  alignment: Alignment.centerLeft,
+                  width: size.width - 100,
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Telefono: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15 * scaleFactor,
+                        color: Colors.black,
+                        fontFamily: 'MontserratSemiBold',
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: myProvider.dataCommerce.phone,
+                          style: TextStyle(
+                            fontSize: 15 * scaleFactor,
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            fontFamily: 'MontserratSemiBold',
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.fromLTRB(30,0,30,5),
-          alignment: Alignment.centerLeft,
-          child: RichText(
-            text: TextSpan(
-              text: 'Dirección: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15 * scaleFactor,
-                color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
-              ),
-              children: <TextSpan>[
-                TextSpan(
-                  text: myProvider.dataCommerce.address,
-                  style: TextStyle(
-                    fontSize: 15 * scaleFactor,
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(right:50),
+                  child: IconButton(
+                    icon: Image.asset(
+                      "assets/icons/mapa.png",
+                      width: size.width / 15,
+                      height: size.width / 15,
+                      color: colorGreen,
+                    ), 
+                    onPressed: () async{
+                  /*  SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.setString('searchAddress', myProvider.selectPaid.addressShipping);
+                      myProvider.statusInitGoogle = true;
+                      myProvider.statusButton = 1;
+                      myProvider.searchAddress = myProvider.dataCommerce.address;
+                      Navigator.pop(context); */
+                      openGoogleMaps(myProvider.dataCommerce.address);
+                    }
                   ),
                 ),
               ],
             ),
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.fromLTRB(30,0,30,5),
-          alignment: Alignment.centerLeft,
-          child: RichText(
-            text: TextSpan(
-              text: 'Telefono: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15 * scaleFactor,
-                color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
-              ),
-              children: <TextSpan>[
-                TextSpan(
-                  text: myProvider.dataCommerce.phone,
-                  style: TextStyle(
-                    fontSize: 15 * scaleFactor,
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ],
         ),
 
         Padding(
@@ -172,7 +227,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   fontSize: 15 * scaleFactor,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'MontserratExtraBold',
+                  fontFamily: 'MontserratSemiBold',
                 ),
               ),
             )
@@ -189,7 +244,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 fontWeight: FontWeight.bold,
                 fontSize: 15 * scaleFactor,
                 color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
+                fontFamily: 'MontserratSemiBold',
               ),
               children: <TextSpan>[
                 TextSpan(
@@ -198,7 +253,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                     fontSize: 15 * scaleFactor,
                     color: Colors.black,
                     fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   ),
                 ),
               ],
@@ -216,7 +271,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 fontWeight: FontWeight.bold,
                 fontSize: 15 * scaleFactor,
                 color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
+                fontFamily: 'MontserratSemiBold',
               ),
               children: <TextSpan>[
                 TextSpan(
@@ -225,7 +280,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                     fontSize: 15 * scaleFactor,
                     color: Colors.black,
                     fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   ),
                 ),
               ],
@@ -249,117 +304,159 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   fontSize: 15 * scaleFactor,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'MontserratExtraBold',
+                  fontFamily: 'MontserratSemiBold',
                 ),
               ),
             )
           )
         ),
 
-        Container(
-          padding: EdgeInsets.fromLTRB(30,0,30,5),
-          alignment: Alignment.centerLeft,
-          child: RichText(
-            text: TextSpan(
-              text: 'Nombre: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15 * scaleFactor,
-                color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
-              ),
-              children: <TextSpan>[
-                TextSpan(
-                  text: myProvider.selectPaid.nameShipping,
-                  style: TextStyle(
-                    fontSize: 15 * scaleFactor,
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.fromLTRB(30,0,30,5),
+                  alignment: Alignment.centerLeft,
+                  width: size.width - 100,
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Nombre: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15 * scaleFactor,
+                        color: Colors.black,
+                        fontFamily: 'MontserratSemiBold',
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: myProvider.selectPaid.nameShipping,
+                          style: TextStyle(
+                            fontSize: 15 * scaleFactor,
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            fontFamily: 'MontserratSemiBold',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(30,0,30,5),
+                  alignment: Alignment.centerLeft,
+                  width: size.width - 100,
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Teléfono: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15 * scaleFactor,
+                        color: Colors.black,
+                        fontFamily: 'MontserratSemiBold',
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: myProvider.selectPaid.numberShipping,
+                          style: TextStyle(
+                            fontSize: 15 * scaleFactor,
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            fontFamily: 'MontserratSemiBold',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(30,0,30,5),
+                  alignment: Alignment.centerLeft,
+                  width: size.width - 100,
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Dirección: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15 * scaleFactor,
+                        color: Colors.black,
+                        fontFamily: 'MontserratSemiBold',
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: myProvider.selectPaid.addressShipping,
+                          style: TextStyle(
+                            fontSize: 15 * scaleFactor,
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            fontFamily: 'MontserratSemiBold',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(30,0,30,5),
+                  alignment: Alignment.centerLeft,
+                  width: size.width - 100,
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Detalle: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15 * scaleFactor,
+                        color: Colors.black,
+                        fontFamily: 'MontserratSemiBold',
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: myProvider.selectPaid.detailsShipping,
+                          style: TextStyle(
+                            fontSize: 15 * scaleFactor,
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            fontFamily: 'MontserratSemiBold',
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.fromLTRB(30,0,30,5),
-          alignment: Alignment.centerLeft,
-          child: RichText(
-            text: TextSpan(
-              text: 'Teléfono: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15 * scaleFactor,
-                color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
-              ),
-              children: <TextSpan>[
-                TextSpan(
-                  text: myProvider.selectPaid.numberShipping,
-                  style: TextStyle(
-                    fontSize: 15 * scaleFactor,
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(right:50),
+                  child: IconButton(
+                    icon: Image.asset(
+                      "assets/icons/mapa.png",
+                      width: size.width / 15,
+                      height: size.width / 15,
+                      color: colorGreen,
+                    ), 
+                    onPressed: () async{
+                      /* SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.setString('searchAddress', myProvider.selectPaid.addressShipping);
+                      myProvider.statusButton = 1;
+                      myProvider.searchAddress = myProvider.selectPaid.addressShipping;
+                      myProvider.statusInitGoogle = true;
+                      Navigator.pop(context); */
+                      openGoogleMaps(myProvider.selectPaid.addressShipping);
+                    }
                   ),
                 ),
               ],
             ),
-          ),
+          ],
         ),
-        Container(
-          padding: EdgeInsets.fromLTRB(30,0,30,5),
-          alignment: Alignment.centerLeft,
-          child: RichText(
-            text: TextSpan(
-              text: 'Dirección: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15 * scaleFactor,
-                color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
-              ),
-              children: <TextSpan>[
-                TextSpan(
-                  text: myProvider.selectPaid.addressShipping,
-                  style: TextStyle(
-                    fontSize: 15 * scaleFactor,
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.fromLTRB(30,0,30,5),
-          alignment: Alignment.centerLeft,
-          child: RichText(
-            text: TextSpan(
-              text: 'Detalle: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15 * scaleFactor,
-                color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
-              ),
-              children: <TextSpan>[
-                TextSpan(
-                  text: myProvider.selectPaid.detailsShipping,
-                  style: TextStyle(
-                    fontSize: 15 * scaleFactor,
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+
 
         Padding(
           padding: EdgeInsets.fromLTRB(40, 20, 40, 20),
@@ -377,7 +474,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   fontSize: 15 * scaleFactor,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'MontserratExtraBold',
+                  fontFamily: 'MontserratSemiBold',
                 ),
               ),
             )
@@ -386,27 +483,36 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
         Container(
           padding: EdgeInsets.fromLTRB(30,0,30,5),
           alignment: Alignment.centerLeft,
-          child: RichText(
-            text: TextSpan(
-              text: 'Estado: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15 * scaleFactor,
-                color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
-              ),
-              children: <TextSpan>[
-                TextSpan(
-                  text: showStatus(myProvider.selectPaid.statusShipping),
-                  style: TextStyle(
-                    fontSize: 15 * scaleFactor,
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
-                  ),
+          child: Row(
+            children: [
+              Text(
+                'Estado: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15 * scaleFactor,
+                  color: Colors.black,
+                  fontFamily: 'MontserratSemiBold',
                 ),
-              ],
-            ),
+              ),
+              Container(
+                width: size.width - 130,
+                child: DirectSelect(
+                  itemExtent: 45.0,
+                  selectedIndex: myProvider.selectPaid.statusShipping,
+                  child: MySelectionItem(
+                    isForList: false,
+                    title: elements[myProvider.selectPaid.statusShipping],
+                  ),
+                  onSelectedItemChanged: (index) {
+                    Navigator.pop(context);
+                    if(myProvider.selectPaid.statusShipping != index)
+                      verifyUpdate(index);
+                  },
+                  mode: DirectSelectMode.tap,
+                  items: _buildItems()
+                )
+              ),
+            ],
           ),
         ),
         Container(
@@ -419,7 +525,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 fontWeight: FontWeight.bold,
                 fontSize: 15 * scaleFactor,
                 color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
+                fontFamily: 'MontserratSemiBold',
               ),
               children: <TextSpan>[
                 TextSpan(
@@ -428,7 +534,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                     fontSize: 15 * scaleFactor,
                     color: Colors.black,
                     fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   ),
                 ),
               ],
@@ -445,7 +551,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 fontWeight: FontWeight.bold,
                 fontSize: 15 * scaleFactor,
                 color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
+                fontFamily: 'MontserratSemiBold',
               ),
               children: <TextSpan>[
                 TextSpan(
@@ -454,7 +560,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                     fontSize: 15 * scaleFactor,
                     color: Colors.black,
                     fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   ),
                 ),
               ],
@@ -471,7 +577,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 fontWeight: FontWeight.bold,
                 fontSize: 15 * scaleFactor,
                 color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
+                fontFamily: 'MontserratSemiBold',
               ),
               children: <TextSpan>[
                 TextSpan(
@@ -480,7 +586,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                     fontSize: 15 * scaleFactor,
                     color: Colors.black,
                     fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   ),
                 ),
               ],
@@ -498,7 +604,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 fontWeight: FontWeight.bold,
                 fontSize: 15 * scaleFactor,
                 color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
+                fontFamily: 'MontserratSemiBold',
               ),
               children: <TextSpan>[
                 TextSpan(
@@ -507,7 +613,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                     fontSize: 15 * scaleFactor,
                     color: Colors.black,
                     fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   ),
                 ),
               ],
@@ -520,12 +626,12 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
           alignment: Alignment.center,
           child: RichText(
             text: TextSpan(
-              text: 'Status del Pago: ',
+              text: 'Estado del Pago: ',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 15 * scaleFactor,
                 color: Colors.black,
-                fontFamily: 'MontserratExtraBold',
+                fontFamily: 'MontserratSemiBold',
               ),
               children: <TextSpan>[
                 TextSpan(
@@ -534,7 +640,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                     fontSize: 15 * scaleFactor,
                     color: myProvider.dataListSales[0]['statusSale'] == 0? Colors.red : Colors.green,
                     fontWeight: FontWeight.normal,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   ),
                 ),
               ],
@@ -558,7 +664,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   fontSize: 15 * scaleFactor,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'MontserratExtraBold',
+                  fontFamily: 'MontserratSemiBold',
                 ),
               ),
             )
@@ -576,7 +682,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                     fontSize: 15 * scaleFactor,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   ),
                 ),
               ),
@@ -587,7 +693,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                     fontSize: 15 * scaleFactor,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   ),
                 ),
               ),
@@ -598,7 +704,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                     fontSize: 15 * scaleFactor,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   ),
                 ),
               ),
@@ -629,17 +735,19 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
     );
   }
 
-  showStatus(status){
-    switch(status) { 
-      case 0: { return "NO RETIRADO PRODUCTOS"; } 
-      break; 
-     
-      case 1: { return "PRODUCTOS RETIRADO"; } 
-      break; 
-     
-      case 2: { return "PRODUCTOS ENTREGADO"; } 
-      break;     
-    } 
+  List<Widget> _buildItems() {
+    return elements
+        .map((val) => MySelectionItem(
+              title: val,
+            ))
+        .toList();
+  }
+
+  openGoogleMaps(destination)async{
+    _onLoading();
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Navigator.pop(context);
+    launch("https://www.google.com/maps/dir/?api=1&origin=${position.latitude}+${position.longitude}&destination=${destination.replaceAll(' ','%20')}&travelmode=driving&dir_action=navigat");
   }
 
   showTotal(coin, price){
@@ -670,6 +778,101 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
       lowPrice.updateValue(priceDouble);
 
     return "${lowPrice.text}";
+  }
+
+  verifyUpdate(index){
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async =>false,
+          child: AlertDialog(
+            title: Text("Cambiar Estado de Envio"),
+            content: Text("Estado Actual es ${elements[myProvider.selectPaid.statusShipping]} desea cambiar por ${elements[index]}"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Si'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  sendUpdate(index);
+                },
+              ),
+              FlatButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  sendUpdate(index)async{
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    var response, result;
+    try
+    {
+      _onLoading();
+      result = await InternetAddress.lookup('google.com'); //verify network
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        response = await http.post(
+          urlApi+"changeStatus",
+          headers:{
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
+          },
+          body: jsonEncode({
+            "codeUrl" : myProvider.codeUrl,
+            "statusShipping" : index,
+          }),
+        ); 
+        var jsonResponse = jsonDecode(response.body); 
+        print(jsonResponse);
+        if (jsonResponse['statusCode'] == 201) {
+
+          var _selectPaid;
+          _selectPaid = Paid(
+            user_id: jsonResponse['data']['paid']['user_id'],
+            commerce_id: jsonResponse['data']['paid']['commerce_id'],
+            codeUrl: jsonResponse['data']['paid']['codeUrl'],
+            nameClient: jsonResponse['data']['paid']['nameClient'],
+            total: jsonResponse['data']['paid']['total'],
+            coin: jsonResponse['data']['paid']['coin'],
+            email: jsonResponse['data']['paid']['email'],
+            nameShipping: jsonResponse['data']['paid']['nameShipping'] == null? '' : jsonResponse['data']['paid']['nameShipping'],
+            numberShipping: jsonResponse['data']['paid']['numberShipping'] == null? '' : jsonResponse['data']['paid']['numberShipping'],
+            addressShipping: jsonResponse['data']['paid']['addressShipping'] == null? '' : jsonResponse['data']['paid']['addressShipping'],
+            detailsShipping: jsonResponse['data']['paid']['detailsShipping'] == null? '' : jsonResponse['data']['paid']['detailsShipping'],
+            selectShipping: jsonResponse['data']['paid']['selectShipping'] == null? '' : jsonResponse['data']['paid']['selectShipping'],
+            priceShipping: jsonResponse['data']['paid']['priceShipping'] == null? '0' : jsonResponse['data']['paid']['priceShipping'],
+            statusShipping: jsonResponse['data']['paid']['statusShipping'] ,
+            percentage: jsonResponse['data']['paid']['percentage'] ,
+            nameCompanyPayments: jsonResponse['data']['paid']['nameCompanyPayments'],
+            date: jsonResponse['data']['paid']['date'],
+          );
+        
+          
+          myProvider.selectPaid = _selectPaid;
+
+          dbctpaga.createOrUpdatePaid(_selectPaid);
+
+          Navigator.pop(context);
+          showMessage("Guardado Correctamente", true);
+        }else{
+          Navigator.pop(context);
+          showMessage(jsonResponse['message'], false);
+        }
+      }
+    } on SocketException catch (_) {
+      Navigator.pop(context);
+      showMessage("No hay internet verifica tu conexión", false);
+    }
   }
 
   Future<void> showMessage(_titleMessage, _statusCorrectly) async {
@@ -710,7 +913,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 15 * scaleFactor,
-                    fontFamily: 'MontserratExtraBold',
+                    fontFamily: 'MontserratSemiBold',
                   )
                 ),
               ),
@@ -721,4 +924,102 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
     );
   }
 
+  Future<void> _onLoading() async {
+    var scaleFactor = MediaQuery.of(context).textScaleFactor;
+
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: AlertDialog(
+            backgroundColor: Colors.white,
+            content: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(5),
+                  child: CircularProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation<Color>(colorGreen),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(5),
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Cargando ",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratSemiBold',
+                          )
+                        ),
+                        TextSpan(
+                          text: "...",
+                          style: TextStyle(
+                            color: colorGreen,
+                            fontSize: 15 * scaleFactor,
+                            fontFamily: 'MontserratSemiBold',
+                          )
+                        ),
+                      ]
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        );
+      },
+    );
+  }
+
+}
+
+
+class MySelectionItem extends StatelessWidget {
+  final String title;
+  final bool isForList;
+
+  const MySelectionItem({Key key, this.title, this.isForList = true}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 60.0,
+      child: isForList
+          ? Padding(
+              child: _buildItem(context),
+              padding: EdgeInsets.all(10.0),
+            )
+          : Card(
+              margin: EdgeInsets.symmetric(horizontal: 10.0),
+              child: Stack(
+                children: <Widget>[
+                  _buildItem(context),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Icon(Icons.arrow_drop_down),
+                  )
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget _buildItem(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      alignment: Alignment.center,
+      child: FittedBox(
+          child: Text(
+        title,
+      )),
+    );
+  }
 }

@@ -14,7 +14,6 @@ class MainMenuBar extends StatefulWidget {
 }
 
 class _MainMenuBarState extends State<MainMenuBar> {
-  int _statusButton = 2;
 
   final _pageOptions = [
     GoogleMapsPage(),
@@ -35,7 +34,7 @@ class _MainMenuBarState extends State<MainMenuBar> {
               children: [
                 Column(
                   children: <Widget>[
-                    Expanded(child:_pageOptions[_statusButton-1]),
+                    Expanded(child:_pageOptions[myProvider.statusButton-1]),
                     SizedBox(height: 60),
                   ],
                 ),
@@ -43,7 +42,7 @@ class _MainMenuBarState extends State<MainMenuBar> {
                 Positioned(
                   bottom: 0,
                   left: 0,
-                  child: _showMenu()
+                  child: _showMenu(myProvider)
                 ),
               ]
             )
@@ -53,7 +52,7 @@ class _MainMenuBarState extends State<MainMenuBar> {
     );
   }
 
-  Widget _showMenu(){
+  Widget _showMenu(myProvider){
     var size = MediaQuery.of(context).size;
     return Container(
       width: size.width,
@@ -70,9 +69,9 @@ class _MainMenuBarState extends State<MainMenuBar> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         mainAxisSize :MainAxisSize.max,
         children: <Widget>[
-          _buildNavItem("Mapa", "assets/icons/mapa.png", _statusButton, 1),
-          _buildNavItem("Inicio" ,"assets/icons/home.png",_statusButton, 2),
-          _buildNavItem("Perfil", "assets/icons/perfil.png", _statusButton, 3),
+          _buildNavItem("Mapa", "assets/icons/mapa.png", myProvider.statusButton, 1),
+          _buildNavItem("Inicio" ,"assets/icons/home.png",myProvider.statusButton, 2),
+          _buildNavItem("Perfil", "assets/icons/perfil.png", myProvider.statusButton, 3),
         ]
       ),
     );
@@ -81,13 +80,10 @@ class _MainMenuBarState extends State<MainMenuBar> {
   Widget _buildNavItem(String _title, String _icon, int _status, int code){
     var size = MediaQuery.of(context).size;
     var scaleFactor = MediaQuery.of(context).textScaleFactor;
-    
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
     return GestureDetector(
       onTap: () async {
-        setState((){
-
-          _statusButton = code;
-        }); 
+        myProvider.statusButton = code;
       },
       child: Container(
         color: Colors.white,
@@ -113,7 +109,7 @@ class _MainMenuBarState extends State<MainMenuBar> {
                   color: Colors.black,
                   fontSize: 10 * scaleFactor,
                   fontWeight: FontWeight.w500,
-                  fontFamily: 'MontserratExtraBold',
+                  fontFamily: 'MontserratSemiBold',
                 ),
               ),
             )
