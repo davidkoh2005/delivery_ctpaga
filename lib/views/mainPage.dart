@@ -8,6 +8,7 @@ import 'package:delivery_ctpaga/database.dart';
 import 'package:delivery_ctpaga/env.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -58,8 +59,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
-
+    
     return WillPopScope(
       onWillPop: () async {        
         return false;
@@ -102,25 +102,25 @@ class _MainPageState extends State<MainPage> {
                                       Container(
                                         padding: EdgeInsets.only(bottom: 20),
                                         alignment: Alignment.center,
-                                        child: Text(
+                                        child: AutoSizeText(
                                           "Ultima Busqueda:",
                                           style: TextStyle(
                                             color: Colors.black,
-                                            fontSize: 25 * scaleFactor,
                                             fontWeight: FontWeight.bold,
                                             fontFamily: 'MontserratSemiBold',
-                                          )
+                                          ),
+                                          maxFontSize: 24,
+                                          minFontSize: 24,
                                         ),
                                       ),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          RichText(
-                                            text: TextSpan(
+                                          AutoSizeText.rich(
+                                            TextSpan(
                                               text: 'Código: ',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 15 * scaleFactor,
                                                 color: Colors.black,
                                                 fontFamily: 'MontserratSemiBold',
                                               ),
@@ -128,7 +128,6 @@ class _MainPageState extends State<MainPage> {
                                                 TextSpan(
                                                   text: myProvider.codeUrl,
                                                   style: TextStyle(
-                                                    fontSize: 15 * scaleFactor,
                                                     color: Colors.black,
                                                     fontWeight: FontWeight.normal,
                                                     fontFamily: 'MontserratSemiBold',
@@ -136,6 +135,8 @@ class _MainPageState extends State<MainPage> {
                                                 ),
                                               ],
                                             ),
+                                            maxFontSize: 14,
+                                            minFontSize: 14,
                                           ),
                                           IconButton(
                                             iconSize: 25,
@@ -180,7 +181,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   showSearch(){
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
     
     return Form(
       key: _formKeySearch,
@@ -191,14 +191,15 @@ class _MainPageState extends State<MainPage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 30.0),
             child: Center(
-              child: Text(
+              child: AutoSizeText(
                 "Buscar Código",
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 20 * scaleFactor,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'MontserratSemiBold',
-                )
+                ),
+                maxFontSize: 19,
+                minFontSize: 19,
               ),
             ) 
           ),
@@ -245,7 +246,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget buttonSearch(){
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
     var size = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.only(left:60, right:60),
@@ -268,14 +268,15 @@ class _MainPageState extends State<MainPage> {
           borderRadius: BorderRadius.circular(30),
           ),
           child: Center(
-            child: Text(
+            child: AutoSizeText(
               "BUSCAR",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 15 * scaleFactor,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'MontserratSemiBold',
               ),
+              maxFontSize: 14,
+              minFontSize: 14,
             ),
           ),
         ),
@@ -293,7 +294,7 @@ class _MainPageState extends State<MainPage> {
       result = await InternetAddress.lookup('google.com'); //verify network
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.post(
-          urlApi+"showPaid",
+          urlApi+"showPaidDelivery",
           headers:{
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
@@ -384,7 +385,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> showMessage(_titleMessage, _statusCorrectly) async {
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
     var size = MediaQuery.of(context).size;
 
     return showDialog(
@@ -420,7 +420,6 @@ class _MainPageState extends State<MainPage> {
                   _titleMessage,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 15 * scaleFactor,
                     fontFamily: 'MontserratSemiBold',
                   )
                 ),
@@ -434,8 +433,7 @@ class _MainPageState extends State<MainPage> {
 
 
   Future<void> _onLoading() async {
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
-
+    
     return showDialog(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -464,7 +462,6 @@ class _MainPageState extends State<MainPage> {
                           text: "Cargando ",
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 15 * scaleFactor,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),
@@ -472,7 +469,6 @@ class _MainPageState extends State<MainPage> {
                           text: "...",
                           style: TextStyle(
                             color: colorGreen,
-                            fontSize: 15 * scaleFactor,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),

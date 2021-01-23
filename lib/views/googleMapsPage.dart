@@ -72,11 +72,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
                             onMapCreated: (GoogleMapController controller) {
                               _controllerGoogleMap.complete(controller);
                               newGoogleMapController = controller;
-                              if(myProvider.statusInitGoogle){
-                                searchNavigate();
-                              }else{
-                                locatePosition();
-                              }
+                              locatePosition();
                             },
                             onTap: (latlang){
                               if(_markers.length>=1)
@@ -180,20 +176,6 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
       ));
     });
 
-    if(myProvider.statusInitGoogle){
-      myProvider.statusInitGoogle = false;
-      setState(() {
-        _markers.add(
-          Marker(
-            markerId: MarkerId(myProvider.searchAddress),
-            position: LatLng(locations[0].latitude, locations[0].longitude),
-            infoWindow: InfoWindow(
-              title: myProvider.searchAddress,
-            ),
-          ),
-        );
-      });
-    }
   }
 
 

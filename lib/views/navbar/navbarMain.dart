@@ -138,7 +138,6 @@ class _NavbarMainState extends State<NavbarMain> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: size.width / 20,
                     fontFamily: 'MontserratSemiBold',
                   )
                 ),
@@ -151,8 +150,7 @@ class _NavbarMainState extends State<NavbarMain> {
   }
 
   Future<void> _onLoading() async {
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
-
+    
     return showDialog(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -181,7 +179,6 @@ class _NavbarMainState extends State<NavbarMain> {
                           text: "Cargando ",
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 15 * scaleFactor,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),
@@ -189,7 +186,6 @@ class _NavbarMainState extends State<NavbarMain> {
                           text: "...",
                           style: TextStyle(
                             color: colorGreen,
-                            fontSize: 15 * scaleFactor,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),

@@ -4,6 +4,7 @@ import 'package:delivery_ctpaga/views/profilePage.dart';
 import 'package:delivery_ctpaga/providers/provider.dart';
 import 'package:delivery_ctpaga/env.dart';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -79,7 +80,6 @@ class _MainMenuBarState extends State<MainMenuBar> {
 
   Widget _buildNavItem(String _title, String _icon, int _status, int code){
     var size = MediaQuery.of(context).size;
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
     var myProvider = Provider.of<MyProvider>(context, listen: false);
     return GestureDetector(
       onTap: () async {
@@ -103,14 +103,15 @@ class _MainMenuBarState extends State<MainMenuBar> {
             ),
             Container(
               padding: EdgeInsets.only(top:5, bottom: 5),
-              child: Text(
+              child: AutoSizeText(
                 _title,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 10 * scaleFactor,
                   fontWeight: FontWeight.w500,
                   fontFamily: 'MontserratSemiBold',
                 ),
+                maxFontSize: 9,
+                minFontSize: 9,
               ),
             )
           ]

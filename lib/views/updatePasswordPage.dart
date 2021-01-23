@@ -3,6 +3,7 @@ import 'package:delivery_ctpaga/views/navbar/navbar.dart';
 import 'package:delivery_ctpaga/providers/provider.dart';
 import 'package:delivery_ctpaga/env.dart';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -170,6 +171,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
                   labelStyle: TextStyle(
                     color: colorGreen,
                     fontFamily: 'MontserratSemiBold',
+                    fontSize: 14,
                   ),
                   icon: new Icon(
                     Icons.lock,
@@ -196,6 +198,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
               cursorColor: colorGreen,
               style: TextStyle(
                 fontFamily: 'MontserratSemiBold',
+                fontSize: 14,
               ),
             ),
           ),
@@ -205,7 +208,6 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
   }
 
   Widget buttonSave(){
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
     var size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () => savePassword() ,
@@ -228,14 +230,15 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
           borderRadius: BorderRadius.circular(30),
           ),
         child: Center(
-          child: Text(
+          child: AutoSizeText(
             "GUARDAR",
             style: TextStyle(
               color: Colors.white,
-              fontSize: 15 * scaleFactor,
               fontWeight: FontWeight.w500,
               fontFamily: 'MontserratSemiBold',
             ),
+            maxFontSize: 14,
+            minFontSize: 14,
           ),
         ),
       ),
@@ -287,7 +290,6 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
   }
   
   Future<void> showMessage(_titleMessage, _statusCorrectly) async {
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
     var size = MediaQuery.of(context).size;
 
     return showDialog(
@@ -323,7 +325,6 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
                   _titleMessage,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 15 * scaleFactor,
                     fontFamily: 'MontserratSemiBold',
                   )
                 ),
@@ -337,8 +338,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
 
 
   Future<void> _onLoading() async {
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
-
+    
     return showDialog(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -367,7 +367,6 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
                           text: "Cargando ",
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 15 * scaleFactor,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),
@@ -375,7 +374,6 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
                           text: "...",
                           style: TextStyle(
                             color: colorGreen,
-                            fontSize: 15 * scaleFactor,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),

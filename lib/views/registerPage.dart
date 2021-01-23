@@ -2,6 +2,7 @@ import 'package:delivery_ctpaga/providers/provider.dart';
 import 'package:delivery_ctpaga/env.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -74,6 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 labelStyle: TextStyle(
                   color: colorGreen,
                   fontFamily: 'MontserratSemiBold',
+                  fontSize: 14,
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: colorGreen),
@@ -85,6 +87,7 @@ class _RegisterPageState extends State<RegisterPage> {
               cursorColor: colorGreen,
               style: TextStyle(
                 fontFamily: 'MontserratSemiBold',
+                fontSize: 14,
               ),
             ),
           ),
@@ -102,6 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 labelStyle: TextStyle(
                   color: colorGreen,
                   fontFamily: 'MontserratSemiBold',
+                  fontSize: 14,
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: colorGreen),
@@ -113,6 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
               cursorColor: colorGreen,
               style: TextStyle(
                 fontFamily: 'MontserratSemiBold',
+                fontSize: 14,
               ),
             ),
           ),
@@ -129,6 +134,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   labelStyle: TextStyle(
                     color: colorGreen,
                     fontFamily: 'MontserratSemiBold',
+                    fontSize: 14,
                   ),
                   icon: new Icon(
                     Icons.mail,
@@ -144,6 +150,7 @@ class _RegisterPageState extends State<RegisterPage> {
               cursorColor: colorGreen,
               style: TextStyle(
                 fontFamily: 'MontserratSemiBold',
+                fontSize: 14,
               ),
             ),
           ),
@@ -161,6 +168,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   labelStyle: TextStyle(
                     color: colorGreen,
                     fontFamily: 'MontserratSemiBold',
+                    fontSize: 14,
                   ),
                   icon: new Icon(
                     Icons.lock,
@@ -189,6 +197,7 @@ class _RegisterPageState extends State<RegisterPage> {
               cursorColor: colorGreen,
               style: TextStyle(
                 fontFamily: 'MontserratSemiBold',
+                fontSize: 14,
               ),
             ),
           ),
@@ -205,6 +214,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   labelStyle: TextStyle(
                     color: colorGreen,
                     fontFamily: 'MontserratSemiBold',
+                    fontSize: 14,
                   ),
                   icon: new Icon(
                     Icons.lock,
@@ -237,6 +247,7 @@ class _RegisterPageState extends State<RegisterPage> {
               cursorColor: colorGreen,
               style: TextStyle(
                 fontFamily: 'MontserratSemiBold',
+                fontSize: 14,
               ),
             ),
           ),
@@ -244,11 +255,12 @@ class _RegisterPageState extends State<RegisterPage> {
           _statusError ? Center(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(10.0, 15.0, 0.0, 50.0),
-                child: Text(
+                child: AutoSizeText(
                   _messageError == null? '' : _messageError,
                   style: TextStyle(
                     color: Colors.red,
                     fontFamily: 'MontserratSemiBold',
+                    fontSize: 14,
                   ),
                 ),
               ),
@@ -260,7 +272,6 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget buttonRegister(){
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
     var size = MediaQuery.of(context).size;
     return  GestureDetector(
       onTap: () {
@@ -293,14 +304,15 @@ class _RegisterPageState extends State<RegisterPage> {
           ],
         ),
         child: Center(
-          child: Text(
+          child: AutoSizeText(
             'Registrar Cuenta',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 15 * scaleFactor,
               fontWeight: FontWeight.w500,
               fontFamily: 'MontserratSemiBold',
             ),
+            maxFontSize: 14,
+            minFontSize: 14,
           ),
         ),
       ),
@@ -371,8 +383,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _onLoading() async {
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
-
+    
     return showDialog(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -401,7 +412,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           text: "Cargando ",
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 15 * scaleFactor,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),
@@ -409,7 +419,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           text: "...",
                           style: TextStyle(
                             color: colorGreen,
-                            fontSize: 15 * scaleFactor,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),

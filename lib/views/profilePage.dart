@@ -4,6 +4,7 @@ import 'package:delivery_ctpaga/views/updatePasswordPage.dart';
 import 'package:delivery_ctpaga/providers/provider.dart';
 import 'package:delivery_ctpaga/env.dart';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -59,8 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
 
   Widget formContact(){
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
-
+    
     return Consumer<MyProvider>(
       builder: (context, myProvider, child) {
         return new Form(
@@ -74,13 +74,14 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 30.0),
                 child: Center(
-                  child: Text(
+                  child: AutoSizeText(
                     "Perfil",
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 25 * scaleFactor,
                       fontWeight: FontWeight.bold
-                    )
+                    ),
+                    maxFontSize: 24,
+                    minFontSize: 24,
                   ),
                 ) 
               ),
@@ -178,14 +179,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: FlatButton(
               
                   onPressed: () => nextPage(),
-                  child: Text(
+                  child: AutoSizeText(
                     "Cambiar contraseña",
                     style: TextStyle(
                       color: Colors.black87,
-                      fontSize: 15 * scaleFactor,
                       decoration: TextDecoration.underline,
                       fontFamily: 'MontserratSemiBold',
-                    )
+                    ),
+                    maxFontSize: 14,
+                    minFontSize: 14,
                   ),
                 ),
               ),
@@ -199,7 +201,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget buttonSave(){
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
     var size = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.only(left:30, right:30, bottom:30),
@@ -222,14 +223,15 @@ class _ProfilePageState extends State<ProfilePage> {
             borderRadius: BorderRadius.circular(30),
             ),
           child: Center(
-            child: Text(
+            child: AutoSizeText(
               "GUARDAR",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 15 * scaleFactor,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'MontserratSemiBold',
               ),
+              maxFontSize: 14,
+              minFontSize: 14,
             ),
           ),
         ),
@@ -277,8 +279,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _onLoading() async {
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
-
+    
     return showDialog(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -307,7 +308,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           text: "Cargando ",
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 15 * scaleFactor,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),
@@ -315,7 +315,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           text: "...",
                           style: TextStyle(
                             color: colorGreen,
-                            fontSize: 15 * scaleFactor,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),
@@ -332,7 +331,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> showMessage(_titleMessage, _statusCorrectly) async {
-    var scaleFactor = MediaQuery.of(context).textScaleFactor;
     var size = MediaQuery.of(context).size;
 
     return showDialog(
@@ -368,7 +366,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   _titleMessage,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 15 * scaleFactor,
                     fontFamily: 'MontserratSemiBold',
                   )
                 ),
