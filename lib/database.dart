@@ -13,7 +13,7 @@ import 'dart:async';
 class DBctpaga{
 
   static Database dbInstance;
-  static int versionDB = 1;
+  static int versionDB = 2;
 
   Future<Database> get db async{
     if(dbInstance == null)
@@ -76,7 +76,7 @@ class DBctpaga{
         email : list[i]['email'],
         name : list[i]['name'],
         phone : list[i]['phone'],
-        status: list[i]['statusShipping']==1? true : false,
+        status: list[i]['status']==1? true : false,
       );
 
     }

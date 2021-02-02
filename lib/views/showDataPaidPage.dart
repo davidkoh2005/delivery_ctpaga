@@ -7,6 +7,7 @@ import 'package:delivery_ctpaga/env.dart';
 
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -850,6 +851,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
 
   sendUpdate(index)async{
     var myProvider = Provider.of<MyProvider>(context, listen: false);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     var response, result;
     try
     {
@@ -871,35 +873,46 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
         var jsonResponse = jsonDecode(response.body); 
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
-
-          var _selectPaid;
-          _selectPaid = Paid(
-            user_id: jsonResponse['data']['paid']['user_id'],
-            commerce_id: jsonResponse['data']['paid']['commerce_id'],
-            codeUrl: jsonResponse['data']['paid']['codeUrl'],
-            nameClient: jsonResponse['data']['paid']['nameClient'],
-            total: jsonResponse['data']['paid']['total'],
-            coin: jsonResponse['data']['paid']['coin'],
-            email: jsonResponse['data']['paid']['email'],
-            nameShipping: jsonResponse['data']['paid']['nameShipping'] == null? '' : jsonResponse['data']['paid']['nameShipping'],
-            numberShipping: jsonResponse['data']['paid']['numberShipping'] == null? '' : jsonResponse['data']['paid']['numberShipping'],
-            addressShipping: jsonResponse['data']['paid']['addressShipping'] == null? '' : jsonResponse['data']['paid']['addressShipping'],
-            detailsShipping: jsonResponse['data']['paid']['detailsShipping'] == null? '' : jsonResponse['data']['paid']['detailsShipping'],
-            selectShipping: jsonResponse['data']['paid']['selectShipping'] == null? '' : jsonResponse['data']['paid']['selectShipping'],
-            priceShipping: jsonResponse['data']['paid']['priceShipping'] == null? '0' : jsonResponse['data']['paid']['priceShipping'],
-            statusShipping: jsonResponse['data']['paid']['statusShipping'] ,
-            percentage: jsonResponse['data']['paid']['percentage'] ,
-            nameCompanyPayments: jsonResponse['data']['paid']['nameCompanyPayments'],
-            date: jsonResponse['data']['paid']['date'],
-          );
-        
+          if(index == 2){
+            prefs.remove("codeUrl");
+            prefs.remove("date_codeUrl");
+            prefs.remove("searchAddress");
+            myProvider.searchAddress = "";
+            myProvider.codeUrl = null;
+            Navigator.pop(context);
+            Navigator.pop(context);
+            showMessage("Guardado Correctamente", true);
+          }else{
+            var _selectPaid;
+            _selectPaid = Paid(
+              user_id: jsonResponse['data']['paid']['user_id'],
+              commerce_id: jsonResponse['data']['paid']['commerce_id'],
+              codeUrl: jsonResponse['data']['paid']['codeUrl'],
+              nameClient: jsonResponse['data']['paid']['nameClient'],
+              total: jsonResponse['data']['paid']['total'],
+              coin: jsonResponse['data']['paid']['coin'],
+              email: jsonResponse['data']['paid']['email'],
+              nameShipping: jsonResponse['data']['paid']['nameShipping'] == null? '' : jsonResponse['data']['paid']['nameShipping'],
+              numberShipping: jsonResponse['data']['paid']['numberShipping'] == null? '' : jsonResponse['data']['paid']['numberShipping'],
+              addressShipping: jsonResponse['data']['paid']['addressShipping'] == null? '' : jsonResponse['data']['paid']['addressShipping'],
+              detailsShipping: jsonResponse['data']['paid']['detailsShipping'] == null? '' : jsonResponse['data']['paid']['detailsShipping'],
+              selectShipping: jsonResponse['data']['paid']['selectShipping'] == null? '' : jsonResponse['data']['paid']['selectShipping'],
+              priceShipping: jsonResponse['data']['paid']['priceShipping'] == null? '0' : jsonResponse['data']['paid']['priceShipping'],
+              statusShipping: jsonResponse['data']['paid']['statusShipping'] ,
+              percentage: jsonResponse['data']['paid']['percentage'] ,
+              nameCompanyPayments: jsonResponse['data']['paid']['nameCompanyPayments'],
+              date: jsonResponse['data']['paid']['date'],
+            );
           
-          myProvider.selectPaid = _selectPaid;
+            
+            myProvider.selectPaid = _selectPaid;
 
-          dbctpaga.createOrUpdatePaid(_selectPaid);
+            dbctpaga.createOrUpdatePaid(_selectPaid);
 
-          Navigator.pop(context);
-          showMessage("Guardado Correctamente", true);
+            Navigator.pop(context);
+            showMessage("Guardado Correctamente", true);
+          }
+          
         }else{
           Navigator.pop(context);
           showMessage(jsonResponse['message'], false);

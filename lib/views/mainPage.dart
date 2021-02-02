@@ -7,7 +7,9 @@ import 'package:delivery_ctpaga/models/paid.dart';
 import 'package:delivery_ctpaga/database.dart';
 import 'package:delivery_ctpaga/env.dart';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pusher_websocket_flutter/pusher.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +27,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final _formKeySearch = new GlobalKey<FormState>();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+  Channel _channel;
   var dbctpaga = DBctpaga();
   DateTime _dateNow = DateTime.now();
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
@@ -36,11 +40,57 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     initialVariable();
+    initialNotification();
+    initialPusher();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> initialPusher() async{
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    try {
+      PusherOptions options = PusherOptions(
+        host: url.replaceAll(':8000', ''),
+        port: 6001,
+        encrypted: false,
+      );
+      await Pusher.init("local",options);
+    } catch (e) {
+      print(e);
+    }
+
+    Pusher.connect(
+      onConnectionStateChange: (val){
+        print(val.currentState);
+      },
+      onError: (err) {
+        print(err.message);
+      }
+    );
+
+    _channel = await Pusher.subscribe("channel-ctpagaDelivery");
+
+    _channel.bind("event-ctpagaDelivery", (onEvent) async{ 
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var notification = jsonDecode(onEvent.data);
+      print("print $notification");
+      if(notification['data']['delivery_id'] == myProvider.dataDelivery.id){
+        myProvider.getDataDelivery(false, false, context);
+        myProvider.codeUrl = notification['data']['codeUrl'];
+        prefs.setString('codeUrl', notification['data']['codeUrl']);
+        prefs.setString('date_codeUrl', formatter.format(_dateNow));
+        setState(() {
+          _codeUrl = notification['data']['codeUrl'];
+        });
+
+        showNotification("Recibiste un código: ${notification['data']['codeUrl']}");
+          
+      }
+    });
+
   }
 
   initialVariable()async{
@@ -56,6 +106,40 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
+  void initialNotification() {
+    var initializationSettingsAndroid = new AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS
+    );
+    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: selectNotification,);
+  }
+
+  Future selectNotification(String payload) async {
+    if(payload == "true"){
+      searchCode();
+    }
+  }
+
+  void showNotification(message) async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'Message New id',
+        'Message New name',
+        'Message New description',
+        importance: Importance.max,
+        priority: Priority.high,
+    );
+
+    var iOS = IOSNotificationDetails();
+    final NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics, iOS:  iOS);
+
+    await flutterLocalNotificationsPlugin.show(
+        0, "Código Recibido", message, platformChannelSpecifics, payload: "true"
+      );
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,93 +158,131 @@ class _MainPageState extends State<MainPage> {
               children: <Widget>[
                 NavbarMain(),
                 Expanded(
-                  child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Consumer<MyProvider>(
-                        builder: (context, myProvider, child) {
-                          return Visibility(
-                            visible: myProvider.codeUrl == null? false : true,
-                            child: GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  _codeUrl = myProvider.codeUrl;
-                                });
-                                searchCode();
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(60, 0, 60, 40),
-                                child: Container(
-                                  padding: EdgeInsets.all(20),
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: colorGreen),
-                                    borderRadius: BorderRadius.circular(10),
+                  child: Consumer<MyProvider>(
+                    builder: (context, myProvider, child) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(right:10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(right:10),
+                                  child: AutoSizeText(
+                                    "Disponibilidad",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'MontserratSemiBold',
+                                    ),
+                                    maxFontSize: 19,
+                                    minFontSize: 19,
                                   ),
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.only(bottom: 20),
-                                        alignment: Alignment.center,
-                                        child: AutoSizeText(
-                                          "Ultima Busqueda:",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'MontserratSemiBold',
-                                          ),
-                                          maxFontSize: 24,
-                                          minFontSize: 24,
+                                ),
+                                Switch(
+                                  value: myProvider.dataDelivery.status,
+                                  onChanged: (value) {
+                                    changeStatus(value);
+                                  },
+                                  activeTrackColor: colorGrey,
+                                  activeColor: colorGreen
+                                ),
+                              ]
+                            )
+                          ),
+
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Visibility(
+                                  visible: myProvider.codeUrl == null? false : true,
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      setState(() {
+                                        _codeUrl = myProvider.codeUrl;
+                                      });
+                                      searchCode();
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.fromLTRB(60, 0, 60, 40),
+                                      child: Container(
+                                        padding: EdgeInsets.all(20),
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: colorGreen),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          AutoSizeText.rich(
-                                            TextSpan(
-                                              text: 'Código: ',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                                fontFamily: 'MontserratSemiBold',
-                                              ),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text: myProvider.codeUrl,
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.normal,
-                                                    fontFamily: 'MontserratSemiBold',
-                                                  ),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              padding: EdgeInsets.only(bottom: 20),
+                                              alignment: Alignment.center,
+                                              child: AutoSizeText(
+                                                "Ultima Busqueda:",
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'MontserratSemiBold',
                                                 ),
+                                                maxFontSize: 24,
+                                                minFontSize: 24,
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                AutoSizeText.rich(
+                                                  TextSpan(
+                                                    text: 'Código: ',
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.black,
+                                                      fontFamily: 'MontserratSemiBold',
+                                                    ),
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                        text: myProvider.codeUrl,
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontWeight: FontWeight.normal,
+                                                          fontFamily: 'MontserratSemiBold',
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  maxFontSize: 14,
+                                                  minFontSize: 14,
+                                                ),
+                                                IconButton(
+                                                  iconSize: 25,
+                                                  icon: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                    ),
+                                                  onPressed: () {
+                                                    removeCode();
+                                                  }
+                                                )
                                               ],
                                             ),
-                                            maxFontSize: 14,
-                                            minFontSize: 14,
-                                          ),
-                                          IconButton(
-                                            iconSize: 25,
-                                            icon: Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                              ),
-                                            onPressed: () {
-                                              removeCode();
-                                            }
-                                          )
-                                        ],
-                                      ),
-                                      ],
-                                  ),
-                                )
-                              )
-                            )
-                          );
-                        }
-                      ),
-                      showSearch(),
-                    ]
-                  )
+                                            ],
+                                        ),
+                                      )
+                                    )
+                                  )
+                                ),
+                                showSearch(),
+                              ]
+                            ),
+                          ),
+                        ],
+                      );
+
+                    }
+                  ),
                 ),
               ],
             ),
@@ -178,6 +300,9 @@ class _MainPageState extends State<MainPage> {
     prefs.remove("searchAddress");
     myProvider.searchAddress = "";
     myProvider.codeUrl = null;
+    setState(() {
+      _codeUrl = null;
+    });
   }
 
   showSearch(){
@@ -282,6 +407,39 @@ class _MainPageState extends State<MainPage> {
         ),
       )
     );
+  }
+
+  changeStatus(newStatus)async{
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    var response, result;
+    try
+    {
+      _onLoading();
+      result = await InternetAddress.lookup('google.com'); //verify network
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        response = await http.post(
+          urlApi+"updateDelivery",
+          headers:{
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
+          },
+          body: jsonEncode({
+            "status" : newStatus,
+          }),
+        ); 
+        var jsonResponse = jsonDecode(response.body); 
+        print(jsonResponse);
+        if (jsonResponse['statusCode'] == 201) {
+          myProvider.getDataDelivery(false, true, context);
+        }else{
+          Navigator.pop(context);
+          showMessage(jsonResponse['message'], false);
+        }
+      }
+    } on SocketException catch (_) {
+      showMessage("Sin conexión a internet", false);
+    }
   }
 
   searchCode()async{
