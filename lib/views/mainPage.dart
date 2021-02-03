@@ -57,7 +57,7 @@ class _MainPageState extends State<MainPage> {
         port: 6001,
         encrypted: false,
       );
-      await Pusher.init("local",options);
+      await Pusher.init("ctpaga20210201",options);
     } catch (e) {
       print(e);
     }
@@ -98,7 +98,7 @@ class _MainPageState extends State<MainPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if(prefs.containsKey('date_codeUrl')){
       var _dataCode = DateTime.parse(prefs.getString('date_codeUrl'));
-      if(_dateNow.difference(_dataCode).inDays > 1)
+      if(_dateNow.difference(_dataCode).inDays >= 1)
         removeCode();
       else{
         myProvider.codeUrl = prefs.getString('codeUrl');
@@ -431,6 +431,7 @@ class _MainPageState extends State<MainPage> {
         var jsonResponse = jsonDecode(response.body); 
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
+           
           myProvider.getDataDelivery(false, true, context);
         }else{
           Navigator.pop(context);

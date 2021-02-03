@@ -89,11 +89,10 @@ class _NavbarMainState extends State<NavbarMain> {
 
         jsonResponse = jsonDecode(response.body); 
         print(jsonResponse);
+        Navigator.pop(context);
+        Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
         prefs.remove("access_token");
         myProvider.removeSession(context, false);
-        Navigator.pop(context);
-        await Future.delayed(Duration(milliseconds: 150));
-        Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
       }
     } on SocketException catch (_) {
       Navigator.pop(context);
