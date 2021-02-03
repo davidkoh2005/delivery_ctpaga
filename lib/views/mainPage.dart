@@ -25,7 +25,7 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
   final _formKeySearch = new GlobalKey<FormState>();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
   Channel _channel;
@@ -42,11 +42,18 @@ class _MainPageState extends State<MainPage> {
     initialVariable();
     initialNotification();
     initialPusher();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("print $state");
+    initialPusher();
   }
 
   Future<void> initialPusher() async{
@@ -431,7 +438,6 @@ class _MainPageState extends State<MainPage> {
         var jsonResponse = jsonDecode(response.body); 
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
-           
           myProvider.getDataDelivery(false, true, context);
         }else{
           Navigator.pop(context);

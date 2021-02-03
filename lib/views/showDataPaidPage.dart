@@ -43,7 +43,6 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
   
   @override
   Widget build(BuildContext context) {
-    var myProvider = Provider.of<MyProvider>(context, listen: false);
     return Consumer<MyProvider>(
       builder: (context, myProvider, child) {
         return WillPopScope(
