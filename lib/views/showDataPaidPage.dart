@@ -364,7 +364,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: myProvider.selectPaid.numberShipping,
+                          text: myProvider.selectPaid.statusShipping >1? myProvider.selectPaid.numberShipping : "BLOQUEADO",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.normal,
@@ -391,7 +391,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: myProvider.selectPaid.addressShipping,
+                          text: myProvider.selectPaid.statusShipping >1? myProvider.selectPaid.addressShipping : "BLOQUEADO",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.normal,

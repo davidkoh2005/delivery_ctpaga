@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 //TODO: Url Api (LocalHost)
-String url = "192.168.1.125:8000";
+//String url = "192.168.1.127:8000";
 
 //TODO: Url Api (AWS)
 //String url = "54.196.181.42";
 
 //TODO: Url Api (hosting)
-//String url = "ctpaga.app";
+String url = "ctpaga.app";
 
-String urlApi = "http://$url/api/auth/";
+String urlApi = "https://$url/api/auth/";
 
 Color colorGreen = Color.fromRGBO(0,204,96,1);
 Color colorGrey = Color.fromRGBO(182,182,182,1);

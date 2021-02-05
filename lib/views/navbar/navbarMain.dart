@@ -79,7 +79,7 @@ class _NavbarMainState extends State<NavbarMain> {
       result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.post(
-          urlApi+"logout",
+          urlApi+"logoutDelivery",
           headers:{
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
@@ -90,9 +90,9 @@ class _NavbarMainState extends State<NavbarMain> {
         jsonResponse = jsonDecode(response.body); 
         print(jsonResponse);
         Navigator.pop(context);
-        Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
         prefs.remove("access_token");
         myProvider.removeSession(context, false);
+        Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
       }
     } on SocketException catch (_) {
       Navigator.pop(context);
