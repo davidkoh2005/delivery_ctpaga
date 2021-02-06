@@ -28,6 +28,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
   final _formKeySearch = new GlobalKey<FormState>();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+   final _controllerSearch = TextEditingController();
   Channel _channel;
   var dbctpaga = DBctpaga();
   DateTime _dateNow = DateTime.now();
@@ -48,10 +49,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
   @override
   void dispose() {
     super.dispose();
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
     print("print $state");
     initialPusher();
   }
@@ -136,6 +138,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
         'Message New description',
         importance: Importance.max,
         priority: Priority.high,
+        playSound: true,
     );
 
     var iOS = IOSNotificationDetails();
@@ -339,6 +342,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
           Padding(
             padding: const EdgeInsets.fromLTRB(60.0, 0.0, 60.0, 30.0),
             child: TextFormField(
+              controller: _controllerSearch,
               autofocus: false,
               decoration: InputDecoration(
                 labelText: 'código',
@@ -472,6 +476,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
         var jsonResponse = jsonDecode(response.body); 
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
+          _controllerSearch.clear();
           _listSales = [];
           for (var item in jsonResponse['data']['sales']) {
             setState(() {
@@ -523,6 +528,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
           Navigator.pop(context);
           Navigator.push(context, SlideLeftRoute(page: ShowDataPaidPage()));
         }else{
+          _controllerSearch.clear();
           Navigator.pop(context);
           showMessage(jsonResponse['message'], false);
         }

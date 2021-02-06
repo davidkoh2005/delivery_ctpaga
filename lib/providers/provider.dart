@@ -121,7 +121,7 @@ class MyProvider with ChangeNotifier {
             email: jsonResponse['data']['email'],
             name: jsonResponse['data']['name'],
             phone: jsonResponse['data']['phone'],
-            status: jsonResponse['data']['status'], //==1? true : false
+            status: jsonResponse['data']['status']==1? true : false, //==1? true : false
           );
 
           dataDelivery = delivery;

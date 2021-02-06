@@ -364,7 +364,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: myProvider.selectPaid.statusShipping >1? myProvider.selectPaid.numberShipping : "BLOQUEADO",
+                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.numberShipping : "BLOQUEADO",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.normal,
@@ -391,7 +391,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: myProvider.selectPaid.statusShipping >1? myProvider.selectPaid.addressShipping : "BLOQUEADO",
+                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.addressShipping : "BLOQUEADO",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.normal,
@@ -418,7 +418,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: myProvider.selectPaid.detailsShipping,
+                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.detailsShipping : "BLOQUEADO",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.normal,
@@ -531,7 +531,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   maxFontSize: 14,
                   minFontSize: 14,
                 ),
-                value: 1 <= myProvider.selectPaid.statusShipping? true: false,
+                value: 1 == myProvider.selectPaid.statusShipping? true: false,
                 activeColor: colorGreen,
                 onChanged: (newValue) { 
                   verifyUpdate(1);
