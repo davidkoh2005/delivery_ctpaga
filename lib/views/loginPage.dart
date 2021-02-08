@@ -344,6 +344,9 @@ class _LoginPageState extends State<LoginPage> {
           if (jsonResponse['statusCode'] == 201) {
 
             SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.remove("access_token");
+            prefs.remove('date_codeUrl');
+            prefs.remove('codeUrl');
             prefs.setString('access_token', jsonResponse['access_token']);
             myProvider.accessTokenDelivery = jsonResponse['access_token'];
             myProvider.statusButton = 2;
@@ -351,6 +354,7 @@ class _LoginPageState extends State<LoginPage> {
             myProvider.statusInitGoogle = false;
             _passwordController.clear();
             myProvider.getDataDelivery(true, true, context);
+            myProvider.codeUrl = null;
           } else if(jsonResponse['message'] == 'Unauthorized'){
 
             setState(() {

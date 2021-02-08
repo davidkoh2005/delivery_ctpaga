@@ -223,7 +223,7 @@ class DBctpaga{
     await dbConnection.rawQuery('CREATE TABLE IF NOT EXISTS sales (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), productService_id INTEGER, name VARCHAR(50), price text, nameClient VARCHAR(50), coinClient INTEGER, coin INTEGER, type INTEGER, quantity INTEGER, statusSale INTEGER, rate text, descriptionShipping text, statusShipping INTEGER)');
     
     for (var item in listsales) {
-      String query = 'INSERT INTO sales (user_id, commerce_id, codeUrl, productService_id, name, price, nameClient, coinClient, coin, type, quantity, statusSale, rate, descriptionShipping, statusShipping) VALUES (\'${item['user_id']}\', \'${item['commerce_id']}\',\'${item['codeUrl']}\',\'${item['productService_id']}\',\'${item['name']}\',\'${item['price']}\',\'${item['nameClient']}\',\'${item['coinClient']}\',\'${item['coin']}\',\'${item['type']}\',\'${item['quantity']}\',\'${item['statusSale']}\',\'${item['rate']}\',\'${item['descriptionShipping']}\',\'${item['statusShipping']?1:0}\')';
+      String query = 'INSERT INTO sales (user_id, commerce_id, codeUrl, productService_id, name, price, nameClient, coinClient, coin, type, quantity, statusSale, rate, descriptionShipping, statusShipping) VALUES (\'${item['user_id']}\', \'${item['commerce_id']}\',\'${item['codeUrl']}\',\'${item['productService_id']}\',\'${item['name']}\',\'${item['price']}\',\'${item['nameClient']}\',\'${item['coinClient']}\',\'${item['coin']}\',\'${item['type']}\',\'${item['quantity']}\',\'${item['statusSale']}\',\'${item['rate']}\',\'${item['descriptionShipping']}\',\'${item['statusShipping']}\')';
       await dbConnection.transaction((transaction) async{
         return await transaction.rawInsert(query);
       });

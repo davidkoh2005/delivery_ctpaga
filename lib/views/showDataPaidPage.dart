@@ -105,7 +105,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 Container(
                   padding: EdgeInsets.fromLTRB(30,0,30,5),
                   alignment: Alignment.centerLeft,
-                  width: size.width - 100,
+                  width: size.width - 120,
                   child: AutoSizeText.rich(
                     TextSpan(
                       text: 'Nombre: ',
@@ -132,7 +132,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 Container(
                   padding: EdgeInsets.fromLTRB(30,0,30,5),
                   alignment: Alignment.centerLeft,
-                  width: size.width - 100,
+                  width: size.width - 120,
                   child: AutoSizeText.rich(
                     TextSpan(
                       text: 'Dirección: ',
@@ -159,7 +159,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 Container(
                   padding: EdgeInsets.fromLTRB(30,0,30,5),
                   alignment: Alignment.centerLeft,
-                  width: size.width - 100,
+                  width: size.width - 120,
                   child: AutoSizeText.rich(
                     TextSpan(
                       text: 'Telefono: ',
@@ -185,30 +185,33 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 ),
               ],
             ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(right:50),
-                  child: IconButton(
-                    icon: Image.asset(
-                      "assets/icons/mapa.png",
-                      width: size.width / 15,
-                      height: size.width / 15,
-                      color: colorGreen,
-                    ), 
-                    onPressed: () async{
-                  /*  SharedPreferences prefs = await SharedPreferences.getInstance();
-                      prefs.setString('searchAddress', myProvider.selectPaid.addressShipping);
-                      myProvider.statusInitGoogle = true;
-                      myProvider.statusButton = 1;
-                      myProvider.searchAddress = myProvider.dataCommerce.address;
-                      Navigator.pop(context); */
-                      openGoogleMaps(myProvider.dataCommerce.address);
-                    }
-                  ),
-                ),
-              ],
+            Padding(
+              padding: EdgeInsets.only(right:0),
+              child: IconButton(
+                icon: Icon(Icons.phone), 
+                color: colorGreen,
+                onPressed: () => launch("tel://${myProvider.dataCommerce.phone}"),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(right:10),
+              child: IconButton(
+                icon: Image.asset(
+                  "assets/icons/mapa.png",
+                  width: size.width / 15,
+                  height: size.width / 15,
+                  color: colorGreen,
+                ), 
+                onPressed: () async{
+              /*  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setString('searchAddress', myProvider.selectPaid.addressShipping);
+                  myProvider.statusInitGoogle = true;
+                  myProvider.statusButton = 1;
+                  myProvider.searchAddress = myProvider.dataCommerce.address;
+                  Navigator.pop(context); */
+                  openGoogleMaps(myProvider.dataCommerce.address);
+                }
+              ),
             ),
           ],
         ),
@@ -326,7 +329,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 Container(
                   padding: EdgeInsets.fromLTRB(30,0,30,5),
                   alignment: Alignment.centerLeft,
-                  width: size.width - 100,
+                  width: size.width - 120,
                   child: AutoSizeText.rich(
                     TextSpan(
                       text: 'Nombre: ',
@@ -353,7 +356,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 Container(
                   padding: EdgeInsets.fromLTRB(30,0,30,5),
                   alignment: Alignment.centerLeft,
-                  width: size.width - 100,
+                  width: size.width - 120,
                   child: AutoSizeText.rich(
                     TextSpan(
                       text: 'Teléfono: ',
@@ -380,7 +383,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 Container(
                   padding: EdgeInsets.fromLTRB(30,0,30,5),
                   alignment: Alignment.centerLeft,
-                  width: size.width - 100,
+                  width: size.width - 120,
                   child: AutoSizeText.rich(
                     TextSpan(
                       text: 'Dirección: ',
@@ -407,7 +410,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 Container(
                   padding: EdgeInsets.fromLTRB(30,0,30,5),
                   alignment: Alignment.centerLeft,
-                  width: size.width - 100,
+                  width: size.width - 120,
                   child: AutoSizeText.rich(
                     TextSpan(
                       text: 'Detalle: ',
@@ -433,30 +436,39 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 ),
               ],
             ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(right:50),
-                  child: IconButton(
-                    icon: Image.asset(
-                      "assets/icons/mapa.png",
-                      width: size.width / 15,
-                      height: size.width / 15,
-                      color: colorGreen,
-                    ), 
-                    onPressed: () async{
-                      /* SharedPreferences prefs = await SharedPreferences.getInstance();
-                      prefs.setString('searchAddress', myProvider.selectPaid.addressShipping);
-                      myProvider.statusButton = 1;
-                      myProvider.searchAddress = myProvider.selectPaid.addressShipping;
-                      myProvider.statusInitGoogle = true;
-                      Navigator.pop(context); */
-                      openGoogleMaps(myProvider.selectPaid.addressShipping);
-                    }
-                  ),
+            Visibility(
+              visible: myProvider.selectPaid.statusShipping >=1? true : false,
+              child: Padding(
+                padding: EdgeInsets.only(right:0),
+                child: IconButton(
+                  icon: Icon(Icons.phone), 
+                  color: colorGreen,
+                  onPressed: () => launch("tel://${myProvider.selectPaid.numberShipping}"),
                 ),
-              ],
+              ),
+            ),
+            Visibility(
+              visible: myProvider.selectPaid.statusShipping >=1? true : false,
+              child: Padding(
+                padding: EdgeInsets.only(right:10),
+                child: IconButton(
+                  icon: Image.asset(
+                    "assets/icons/mapa.png",
+                    width: size.width / 15,
+                    height: size.width / 15,
+                    color: colorGreen,
+                  ), 
+                  onPressed: () async{
+                    /* SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.setString('searchAddress', myProvider.selectPaid.addressShipping);
+                    myProvider.statusButton = 1;
+                    myProvider.searchAddress = myProvider.selectPaid.addressShipping;
+                    myProvider.statusInitGoogle = true;
+                    Navigator.pop(context); */
+                    openGoogleMaps(myProvider.selectPaid.addressShipping);
+                  }
+                ),
+              )
             ),
           ],
         ),

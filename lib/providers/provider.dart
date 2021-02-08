@@ -158,12 +158,15 @@ class MyProvider with ChangeNotifier {
   removeSession(BuildContext context, status)async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("access_token");
+    prefs.remove('date_codeUrl');
+    prefs.remove('codeUrl');
     delivery = Delivery(
       status: false,
     );
     dataDelivery = delivery;
     dbctpaga.deleteAll();
     status = false;
+    codeUrl = null;
 
     if(status)
       Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
