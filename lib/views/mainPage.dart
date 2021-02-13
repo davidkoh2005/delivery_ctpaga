@@ -9,12 +9,10 @@ import 'package:delivery_ctpaga/env.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pusher_websocket_flutter/pusher.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -25,82 +23,29 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
-  final _formKeySearch = new GlobalKey<FormState>();
+class _MainPageState extends State<MainPage>{
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-   final _controllerSearch = TextEditingController();
-  Channel _channel;
+  final _controllerSearch = TextEditingController();
+  ScrollController scrollController;
   var dbctpaga = DBctpaga();
   DateTime _dateNow = DateTime.now();
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
   List _listSales = new List();
-  bool _statusBotton = false; 
+  int _positionButton = 0;
   String _codeUrl;
+  double positionScroll = 0.0;
 
   @override
   void initState() {
     super.initState();
     initialVariable();
     initialNotification();
-    initialPusher();
-    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-  }
-
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    print("print $state");
-    initialPusher();
-  }
-
-  Future<void> initialPusher() async{
-    var myProvider = Provider.of<MyProvider>(context, listen: false);
-    try {
-      PusherOptions options = PusherOptions(
-        host: url.replaceAll(':8000', ''),
-        port: 6001,
-        encrypted: false,
-      );
-      await Pusher.init("ctpaga20210201",options);
-    } catch (e) {
-      print(e);
-    }
-
-    Pusher.connect(
-      onConnectionStateChange: (val){
-        print(val.currentState);
-      },
-      onError: (err) {
-        print(err.message);
-      }
-    );
-
-    _channel = await Pusher.subscribe("channel-ctpagaDelivery");
-
-    _channel.bind("event-ctpagaDelivery", (onEvent) async{ 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      var notification = jsonDecode(onEvent.data);
-      print("print $notification");
-      if(notification['data']['delivery_id'] == myProvider.dataDelivery.id){
-        myProvider.getDataDelivery(false, false, context);
-        myProvider.codeUrl = notification['data']['codeUrl'];
-        prefs.setString('codeUrl', notification['data']['codeUrl']);
-        prefs.setString('date_codeUrl', formatter.format(_dateNow));
-        setState(() {
-          _codeUrl = notification['data']['codeUrl'];
-        });
-
-        showNotification("Recibiste un código: ${notification['data']['codeUrl']}");
-          
-      }
-    });
-
-  }
+  }  
 
   initialVariable()async{
     var myProvider = Provider.of<MyProvider>(context, listen: false);
@@ -113,6 +58,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
         myProvider.codeUrl = prefs.getString('codeUrl');
       }
     }
+    _onLoading();
+    myProvider.getDataAllPaids(context, true);
   }
 
   void initialNotification() {
@@ -153,153 +100,195 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    
-    return WillPopScope(
-      onWillPop: () async {        
-        return false;
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Stack(
-          children: <Widget> [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                NavbarMain(),
-                Expanded(
-                  child: Consumer<MyProvider>(
-                    builder: (context, myProvider, child) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(right:10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.only(right:10),
-                                  child: AutoSizeText(
-                                    "Disponibilidad",
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'MontserratSemiBold',
-                                    ),
-                                    maxFontSize: 19,
-                                    minFontSize: 19,
+    var size = MediaQuery.of(context).size;
+    return Consumer<MyProvider>(
+        builder: (context, myProvider, child) {
+          return WillPopScope(
+          onWillPop: () async {        
+            return false;
+          },
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            floatingActionButton: FloatingActionButton(
+              backgroundColor: colorGreen,
+              onPressed: () {
+                _onLoading();
+                myProvider.getDataAllPaids(context, true);
+              },
+              child: Icon(Icons.refresh),
+            ),
+            body: Stack(
+              children: <Widget> [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    NavbarMain(),
+                    GestureDetector(
+                      onTap: (){
+                        setState(() {
+                          _codeUrl = myProvider.codeUrl;
+                        });
+                        searchCode();
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(60, 0, 60, 40),
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: colorGreen),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.only(bottom: 20),
+                                alignment: Alignment.center,
+                                child: AutoSizeText(
+                                  "Orden Pendiente:",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'MontserratSemiBold',
                                   ),
+                                  maxFontSize: 24,
+                                  minFontSize: 24,
                                 ),
-                                Switch(
-                                  value: myProvider.dataDelivery.status,
-                                  onChanged: (value) {
-                                    changeStatus(value);
-                                  },
-                                  activeTrackColor: colorGrey,
-                                  activeColor: colorGreen
+                              ),
+                              AutoSizeText.rich(
+                                TextSpan(
+                                  text: 'Código: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                    fontFamily: 'MontserratSemiBold',
+                                  ),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: myProvider.codeUrl != null? myProvider.codeUrl : "Sin Orden",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.normal,
+                                        fontFamily: 'MontserratSemiBold',
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ]
-                            )
+                                maxFontSize: 14,
+                                minFontSize: 14,
+                              ),
+                            ],
                           ),
+                        )
+                      )
+                    ),
+                    Container(
+                      height: size.height /1.9,
+                      child: showList(myProvider)
+                    )
+                  ],
+                ),
+              ]
+            )
+          ),
+        );
+      }
+    );
+  }
 
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Visibility(
-                                  visible: myProvider.codeUrl == null? false : true,
-                                  child: GestureDetector(
-                                    onTap: (){
-                                      setState(() {
-                                        _codeUrl = myProvider.codeUrl;
-                                      });
-                                      searchCode();
-                                    },
-                                    child: Padding(
-                                      padding: EdgeInsets.fromLTRB(60, 0, 60, 40),
-                                      child: Container(
-                                        padding: EdgeInsets.all(20),
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(color: colorGreen),
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.only(bottom: 20),
-                                              alignment: Alignment.center,
-                                              child: AutoSizeText(
-                                                "Ultima Busqueda:",
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontFamily: 'MontserratSemiBold',
-                                                ),
-                                                maxFontSize: 24,
-                                                minFontSize: 24,
-                                              ),
-                                            ),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                AutoSizeText.rich(
-                                                  TextSpan(
-                                                    text: 'Código: ',
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.black,
-                                                      fontFamily: 'MontserratSemiBold',
-                                                    ),
-                                                    children: <TextSpan>[
-                                                      TextSpan(
-                                                        text: myProvider.codeUrl,
-                                                        style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontWeight: FontWeight.normal,
-                                                          fontFamily: 'MontserratSemiBold',
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  maxFontSize: 14,
-                                                  minFontSize: 14,
-                                                ),
-                                                IconButton(
-                                                  iconSize: 25,
-                                                  icon: Icon(
-                                                    Icons.delete,
-                                                    color: Colors.red,
-                                                    ),
-                                                  onPressed: () {
-                                                    removeCode();
-                                                  }
-                                                )
-                                              ],
-                                            ),
-                                            ],
-                                        ),
-                                      )
-                                    )
-                                  )
-                                ),
-                                showSearch(),
-                              ]
-                            ),
-                          ),
-                        ],
-                      );
-
+  showList(myProvider){
+    var size = MediaQuery.of(context).size;
+    if(myProvider.dataAllPaids.length == 0)
+      return Center(
+        child: AutoSizeText(
+          "No hay Orden disponible",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'MontserratSemiBold',
+          ),
+          maxFontSize: 14,
+          minFontSize: 14,
+        ),
+      );
+    else{
+      return ListView.builder(
+        shrinkWrap: true, 
+        padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
+        itemCount: myProvider.dataAllPaids.length,
+        itemBuilder:  (BuildContext ctxt, int index) {
+          return Padding(
+            padding: EdgeInsets.only(top:10),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: colorGreen)
+              ),
+              child: ListTile(
+                onTap: () => null,
+                title: AutoSizeText(
+                  myProvider.dataAllPaids[index]['name'],
+                  style: TextStyle(
+                    color:  colorText,
+                    fontWeight: FontWeight.normal,
+                    fontFamily: 'MontserratSemiBold',
+                  ),
+                  minFontSize: 14,
+                  maxFontSize: 14,
+                ),
+                subtitle: AutoSizeText(
+                  myProvider.dataAllPaids[index]['address'],
+                  style: TextStyle(
+                    color:  colorText,
+                    fontWeight: FontWeight.normal,
+                    fontFamily: 'MontserratSemiBold',
+                  ),
+                  minFontSize: 10,
+                  maxFontSize: 10,
+                ),
+                trailing: GestureDetector(
+                  onTap: () async {
+                    if(myProvider.codeUrl != null)
+                      showMessage("Usted tiene orden Pendiente no puede seleccionar una orden", false);
+                    else{
+                      setState(() {
+                        _positionButton = index+1;
+                        _codeUrl = myProvider.dataAllPaids[index]['codeUrl'];
+                      });
+                      
+                      searchCode();
                     }
+                  },
+                  child: _positionButton != index+1? Container(
+                    width: size.width / 5,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color:  _positionButton == index+1? colorGrey : colorGreen,
+                    borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Center(
+                      child: AutoSizeText(
+                        "Ordenar",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'MontserratSemiBold',
+                        ),
+                        maxFontSize: 14,
+                        minFontSize: 14,
+                      ),
+                    ),
+                  ) : Image.asset(
+                    "assets/icons/loadingTransparent.gif",
+                    width: size.width/8,
                   ),
                 ),
-              ],
-            ),
-          ]
-        )
-      )
-    );
+              )
+            )
+          ); 
+        }
+      );
+    }
   }
 
   removeCode() async {
@@ -313,144 +302,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
     setState(() {
       _codeUrl = null;
     });
-  }
-
-  showSearch(){
-    
-    return Form(
-      key: _formKeySearch,
-      child: new ListView(
-        padding: EdgeInsets.only(top: 0),
-        shrinkWrap: true,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 30.0),
-            child: Center(
-              child: AutoSizeText(
-                "Buscar Código",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'MontserratSemiBold',
-                ),
-                maxFontSize: 19,
-                minFontSize: 19,
-              ),
-            ) 
-          ),
-
-          Padding(
-            padding: const EdgeInsets.fromLTRB(60.0, 0.0, 60.0, 30.0),
-            child: TextFormField(
-              controller: _controllerSearch,
-              autofocus: false,
-              decoration: InputDecoration(
-                labelText: 'código',
-                labelStyle: TextStyle(
-                  color: colorText,
-                  fontFamily: 'MontserratSemiBold',
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: colorGreen),
-                ),
-              ),
-              validator: _validateCode,
-              textInputAction: TextInputAction.done,
-              onSaved: (val) => _codeUrl = val,
-              onChanged: (val){
-                setState(() {
-                  _codeUrl = val;
-                });
-              },
-              onEditingComplete: () {
-                FocusScope.of(context).requestFocus(new FocusNode());
-                if (_formKeySearch.currentState.validate()) {
-                  _formKeySearch.currentState.save();
-                  searchCode();
-                }
-              },
-              cursorColor: colorGreen,
-              style: TextStyle(
-                fontFamily: 'MontserratSemiBold',
-              ),
-            ),
-          ),
-          buttonSearch(),
-        ]
-      ),
-    );
-  }
-
-  Widget buttonSearch(){
-    var size = MediaQuery.of(context).size;
-    return Padding(
-      padding: EdgeInsets.only(left:60, right:60),
-      child: GestureDetector(
-        onTap: () async {
-          FocusScope.of(context).requestFocus(new FocusNode());
-          setState(() => _statusBotton = true);
-          await Future.delayed(Duration(milliseconds: 150));
-          setState(() => _statusBotton = false);
-          if (_formKeySearch.currentState.validate()) {
-            _formKeySearch.currentState.save();
-            searchCode();
-          }
-        },
-        child: Container(
-          width:size.width - 100,
-          height: size.height / 20,
-          decoration: BoxDecoration(
-            color: _statusBotton? colorGrey : colorGreen,
-          borderRadius: BorderRadius.circular(30),
-          ),
-          child: Center(
-            child: AutoSizeText(
-              "BUSCAR",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'MontserratSemiBold',
-              ),
-              maxFontSize: 14,
-              minFontSize: 14,
-            ),
-          ),
-        ),
-      )
-    );
-  }
-
-  changeStatus(newStatus)async{
-    var myProvider = Provider.of<MyProvider>(context, listen: false);
-    var response, result;
-    try
-    {
-      _onLoading();
-      result = await InternetAddress.lookup('google.com'); //verify network
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        response = await http.post(
-          urlApi+"updateDelivery",
-          headers:{
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
-          },
-          body: jsonEncode({
-            "status" : newStatus,
-          }),
-        ); 
-        var jsonResponse = jsonDecode(response.body); 
-        print(jsonResponse);
-        if (jsonResponse['statusCode'] == 201) {
-          myProvider.getDataDelivery(false, true, context);
-        }else{
-          Navigator.pop(context);
-          showMessage(jsonResponse['message'], false);
-        }
-      }
-    } on SocketException catch (_) {
-      showMessage("Sin conexión a internet", false);
-    }
   }
 
   searchCode()async{
@@ -476,6 +327,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
         var jsonResponse = jsonDecode(response.body); 
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
+          myProvider.getDataAllPaids(context, false);
+
           _controllerSearch.clear();
           _listSales = [];
           for (var item in jsonResponse['data']['sales']) {
@@ -525,9 +378,16 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
           dbctpaga.createOrUpdateCommerces(_selectCommerce);
           dbctpaga.createOrUpdateSales(_listSales);
 
+          setState(() {
+            _positionButton = 0;
+          });
+
           Navigator.pop(context);
           Navigator.push(context, SlideLeftRoute(page: ShowDataPaidPage()));
         }else{
+          setState(() {
+            _positionButton = 0;
+          });
           _controllerSearch.clear();
           Navigator.pop(context);
           showMessage(jsonResponse['message'], false);
@@ -653,20 +513,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
         );
       },
     );
-  }
-
-  String _validateCode(String value) {
-    // This is just a regular expression for phone*$
-    String p = '[a-zA-Z0-9]';
-    RegExp regExp = new RegExp(p);
-
-    if (value.isNotEmpty && regExp.hasMatch(value) && value.length >=6) {
-      // So, the phone is valid
-      return null;
-    }
-
-    // The pattern of the phone didn't match the regex above.
-    return 'Ingrese el código correctamente';
   }
 
 }

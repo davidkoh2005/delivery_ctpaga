@@ -90,6 +90,14 @@ class MyProvider with ChangeNotifier {
     _listSales = newListSales;
     notifyListeners();
   }
+
+  List _listAllPaids = new List();
+  List get dataAllPaids =>_listAllPaids;
+
+  set dataAllPaids(List newListAllPaids){
+    _listAllPaids = newListAllPaids;
+    notifyListeners();
+  }
   
   
   Delivery delivery = Delivery();
@@ -126,6 +134,8 @@ class MyProvider with ChangeNotifier {
 
           dataDelivery = delivery;
 
+          codeUrl = jsonResponse['paid'] == null? null : jsonResponse['paid']['codeUrl'];
+
           if(await dbctpaga.existDelivery() == 0)
             dbctpaga.addNewDelivery(delivery);
           else
@@ -154,8 +164,40 @@ class MyProvider with ChangeNotifier {
       }
     }
   }
+
+  getDataAllPaids(context, status)async{
+    _listAllPaids = [];
+
+    var result, response, jsonResponse;
+
+    try {
+      result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        response = await http.post(
+          urlApi+"showPaidAll",
+          headers:{
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'authorization': 'Bearer $accessTokenDelivery',
+          },
+        ); 
+        print("bearer $accessTokenDelivery");
+        jsonResponse = jsonDecode(response.body);
+        print(jsonResponse);
+        if (jsonResponse['statusCode'] == 201) {
+          dataAllPaids = jsonResponse['data'];
+        }
+        if(status)
+          Navigator.pop(context);
+      }
+    } on SocketException catch (_) {
+      if(status)
+        Navigator.pop(context);
+    }
+  }
+
  
-  removeSession(BuildContext context, status)async{
+  removeSession(BuildContext context, statusLogin)async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("access_token");
     prefs.remove('date_codeUrl');
@@ -165,10 +207,9 @@ class MyProvider with ChangeNotifier {
     );
     dataDelivery = delivery;
     dbctpaga.deleteAll();
-    status = false;
     codeUrl = null;
 
-    if(status)
+    if(statusLogin)
       Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
   }
 
