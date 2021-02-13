@@ -367,7 +367,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.numberShipping : "BLOQUEADO",
+                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.numberShipping : "Disponible cuando retire el producto",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.normal,
@@ -394,7 +394,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.addressShipping : "BLOQUEADO",
+                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.addressShipping : "Disponible cuando retire el producto",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.normal,
@@ -421,7 +421,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.detailsShipping : "BLOQUEADO",
+                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.detailsShipping : "Disponible cuando retire el producto",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.normal,
