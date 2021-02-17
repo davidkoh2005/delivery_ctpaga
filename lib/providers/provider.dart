@@ -173,7 +173,7 @@ class MyProvider with ChangeNotifier {
     try {
       result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        response = await http.post(
+        response = await http.get(
           urlApi+"showPaidAll",
           headers:{
             'Content-Type': 'application/json',

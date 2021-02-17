@@ -8,6 +8,7 @@ import 'package:delivery_ctpaga/database.dart';
 import 'package:delivery_ctpaga/env.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:provider/provider.dart';
@@ -132,7 +133,7 @@ class _MainPageState extends State<MainPage>{
                         searchCode();
                       },
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(60, 0, 60, 40),
+                        padding: EdgeInsets.fromLTRB(60, 0, 60, 20),
                         child: Container(
                           padding: EdgeInsets.all(20),
                           width: double.infinity,
@@ -143,7 +144,7 @@ class _MainPageState extends State<MainPage>{
                           child: Column(
                             children: [
                               Container(
-                                padding: EdgeInsets.only(bottom: 20),
+                                padding: EdgeInsets.only(bottom: 10),
                                 alignment: Alignment.center,
                                 child: AutoSizeText(
                                   "Orden Pendiente:",
@@ -182,6 +183,20 @@ class _MainPageState extends State<MainPage>{
                           ),
                         )
                       )
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 20, bottom: 10),
+                      alignment: Alignment.centerLeft,
+                      child: AutoSizeText(
+                        "Orden Disponible:",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'MontserratSemiBold',
+                        ),
+                        maxFontSize: 20,
+                        minFontSize: 20,
+                      ),
                     ),
                     Container(
                       height: size.height /1.9,
@@ -226,6 +241,23 @@ class _MainPageState extends State<MainPage>{
               ),
               child: ListTile(
                 onTap: () => null,
+                leading: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: "http://"+url+myProvider.dataAllPaids[index]['url'],
+                    fit: BoxFit.cover,
+                    width: size.width / 8,
+                    height: size.width / 8,
+                    placeholder: (context, url) {
+                      return Container(
+                        margin: EdgeInsets.all(15),
+                        child:CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(colorGreen),
+                        ),
+                      );
+                    },
+                    errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red, size: size.width / 7,),
+                  ),
+                ),
                 title: AutoSizeText(
                   myProvider.dataAllPaids[index]['name'],
                   style: TextStyle(
