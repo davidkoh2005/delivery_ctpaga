@@ -11,6 +11,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class _MainPageState extends State<MainPage>{
   final _controllerSearch = TextEditingController();
   ScrollController scrollController;
   var dbctpaga = DBctpaga();
-  DateTime _dateNow = DateTime.now();
+  DateTime _dateNow = DateTime.now(), currentBackPressTime;
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
   List _listSales = new List();
   int _positionButton = 0;
@@ -75,7 +76,7 @@ class _MainPageState extends State<MainPage>{
 
   Future selectNotification(String payload) async {
     if(payload == "true"){
-      searchCode();
+      searchCode(true);
     }
   }
 
@@ -99,15 +100,24 @@ class _MainPageState extends State<MainPage>{
 
   }
 
+  // ignore: missing_return
+  Future<bool> _onBackPressed(){
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null || now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      Fluttertoast.showToast(msg: "Presiona dos veces para salir de la aplicación");
+      return Future.value(false);
+    }
+    exit(0);
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Consumer<MyProvider>(
         builder: (context, myProvider, child) {
           return WillPopScope(
-          onWillPop: () async {        
-            return false;
-          },
+          onWillPop:_onBackPressed,
           child: Scaffold(
             backgroundColor: Colors.white,
             floatingActionButton: FloatingActionButton(
@@ -130,7 +140,8 @@ class _MainPageState extends State<MainPage>{
                         setState(() {
                           _codeUrl = myProvider.codeUrl;
                         });
-                        searchCode();
+                        if(myProvider.codeUrl != null)
+                          searchCode(true);
                       },
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(60, 0, 60, 20),
@@ -236,9 +247,6 @@ class _MainPageState extends State<MainPage>{
           return Padding(
             padding: EdgeInsets.only(top:10),
             child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: colorGreen)
-              ),
               child: ListTile(
                 onTap: () => null,
                 leading: ClipOval(
@@ -288,7 +296,7 @@ class _MainPageState extends State<MainPage>{
                         _codeUrl = myProvider.dataAllPaids[index]['codeUrl'];
                       });
                       
-                      searchCode();
+                      searchCode(false);
                     }
                   },
                   child: _positionButton != index+1? Container(
@@ -300,7 +308,7 @@ class _MainPageState extends State<MainPage>{
                     ),
                     child: Center(
                       child: AutoSizeText(
-                        "Ordenar",
+                        "Tomar",
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
@@ -336,7 +344,7 @@ class _MainPageState extends State<MainPage>{
     });
   }
 
-  searchCode()async{
+  searchCode(statusOrder)async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var myProvider = Provider.of<MyProvider>(context, listen: false);
     var response, result;
@@ -346,7 +354,7 @@ class _MainPageState extends State<MainPage>{
       result = await InternetAddress.lookup('google.com'); //verify network
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.post(
-          urlApi+"showPaidDelivery",
+          statusOrder? urlApi+"showPaidDelivery" : urlApi+"orderPaidDelivery",
           headers:{
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
