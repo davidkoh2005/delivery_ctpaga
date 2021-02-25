@@ -53,7 +53,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Navbar("Código: ${myProvider.codeUrl}"),
+                Navbar("Código: ${myProvider.dataDelivery.codeUrlPaid}"),
                 Expanded(
                   child: showDataPaid(),
                 ),
@@ -524,7 +524,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   maxFontSize: 14,
                   minFontSize: 14,
                 ),
-                value: 0 <= myProvider.selectPaid.statusShipping? true: false,
+                value: myProvider.selectPaid.statusShipping >=0? true: false,
                 activeColor: colorGreen,
                 onChanged: (newValue) { 
                   verifyUpdate(0);
@@ -543,7 +543,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   maxFontSize: 14,
                   minFontSize: 14,
                 ),
-                value: 1 == myProvider.selectPaid.statusShipping? true: false,
+                value:myProvider.selectPaid.statusShipping >=1? true: false,
                 activeColor: colorGreen,
                 onChanged: (newValue) { 
                   verifyUpdate(1);
@@ -562,7 +562,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   maxFontSize: 14,
                   minFontSize: 14,
                 ),
-                value: 2 <= myProvider.selectPaid.statusShipping? true: false,
+                value:myProvider.selectPaid.statusShipping >= 2? true: false,
                 activeColor: colorGreen,
                 onChanged: (newValue) { 
                   verifyUpdate(2);
@@ -885,8 +885,8 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
           if(index == 2){
+            myProvider.getDataDelivery(false, false, context);
             prefs.remove("codeUrl");
-            prefs.remove("date_codeUrl");
             prefs.remove("searchAddress");
             myProvider.searchAddress = "";
             myProvider.codeUrl = null;

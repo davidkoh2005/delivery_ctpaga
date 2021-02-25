@@ -130,6 +130,7 @@ class MyProvider with ChangeNotifier {
             name: jsonResponse['data']['name'],
             phone: jsonResponse['data']['phone'],
             status: jsonResponse['data']['status']==1? true : false, //==1? true : false
+            codeUrlPaid: jsonResponse['data']['codeUrlPaid'],
           );
 
           dataDelivery = delivery;
@@ -200,7 +201,6 @@ class MyProvider with ChangeNotifier {
   removeSession(BuildContext context, statusLogin)async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("access_token");
-    prefs.remove('date_codeUrl');
     prefs.remove('codeUrl');
     delivery = Delivery(
       status: false,

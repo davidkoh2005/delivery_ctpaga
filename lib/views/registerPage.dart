@@ -360,6 +360,7 @@ class _RegisterPageState extends State<RegisterPage> {
             myProvider.statusButton = 2;
             myProvider.searchAddress = "";
             myProvider.statusInitGoogle = false;
+            myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context);
 
           } else if(jsonResponse['errors'] != null){

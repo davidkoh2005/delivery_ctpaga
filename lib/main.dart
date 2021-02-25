@@ -157,6 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
       myProvider.searchAddress = prefs.getString('searchAddress');
       myProvider.statusButton = 2;
       myProvider.statusInitGoogle = false;
+      myProvider.getDataAllPaids(context, false);
       myProvider.getDataDelivery(true, false, context);
     }else{
       Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));

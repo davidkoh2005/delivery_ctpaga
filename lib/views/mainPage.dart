@@ -40,7 +40,6 @@ class _MainPageState extends State<MainPage>{
   @override
   void initState() {
     super.initState();
-    initialVariable();
     initialNotification();
   }
 
@@ -48,21 +47,6 @@ class _MainPageState extends State<MainPage>{
   void dispose() {
     super.dispose();
   }  
-
-  initialVariable()async{
-    var myProvider = Provider.of<MyProvider>(context, listen: false);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.containsKey('date_codeUrl')){
-      var _dataCode = DateTime.parse(prefs.getString('date_codeUrl'));
-      if(_dateNow.difference(_dataCode).inDays >= 1)
-        removeCode();
-      else{
-        myProvider.codeUrl = prefs.getString('codeUrl');
-      }
-    }
-    _onLoading();
-    myProvider.getDataAllPaids(context, true);
-  }
 
   void initialNotification() {
     var initializationSettingsAndroid = new AndroidInitializationSettings('app_icon');
@@ -138,9 +122,9 @@ class _MainPageState extends State<MainPage>{
                     GestureDetector(
                       onTap: (){
                         setState(() {
-                          _codeUrl = myProvider.codeUrl;
+                          _codeUrl = myProvider.dataDelivery.codeUrlPaid;
                         });
-                        if(myProvider.codeUrl != null)
+                        if(myProvider.dataDelivery.codeUrlPaid != null)
                           searchCode(true);
                       },
                       child: Padding(
@@ -178,7 +162,7 @@ class _MainPageState extends State<MainPage>{
                                   ),
                                   children: <TextSpan>[
                                     TextSpan(
-                                      text: myProvider.codeUrl != null? myProvider.codeUrl : "Sin Orden",
+                                      text: myProvider.dataDelivery.codeUrlPaid != null? myProvider.dataDelivery.codeUrlPaid : "Sin Orden",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.normal,
@@ -288,7 +272,7 @@ class _MainPageState extends State<MainPage>{
                 ),
                 trailing: GestureDetector(
                   onTap: () async {
-                    if(myProvider.codeUrl != null)
+                    if(myProvider.dataDelivery.codeUrlPaid != null)
                       showMessage("Usted tiene orden Pendiente no puede seleccionar una orden", false);
                     else{
                       setState(() {
@@ -335,10 +319,9 @@ class _MainPageState extends State<MainPage>{
     var myProvider = Provider.of<MyProvider>(context, listen: false);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("codeUrl");
-    prefs.remove("date_codeUrl");
     prefs.remove("searchAddress");
     myProvider.searchAddress = "";
-    myProvider.codeUrl = null;
+    myProvider.dataDelivery.codeUrlPaid = null;
     setState(() {
       _codeUrl = null;
     });
@@ -367,6 +350,7 @@ class _MainPageState extends State<MainPage>{
         var jsonResponse = jsonDecode(response.body); 
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
+          myProvider.getDataDelivery(false, false, context);
           myProvider.getDataAllPaids(context, false);
 
           _controllerSearch.clear();
@@ -410,9 +394,8 @@ class _MainPageState extends State<MainPage>{
           myProvider.selectPaid = _selectPaid;
           myProvider.dataCommerce = _selectCommerce;
           myProvider.dataListSales = _listSales;
-          myProvider.codeUrl = _codeUrl;
+          myProvider.dataDelivery.codeUrlPaid = _codeUrl;
           prefs.setString('codeUrl', _codeUrl);
-          prefs.setString('date_codeUrl', formatter.format(_dateNow));
 
           dbctpaga.createOrUpdatePaid(_selectPaid);
           dbctpaga.createOrUpdateCommerces(_selectCommerce);
@@ -443,7 +426,7 @@ class _MainPageState extends State<MainPage>{
     myProvider.selectPaid = await dbctpaga.getPaid();
     myProvider.dataCommerce = await dbctpaga.getCommerce();
     myProvider.dataListSales = await dbctpaga.getSales();
-    if(myProvider.selectPaid.codeUrl != myProvider.codeUrl){
+    if(myProvider.selectPaid.codeUrl != myProvider.dataDelivery.codeUrlPaid){
       myProvider.selectPaid = null;
       myProvider.dataCommerce = null;
       myProvider.dataListSales = [];

@@ -345,7 +345,6 @@ class _LoginPageState extends State<LoginPage> {
 
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.remove("access_token");
-            prefs.remove('date_codeUrl');
             prefs.remove('codeUrl');
             prefs.setString('access_token', jsonResponse['access_token']);
             myProvider.accessTokenDelivery = jsonResponse['access_token'];
@@ -353,6 +352,7 @@ class _LoginPageState extends State<LoginPage> {
             myProvider.searchAddress = "";
             myProvider.statusInitGoogle = false;
             _passwordController.clear();
+            myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context);
             myProvider.codeUrl = null;
           } else if(jsonResponse['message'] == 'Unauthorized'){
