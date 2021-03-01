@@ -104,13 +104,16 @@ class _MainPageState extends State<MainPage>{
           onWillPop:_onBackPressed,
           child: Scaffold(
             backgroundColor: Colors.white,
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: colorGreen,
-              onPressed: () {
-                _onLoading();
-                myProvider.getDataAllPaids(context, true);
-              },
-              child: Icon(Icons.refresh),
+            floatingActionButton: new Visibility(
+              visible: myProvider.dataDelivery.statusAvailability==0? false: true,
+              child:  FloatingActionButton(
+                backgroundColor: colorGreen,
+                onPressed: () {
+                  _onLoading();
+                  myProvider.getDataAllPaids(context, true);
+                },
+                child: Icon(Icons.refresh),
+              ),
             ),
             body: Stack(
               children: <Widget> [
@@ -119,84 +122,142 @@ class _MainPageState extends State<MainPage>{
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     NavbarMain(),
-                    GestureDetector(
-                      onTap: (){
-                        setState(() {
-                          _codeUrl = myProvider.dataDelivery.codeUrlPaid;
-                        });
-                        if(myProvider.dataDelivery.codeUrlPaid != null)
-                          searchCode(true);
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(60, 0, 60, 20),
-                        child: Container(
-                          padding: EdgeInsets.all(20),
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: colorGreen),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.only(bottom: 10),
-                                alignment: Alignment.center,
-                                child: AutoSizeText(
-                                  "Orden Pendiente:",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'MontserratSemiBold',
-                                  ),
-                                  maxFontSize: 24,
-                                  minFontSize: 24,
-                                ),
+                    Padding(
+                      padding: EdgeInsets.only(right:10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(right:10),
+                            child: AutoSizeText(
+                              "Disponibilidad",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'MontserratSemiBold',
                               ),
-                              AutoSizeText.rich(
-                                TextSpan(
-                                  text: 'Código: ',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontFamily: 'MontserratSemiBold',
-                                  ),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      text: myProvider.dataDelivery.codeUrlPaid != null? myProvider.dataDelivery.codeUrlPaid : "Sin Orden",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.normal,
-                                        fontFamily: 'MontserratSemiBold',
-                                      ),
+                              maxFontSize: 19,
+                              minFontSize: 19,
+                            ),
+                          ),
+                          Switch(
+                            value: myProvider.dataDelivery.statusAvailability==0? false: true,
+                            onChanged: (value) {
+                              verifyStatus(myProvider);
+                            },
+                            activeTrackColor: colorGrey,
+                            activeColor: colorGreen
+                          ),
+                        ],
+                      ),
+                    ),
+                    Visibility(
+                      visible: myProvider.dataDelivery.codeUrlPaid != null? true : myProvider.dataDelivery.statusAvailability ==1? true : false,
+                      child: GestureDetector(
+                        onTap: (){
+                          setState(() {
+                            _codeUrl = myProvider.dataDelivery.codeUrlPaid;
+                          });
+                          if(myProvider.dataDelivery.codeUrlPaid != null)
+                            searchCode(true);
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(60, 0, 60, 20),
+                          child: Container(
+                            padding: EdgeInsets.all(20),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: colorGreen),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(bottom: 10),
+                                  alignment: Alignment.center,
+                                  child: AutoSizeText(
+                                    "Orden Pendiente:",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'MontserratSemiBold',
                                     ),
-                                  ],
+                                    maxFontSize: 24,
+                                    minFontSize: 24,
+                                  ),
                                 ),
-                                maxFontSize: 14,
-                                minFontSize: 14,
-                              ),
-                            ],
-                          ),
+                                AutoSizeText.rich(
+                                  TextSpan(
+                                    text: 'Código: ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                      fontFamily: 'MontserratSemiBold',
+                                    ),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: myProvider.dataDelivery.codeUrlPaid != null? myProvider.dataDelivery.codeUrlPaid : "Sin Orden",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.normal,
+                                          fontFamily: 'MontserratSemiBold',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  maxFontSize: 14,
+                                  minFontSize: 14,
+                                ),
+                              ],
+                            ),
+                          )
                         )
                       )
                     ),
-                    Container(
-                      padding: EdgeInsets.only(left: 20, bottom: 10),
-                      alignment: Alignment.centerLeft,
-                      child: AutoSizeText(
-                        "Orden Disponible:",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'MontserratSemiBold',
-                        ),
-                        maxFontSize: 20,
-                        minFontSize: 20,
+                    Visibility(
+                      visible: myProvider.dataDelivery.statusAvailability==0? false: true,
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(left: 20, bottom: 10),
+                            alignment: Alignment.centerLeft,
+                            child: AutoSizeText(
+                              "Orden Disponible:",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'MontserratSemiBold',
+                              ),
+                              maxFontSize: 20,
+                              minFontSize: 20,
+                            ),
+                          ),
+                          Container(
+                            height: size.height /1.9,
+                            child: showList(myProvider)
+                          )
+                        ],
                       ),
                     ),
-                    Container(
-                      height: size.height /1.9,
-                      child: showList(myProvider)
-                    )
+
+                    Visibility(
+                      visible: myProvider.dataDelivery.statusAvailability==0? !false: !true,
+                      child: Expanded(
+                        child: Center(
+                          child: AutoSizeText(
+                             myProvider.dataDelivery.codeUrlPaid == null? "Debe estar disponible para recibir pedidos" : "Debe completar el orden pendiente",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'MontserratSemiBold',
+                            ),
+                            maxFontSize: 14,
+                            minFontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                    
                   ],
                 ),
               ]
@@ -315,6 +376,52 @@ class _MainPageState extends State<MainPage>{
     }
   }
 
+  verifyStatus(myProvider) async {
+    if(myProvider.dataDelivery.codeUrlPaid == null)
+      if(myProvider.dataDelivery.statusAvailability==0){
+        myProvider.getDataAllPaids(context, false);
+        changeStatus();
+      }else{
+        changeStatus();
+      }
+    else
+      showMessage("Debe completar el orden pendiente: ${myProvider.dataDelivery.codeUrlPaid}", false);
+  }
+
+  changeStatus()async{
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    var response, result;
+    try
+    {
+      _onLoading();
+      result = await InternetAddress.lookup('google.com'); //verify network
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        response = await http.post(
+          urlApi+"updateDelivery",
+          headers:{
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
+          },
+          body: jsonEncode({
+            "statusAvailability" : myProvider.dataDelivery.statusAvailability == 1? 0 : 1,
+          }),
+        ); 
+        var jsonResponse = jsonDecode(response.body); 
+        print(jsonResponse);
+        if (jsonResponse['statusCode'] == 201) {
+          myProvider.getDataDelivery(false, true, context);
+        }else{
+          Navigator.pop(context);
+          showMessage(jsonResponse['message'], false);
+        }
+      }
+    } on SocketException catch (_) {
+      Navigator.pop(context);
+      showMessage("Sin conexión a internet", false);
+    }
+  }
+
   removeCode() async {
     var myProvider = Provider.of<MyProvider>(context, listen: false);
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -407,6 +514,9 @@ class _MainPageState extends State<MainPage>{
 
           Navigator.pop(context);
           Navigator.push(context, SlideLeftRoute(page: ShowDataPaidPage()));
+        }else if (jsonResponse['statusCode'] == 401) {
+          myProvider.removeSession(context, true);
+          Navigator.pop(context);
         }else{
           setState(() {
             _positionButton = 0;

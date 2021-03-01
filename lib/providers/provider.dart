@@ -98,7 +98,7 @@ class MyProvider with ChangeNotifier {
     _listAllPaids = newListAllPaids;
     notifyListeners();
   }
-  
+
   
   Delivery delivery = Delivery();
   List listCommerces = new List();
@@ -131,6 +131,7 @@ class MyProvider with ChangeNotifier {
             phone: jsonResponse['data']['phone'],
             status: jsonResponse['data']['status']==1? true : false, //==1? true : false
             codeUrlPaid: jsonResponse['data']['codeUrlPaid'],
+            statusAvailability : jsonResponse['data']['statusAvailability'],
           );
 
           dataDelivery = delivery;
@@ -187,6 +188,8 @@ class MyProvider with ChangeNotifier {
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
           dataAllPaids = jsonResponse['data'];
+        }else if (jsonResponse['statusCode'] == 401) {
+          removeSession(context, true);
         }
         if(status)
           Navigator.pop(context);

@@ -355,7 +355,17 @@ class _LoginPageState extends State<LoginPage> {
             myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context);
             myProvider.codeUrl = null;
-          } else if(jsonResponse['message'] == 'Unauthorized'){
+
+          } else if(jsonResponse['statusCode'] == 401){
+
+            setState(() {
+              _passwordController.clear();
+              _statusError = true;
+              _messageError = "Por favor contactar con el administrador";
+            });
+            Navigator.pop(context);
+
+          } else if(jsonResponse['statusCode'] == 400){
 
             setState(() {
               _passwordController.clear();
@@ -364,7 +374,7 @@ class _LoginPageState extends State<LoginPage> {
             });
             Navigator.pop(context);
 
-          }  
+          } 
         }
       } on SocketException catch (_) {
 

@@ -13,7 +13,7 @@ import 'dart:async';
 class DBctpaga{
 
   static Database dbInstance;
-  static int versionDB = 3;
+  static int versionDB = 4;
 
   Future<Database> get db async{
     if(dbInstance == null)
@@ -41,7 +41,7 @@ class DBctpaga{
 
   void onCreateFunc (Database db, int version) async{
     //create table
-    await db.execute('CREATE TABLE IF NOT EXISTS deliveries (id INTEGER PRIMARY KEY AUTOINCREMENT, email Text, name VARCHAR(100), phone VARCHAR(20), status INTEGER, codeUrlPaid VARCHAR(10) )');
+    await db.execute('CREATE TABLE IF NOT EXISTS deliveries (id INTEGER PRIMARY KEY AUTOINCREMENT, email Text, name VARCHAR(100), phone VARCHAR(20), status INTEGER, codeUrlPaid VARCHAR(10), statusAvailability INTEGER )');
     await db.execute('CREATE TABLE IF NOT EXISTS commerces (id INTEGER PRIMARY KEY AUTOINCREMENT, rif VARCHAR(15), name Text, address Text, phone VARCHAR(20), userUrl VARCHAR(20))');
     await db.execute('CREATE TABLE IF NOT EXISTS paids (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), nameClient VARCHAR(50), total text, coin INTEGER, email text, nameShipping VARCHAR(50), numberShipping VARCHAR(50), addressShipping text, detailsShipping text, selectShipping text, priceShipping text, statusShipping INTEGER, percentage INTEGER, nameCompanyPayments VARCHAR(10), date text)');
     await db.execute('CREATE TABLE IF NOT EXISTS sales (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), productService_id INTEGER, name VARCHAR(50), price text, nameClient VARCHAR(50), coinClient INTEGER, coin INTEGER, type INTEGER, quantity INTEGER, statusSale INTEGER, rate text, descriptionShipping text, statusShipping INTEGER)');
@@ -78,6 +78,7 @@ class DBctpaga{
         phone : list[i]['phone'],
         status: list[i]['status']==1? true : false,
         codeUrlPaid: list[i]['codeUrlPaid'],
+        statusAvailability: list[i]['statusAvailability'],
       );
 
     }
@@ -96,7 +97,7 @@ class DBctpaga{
   // Add New Delivery
   void addNewDelivery (Delivery delivery) async{
     var dbConnection = await db;
-    String query = 'INSERT INTO deliveries (email , name, phone, status, codeUrlPaid) VALUES (\'${delivery.email}\',\'${delivery.name}\',\'${delivery.phone}\',\'${delivery.status?1:0}\',\'${delivery.codeUrlPaid}\')';
+    String query = 'INSERT INTO deliveries (email , name, phone, status, codeUrlPaid, statusAvailability) VALUES (\'${delivery.email}\',\'${delivery.name}\',\'${delivery.phone}\',\'${delivery.status?1:0}\',\'${delivery.codeUrlPaid}\',\'${delivery.statusAvailability}\')';
     await dbConnection.transaction((transaction) async{
       return await transaction.rawInsert(query);
     });
@@ -105,7 +106,7 @@ class DBctpaga{
   // Update Delivery
   void updateDelivery (Delivery delivery) async{
     var dbConnection = await db;
-    String query = 'UPDATE deliveries SET email=\'${delivery.email}\', name=\'${delivery.name}\', phone=\'${delivery.phone}\', status=\'${delivery.status?1:0}\', codeUrlPaid=\'${delivery.codeUrlPaid}\'  WHERE id=1';
+    String query = 'UPDATE deliveries SET email=\'${delivery.email}\', name=\'${delivery.name}\', phone=\'${delivery.phone}\', status=\'${delivery.status?1:0}\', codeUrlPaid=\'${delivery.codeUrlPaid}\', statusAvailability=\'${delivery.statusAvailability}\'  WHERE id=1';
     await dbConnection.transaction((transaction) async{
       return await transaction.rawQuery(query);
     });

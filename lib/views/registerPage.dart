@@ -1,4 +1,6 @@
+import 'package:delivery_ctpaga/animation/slideRoute.dart';
 import 'package:delivery_ctpaga/providers/provider.dart';
+import 'package:delivery_ctpaga/views/loginPage.dart';
 import 'package:delivery_ctpaga/env.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -354,14 +356,17 @@ class _RegisterPageState extends State<RegisterPage> {
           jsonResponse = jsonDecode(response.body);
           print(jsonResponse);
           if (jsonResponse['statusCode'] == 201) {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
+            Navigator.pop(context);
+            showMessage("La cuenta fue registrado correctamente!, Debe contactar con el administrador para la aoturización de la aplicación", true);
+            Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
+            /* SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setString('access_token', jsonResponse['access_token']);
             myProvider.accessTokenDelivery = jsonResponse['access_token'];
             myProvider.statusButton = 2;
             myProvider.searchAddress = "";
             myProvider.statusInitGoogle = false;
             myProvider.getDataAllPaids(context, false);
-            myProvider.getDataDelivery(true, true, context);
+            myProvider.getDataDelivery(true, true, context); */
 
           } else if(jsonResponse['errors'] != null){
 
@@ -381,6 +386,53 @@ class _RegisterPageState extends State<RegisterPage> {
         Navigator.pop(context);
       } 
     }
+  }
+
+    Future<void> showMessage(_titleMessage, _statusCorrectly) async {
+    var size = MediaQuery.of(context).size;
+
+    return showDialog(
+      context: context,
+      barrierDismissible: true, 
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          content: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              _statusCorrectly? Padding(
+                padding: EdgeInsets.all(5),
+                child: Icon(
+                  Icons.check_circle,
+                  color: colorGreen,
+                  size: size.width / 8,
+                )
+              )
+              : Padding(
+                padding: EdgeInsets.all(5),
+                child: Icon(
+                  Icons.error,
+                  color: Colors.red,
+                  size: size.width / 8,
+                )
+              ),
+              Container(
+                padding: EdgeInsets.all(5),
+                child: Text(
+                  _titleMessage,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'MontserratSemiBold',
+                  )
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _onLoading() async {

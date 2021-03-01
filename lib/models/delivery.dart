@@ -1,9 +1,9 @@
 class Delivery{
-  int id;
+  int id, statusAvailability;
   String email, name, phone, codeUrlPaid;
   bool status;
 
-  Delivery({this.id, this.email, this.name, this.phone, this.status, this.codeUrlPaid});
+  Delivery({this.id, this.email, this.name, this.phone, this.status, this.codeUrlPaid, this.statusAvailability});
 
   factory Delivery.fromMap(dynamic data) => Delivery(
     id: data['id'],
@@ -12,6 +12,7 @@ class Delivery{
     phone: data['phone'],
     status: data['status'],
     codeUrlPaid: data['codeUrlPaid'],
+    statusAvailability: data['statusAvailability'],
   );
 
   Map<String, dynamic> toJson()=> {
@@ -21,6 +22,7 @@ class Delivery{
     'phone': phone,
     'status': status,
     'codeUrlPaid': codeUrlPaid,
+    'statusAvailability': statusAvailability,
   };
 
 }
