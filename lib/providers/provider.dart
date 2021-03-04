@@ -99,6 +99,22 @@ class MyProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  List schedule = new List();
+  List get getScheduleInitial =>schedule;
+
+  set getScheduleInitial(List newScheduleInitial){
+    schedule = newScheduleInitial;
+    notifyListeners();
+  }
+
+  bool _statusShedule;
+  bool get statusShedule =>_statusShedule; 
+  
+  set statusShedule(bool newStatus) {
+    _statusShedule = newStatus; 
+    notifyListeners(); 
+  }
+
   
   Delivery delivery = Delivery();
   List listCommerces = new List();
@@ -106,6 +122,7 @@ class MyProvider with ChangeNotifier {
   getDataDelivery(status, loading, context)async{
 
     var result, response, jsonResponse;
+    schedule = [];
 
     try {
       result = await InternetAddress.lookup('google.com');
@@ -143,6 +160,13 @@ class MyProvider with ChangeNotifier {
           else
             dbctpaga.updateDelivery(delivery); 
 
+          schedule.add(jsonResponse['scheduleInitial']);
+          schedule.add(jsonResponse['scheduleFinal']);
+
+          dbctpaga.createOrUpdateSettings(schedule);
+
+          //verifySchedule();
+
           await Future.delayed(Duration(seconds: 1));
 
           if(loading){
@@ -165,6 +189,50 @@ class MyProvider with ChangeNotifier {
         Navigator.pushReplacement(context, SlideLeftRoute(page: MainMenuBar()));
       }
     }
+  }
+
+  verifySchedule(){
+    DateTime _today = DateTime.now();
+    var _dateSheduleInitialGet = getTime(schedule[0]['value']);
+    var _dateSheduleFinalGet = getTime(schedule[1]['value']); 
+
+
+    var hoursInitial = getHours(_dateSheduleInitialGet['hours'], _dateSheduleInitialGet['anteMeridiem']);
+    var hoursFinal = getHours(_dateSheduleFinalGet['hours'], _dateSheduleFinalGet['anteMeridiem']);
+      
+    DateTime _dateSheduleInitial = new DateTime(_today.year, _today.month, _today.day, hoursInitial, int.parse(_dateSheduleInitialGet['min']), 0);
+    DateTime _dateSheduleFinal = new DateTime(_today.year, _today.month, _today.day, hoursFinal, int.parse(_dateSheduleFinalGet['min']), 0);
+    
+    if(_today.isAfter(_dateSheduleInitial) && _today.isBefore(_dateSheduleFinal))
+      statusShedule = true;
+    else
+      statusShedule = false;
+  }
+
+  getHours(hours, anteMeridiem){
+
+    if(anteMeridiem == "PM")
+      return int.parse(hours) + 12;
+    
+    return int.parse(hours);
+  }
+
+
+  getTime(value){
+    var array, hours, min, anteMeridiem;
+    var result = new Map(); 
+    array = value.split(":");
+
+    hours = array[0];
+
+    array = array[1].split(" ");
+    min = array[0];
+    anteMeridiem = array[1];
+
+    result['hours'] = hours;
+    result['min'] = min;
+    result['anteMeridiem']= anteMeridiem;
+    return result;
   }
 
   getDataAllPaids(context, status)async{

@@ -13,7 +13,7 @@ import 'dart:async';
 class DBctpaga{
 
   static Database dbInstance;
-  static int versionDB = 4;
+  static int versionDB = 5;
 
   Future<Database> get db async{
     if(dbInstance == null)
@@ -45,6 +45,7 @@ class DBctpaga{
     await db.execute('CREATE TABLE IF NOT EXISTS commerces (id INTEGER PRIMARY KEY AUTOINCREMENT, rif VARCHAR(15), name Text, address Text, phone VARCHAR(20), userUrl VARCHAR(20))');
     await db.execute('CREATE TABLE IF NOT EXISTS paids (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), nameClient VARCHAR(50), total text, coin INTEGER, email text, nameShipping VARCHAR(50), numberShipping VARCHAR(50), addressShipping text, detailsShipping text, selectShipping text, priceShipping text, statusShipping INTEGER, percentage INTEGER, nameCompanyPayments VARCHAR(10), date text)');
     await db.execute('CREATE TABLE IF NOT EXISTS sales (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), productService_id INTEGER, name VARCHAR(50), price text, nameClient VARCHAR(50), coinClient INTEGER, coin INTEGER, type INTEGER, quantity INTEGER, statusSale INTEGER, rate text, descriptionShipping text, statusShipping INTEGER)');
+    await db.execute('CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(50), value VARCHAR(50))');
   }
 
   /*
@@ -58,6 +59,7 @@ class DBctpaga{
     await dbConnection.execute('DROP TABLE IF EXISTS commerces');
     await dbConnection.execute('DROP TABLE IF EXISTS paids');
     await dbConnection.execute('DROP TABLE IF EXISTS sales');
+    await dbConnection.execute('DROP TABLE IF EXISTS settings');
   
     onCreateFunc(dbConnection, versionDB);
   }
@@ -229,6 +231,37 @@ class DBctpaga{
       await dbConnection.transaction((transaction) async{
         return await transaction.rawInsert(query);
       });
+    }
+
+  }
+
+  // Get Settings 
+  Future <List<dynamic>> getSettings() async{
+    var dbConnection = await db;
+
+    List<Map> list = await dbConnection.rawQuery('SELECT * FROM Settings');
+    
+    return list;
+  }
+
+  // Create or update Settings
+  void createOrUpdateSettings(List listSettings) async{
+    var dbConnection = await db;
+
+    for (var item in listSettings) {
+      List<Map> list = await dbConnection.rawQuery('SELECT * FROM settings WHERE name=\'${item['name']}\' ');
+
+      if(list.length == 0){
+        String query = 'INSERT INTO settings (name, value) VALUES (\'${item['name']}\',\'${item['value']}\')';
+        await dbConnection.transaction((transaction) async{
+          return await transaction.rawInsert(query);
+      });
+      }else{
+        String query = 'UPDATE settings SET value=\'${item['value']}\' WHERE name=\'${item['name']}\'';
+        await dbConnection.transaction((transaction) async{
+          return await transaction.rawInsert(query);
+        });
+      }
     }
 
   }

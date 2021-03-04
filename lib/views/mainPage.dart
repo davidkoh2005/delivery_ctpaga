@@ -17,6 +17,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'dart:io';
 
 
@@ -41,6 +42,57 @@ class _MainPageState extends State<MainPage>{
   void initState() {
     super.initState();
     initialNotification();
+    initialVariable();
+  }
+
+  initialVariable(){
+    const oneSec = const Duration(seconds:1);
+    new Timer.periodic(oneSec, (Timer t) => verifyShedule());
+  }
+
+  verifyShedule(){
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    DateTime _today = DateTime.now();
+
+    var _dateSheduleInitialGet = getTime(myProvider.schedule[0]['value']);
+    var _dateSheduleFinalGet = getTime(myProvider.schedule[1]['value']); 
+
+    var hoursInitial = getHours(_dateSheduleInitialGet['hours'], _dateSheduleInitialGet['anteMeridiem']);
+    var hoursFinal = getHours(_dateSheduleFinalGet['hours'], _dateSheduleFinalGet['anteMeridiem']);
+      
+    DateTime _dateSheduleInitial = new DateTime(_today.year, _today.month, _today.day, hoursInitial, int.parse(_dateSheduleInitialGet['min']), 0);
+    DateTime _dateSheduleFinal = new DateTime(_today.year, _today.month, _today.day, hoursFinal, int.parse(_dateSheduleFinalGet['min']), 0);
+    
+    if(_today.isAfter(_dateSheduleInitial) && _today.isBefore(_dateSheduleFinal))
+      myProvider.statusShedule = true;
+    else
+      myProvider.statusShedule = false;
+  }
+
+  getHours(hours, anteMeridiem){
+
+    if(anteMeridiem == "PM")
+      return int.parse(hours) + 12;
+    
+    return int.parse(hours);
+  }
+
+
+  getTime(value){
+    var array, hours, min, anteMeridiem;
+    var result = new Map(); 
+    array = value.split(":");
+
+    hours = array[0];
+
+    array = array[1].split(" ");
+    min = array[0];
+    anteMeridiem = array[1];
+
+    result['hours'] = hours;
+    result['min'] = min;
+    result['anteMeridiem']= anteMeridiem;
+    return result;
   }
 
   @override
@@ -105,11 +157,12 @@ class _MainPageState extends State<MainPage>{
           child: Scaffold(
             backgroundColor: Colors.white,
             floatingActionButton: new Visibility(
-              visible: myProvider.dataDelivery.statusAvailability==0? false: true,
+              visible: myProvider.statusShedule? myProvider.dataDelivery.statusAvailability==0? false: true : false,
               child:  FloatingActionButton(
                 backgroundColor: colorGreen,
                 onPressed: () {
                   _onLoading();
+                  myProvider.getDataDelivery(false, false, context);
                   myProvider.getDataAllPaids(context, true);
                 },
                 child: Icon(Icons.refresh),
@@ -141,9 +194,10 @@ class _MainPageState extends State<MainPage>{
                             ),
                           ),
                           Switch(
-                            value: myProvider.dataDelivery.statusAvailability==0? false: true,
+                            value: myProvider.statusShedule? myProvider.dataDelivery.statusAvailability==0? false: true : false,
                             onChanged: (value) {
-                              verifyStatus(myProvider);
+                              _onLoading();
+                              myProvider.getDataDelivery(false, false, context).then((_) => verifyStatus(myProvider));
                             },
                             activeTrackColor: colorGrey,
                             activeColor: colorGreen
@@ -155,11 +209,19 @@ class _MainPageState extends State<MainPage>{
                       visible: myProvider.dataDelivery.codeUrlPaid != null? true : myProvider.dataDelivery.statusAvailability ==1? true : false,
                       child: GestureDetector(
                         onTap: (){
-                          setState(() {
-                            _codeUrl = myProvider.dataDelivery.codeUrlPaid;
+                          _onLoading();
+                          myProvider.getDataDelivery(false, false, context).then((_) {
+                            if(myProvider.statusShedule){
+                              setState(() {
+                                _codeUrl = myProvider.dataDelivery.codeUrlPaid;
+                              });
+                              if(myProvider.dataDelivery.codeUrlPaid != null)
+                                searchCode(true);
+                            }else{
+                              Navigator.pop(context);
+                              showMessage("El horario es de ${myProvider.schedule[0]['value']} hasta las ${myProvider.schedule[1]['value']}", false);
+                            }
                           });
-                          if(myProvider.dataDelivery.codeUrlPaid != null)
-                            searchCode(true);
                         },
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(60, 0, 60, 20),
@@ -215,7 +277,7 @@ class _MainPageState extends State<MainPage>{
                       )
                     ),
                     Visibility(
-                      visible: myProvider.dataDelivery.statusAvailability==0? false: true,
+                      visible: myProvider.statusShedule? myProvider.dataDelivery.statusAvailability==0? false: true : false,
                       child: Column(
                         children: [
                           Container(
@@ -241,7 +303,7 @@ class _MainPageState extends State<MainPage>{
                     ),
 
                     Visibility(
-                      visible: myProvider.dataDelivery.statusAvailability==0? !false: !true,
+                      visible: myProvider.statusShedule? myProvider.dataDelivery.statusAvailability==0? !false: !true : !false,
                       child: Expanded(
                         child: Center(
                           child: AutoSizeText(
@@ -336,12 +398,20 @@ class _MainPageState extends State<MainPage>{
                     if(myProvider.dataDelivery.codeUrlPaid != null)
                       showMessage("Usted tiene orden Pendiente no puede seleccionar una orden", false);
                     else{
-                      setState(() {
-                        _positionButton = index+1;
-                        _codeUrl = myProvider.dataAllPaids[index]['codeUrl'];
+                      _onLoading();
+                      myProvider.getDataDelivery(false, false, context).then((_) {
+                        if(myProvider.statusShedule){
+                          setState(() {
+                            _positionButton = index+1;
+                            _codeUrl = myProvider.dataAllPaids[index]['codeUrl'];
+                          });
+                          
+                          searchCode(false);
+                        }else{
+                          Navigator.pop(context);
+                          showMessage("El horario es de ${myProvider.schedule[0]['value']} hasta las ${myProvider.schedule[1]['value']}", false);
+                        }
                       });
-                      
-                      searchCode(false);
                     }
                   },
                   child: _positionButton != index+1? Container(
@@ -377,15 +447,25 @@ class _MainPageState extends State<MainPage>{
   }
 
   verifyStatus(myProvider) async {
-    if(myProvider.dataDelivery.codeUrlPaid == null)
-      if(myProvider.dataDelivery.statusAvailability==0){
-        myProvider.getDataAllPaids(context, false);
-        changeStatus();
-      }else{
-        changeStatus();
-      }
-    else
-      showMessage("Debe completar el orden pendiente: ${myProvider.dataDelivery.codeUrlPaid}", false);
+    if(myProvider.statusShedule){
+      if(!myProvider.statusShedule)
+        if(myProvider.dataDelivery.codeUrlPaid == null)
+          if(myProvider.dataDelivery.statusAvailability==0){
+            myProvider.getDataAllPaids(context, false);
+            changeStatus();
+          }else{
+            changeStatus();
+          }
+        else{
+          Navigator.pop(context);
+          showMessage("Debe completar el orden pendiente: ${myProvider.dataDelivery.codeUrlPaid}", false);
+        }
+      else
+        Navigator.pop(context);
+    }else{
+      Navigator.pop(context);
+      showMessage("El horario es de ${myProvider.schedule[0]['value']} hasta las ${myProvider.schedule[1]['value']}", false);
+    }
   }
 
   changeStatus()async{
@@ -393,7 +473,6 @@ class _MainPageState extends State<MainPage>{
     var response, result;
     try
     {
-      _onLoading();
       result = await InternetAddress.lookup('google.com'); //verify network
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.post(
@@ -440,7 +519,6 @@ class _MainPageState extends State<MainPage>{
     var response, result;
     try
     {
-      _onLoading();
       result = await InternetAddress.lookup('google.com'); //verify network
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.post(

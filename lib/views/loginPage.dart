@@ -351,6 +351,7 @@ class _LoginPageState extends State<LoginPage> {
             myProvider.statusButton = 2;
             myProvider.searchAddress = "";
             myProvider.statusInitGoogle = false;
+            myProvider.statusShedule = false;
             _passwordController.clear();
             myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context);
