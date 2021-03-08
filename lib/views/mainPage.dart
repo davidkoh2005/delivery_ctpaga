@@ -12,6 +12,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -31,7 +33,7 @@ class _MainPageState extends State<MainPage>{
   final _controllerSearch = TextEditingController();
   ScrollController scrollController;
   var dbctpaga = DBctpaga();
-  DateTime _dateNow = DateTime.now(), currentBackPressTime;
+  DateTime currentBackPressTime;
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
   List _listSales = new List();
   int _positionButton = 0;
@@ -54,19 +56,25 @@ class _MainPageState extends State<MainPage>{
     var myProvider = Provider.of<MyProvider>(context, listen: false);
     DateTime _today = DateTime.now();
 
-    var _dateSheduleInitialGet = getTime(myProvider.schedule[0]['value']);
-    var _dateSheduleFinalGet = getTime(myProvider.schedule[1]['value']); 
+    if(myProvider.schedule.length >0){
+      var _dateSheduleInitialGet = getTime(myProvider.schedule[0]['value']);
+      var _dateSheduleFinalGet = getTime(myProvider.schedule[1]['value']); 
 
-    var hoursInitial = getHours(_dateSheduleInitialGet['hours'], _dateSheduleInitialGet['anteMeridiem']);
-    var hoursFinal = getHours(_dateSheduleFinalGet['hours'], _dateSheduleFinalGet['anteMeridiem']);
-      
-    DateTime _dateSheduleInitial = new DateTime(_today.year, _today.month, _today.day, hoursInitial, int.parse(_dateSheduleInitialGet['min']), 0);
-    DateTime _dateSheduleFinal = new DateTime(_today.year, _today.month, _today.day, hoursFinal, int.parse(_dateSheduleFinalGet['min']), 0);
+      var hoursInitial = getHours(_dateSheduleInitialGet['hours'], _dateSheduleInitialGet['anteMeridiem']);
+      var hoursFinal = getHours(_dateSheduleFinalGet['hours'], _dateSheduleFinalGet['anteMeridiem']);
+        
+      DateTime _dateSheduleInitial = new DateTime(_today.year, _today.month, _today.day, hoursInitial, int.parse(_dateSheduleInitialGet['min']), 0);
+      DateTime _dateSheduleFinal = new DateTime(_today.year, _today.month, _today.day, hoursFinal, int.parse(_dateSheduleFinalGet['min']), 0);
+
+      if(_today.isAfter(_dateSheduleInitial) && _today.isBefore(_dateSheduleFinal))
+        myProvider.statusShedule = true;
+      else
+        myProvider.statusShedule = false;
     
-    if(_today.isAfter(_dateSheduleInitial) && _today.isBefore(_dateSheduleFinal))
-      myProvider.statusShedule = true;
-    else
-      myProvider.statusShedule = false;
+    }
+
+    if(myProvider.statusShedule && myProvider.dataDelivery.statusAvailability==1)
+      locatePosition();
   }
 
   getHours(hours, anteMeridiem){
@@ -93,6 +101,50 @@ class _MainPageState extends State<MainPage>{
     result['min'] = min;
     result['anteMeridiem']= anteMeridiem;
     return result;
+  }
+
+  void locatePosition() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
+
+    final coordinates = new Coordinates(position.latitude, position.longitude);
+
+    var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    var first = addresses.first;
+    var addressDelivery = "${first.subLocality}, ${first.addressLine}";
+
+    if(addressDelivery != myProvider.addressDelivery){
+      myProvider.addressDelivery = addressDelivery;
+      prefs.setString("addressDelivery", addressDelivery);
+      var result, response, jsonResponse;
+       try {
+        result = await InternetAddress.lookup('google.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          var myProvider = Provider.of<MyProvider>(context, listen: false);
+
+          response = await http.post(
+            urlApi+"updateDelivery",
+            headers:{
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+              'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
+            },
+            body: jsonEncode({
+              'addressposition': addressDelivery,
+            }),
+          ); 
+
+          jsonResponse = jsonDecode(response.body); 
+          if (jsonResponse['statusCode'] == 201) {
+            myProvider.getDataDelivery(false, false, context);
+          } 
+        }
+      } on SocketException catch (_) {
+        print("Sin conexión a internet");
+      } 
+    }
+
   }
 
   @override
@@ -448,20 +500,17 @@ class _MainPageState extends State<MainPage>{
 
   verifyStatus(myProvider) async {
     if(myProvider.statusShedule){
-      if(!myProvider.statusShedule)
-        if(myProvider.dataDelivery.codeUrlPaid == null)
-          if(myProvider.dataDelivery.statusAvailability==0){
-            myProvider.getDataAllPaids(context, false);
-            changeStatus();
-          }else{
-            changeStatus();
-          }
-        else{
-          Navigator.pop(context);
-          showMessage("Debe completar el orden pendiente: ${myProvider.dataDelivery.codeUrlPaid}", false);
+      if(myProvider.dataDelivery.codeUrlPaid == null)
+        if(myProvider.dataDelivery.statusAvailability==0){
+          myProvider.getDataAllPaids(context, false);
+          changeStatus();
+        }else{
+          changeStatus();
         }
-      else
+      else{
         Navigator.pop(context);
+        showMessage("Debe completar el orden pendiente: ${myProvider.dataDelivery.codeUrlPaid}", false);
+      }
     }else{
       Navigator.pop(context);
       showMessage("El horario es de ${myProvider.schedule[0]['value']} hasta las ${myProvider.schedule[1]['value']}", false);
@@ -505,8 +554,8 @@ class _MainPageState extends State<MainPage>{
     var myProvider = Provider.of<MyProvider>(context, listen: false);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("codeUrl");
-    prefs.remove("searchAddress");
-    myProvider.searchAddress = "";
+    prefs.remove("addressDelivery");
+    myProvider.addressDelivery = "";
     myProvider.dataDelivery.codeUrlPaid = null;
     setState(() {
       _codeUrl = null;

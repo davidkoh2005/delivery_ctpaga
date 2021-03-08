@@ -154,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await Future.delayed(Duration(seconds: 2));
     if(prefs.containsKey('access_token')){
       myProvider.accessTokenDelivery = prefs.getString('access_token');
-      myProvider.searchAddress = prefs.getString('searchAddress');
+      myProvider.addressDelivery = prefs.containsKey('addressDelivery')? prefs.getString('addressDelivery') : '';
       myProvider.statusButton = 2;
       myProvider.statusInitGoogle = false;
       myProvider.statusShedule = false;

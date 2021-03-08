@@ -43,11 +43,11 @@ class MyProvider with ChangeNotifier {
     notifyListeners(); 
   }
 
-  String _searchAddress;
-  String get searchAddress =>_searchAddress; 
+  String _addressDelivery;
+  String get addressDelivery =>_addressDelivery; 
   
-  set searchAddress(String newAddress) {
-    _searchAddress = newAddress; 
+  set addressDelivery(String newAddress) {
+    _addressDelivery = newAddress; 
     notifyListeners(); 
   }
 
@@ -159,11 +159,13 @@ class MyProvider with ChangeNotifier {
             dbctpaga.addNewDelivery(delivery);
           else
             dbctpaga.updateDelivery(delivery); 
+          
+          if(jsonResponse['scheduleInitial'] != null && jsonResponse['scheduleFinal'] != null){
+            schedule.add(jsonResponse['scheduleInitial']);
+            schedule.add(jsonResponse['scheduleFinal']);
 
-          schedule.add(jsonResponse['scheduleInitial']);
-          schedule.add(jsonResponse['scheduleFinal']);
-
-          dbctpaga.createOrUpdateSettings(schedule);
+            dbctpaga.createOrUpdateSettings(schedule);
+          }
 
           //verifySchedule();
 

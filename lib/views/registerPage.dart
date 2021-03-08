@@ -1,11 +1,8 @@
 import 'package:delivery_ctpaga/animation/slideRoute.dart';
-import 'package:delivery_ctpaga/providers/provider.dart';
 import 'package:delivery_ctpaga/views/loginPage.dart';
 import 'package:delivery_ctpaga/env.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -331,7 +328,6 @@ class _RegisterPageState extends State<RegisterPage> {
       _onLoading();
 
       var result, response;
-      var myProvider = Provider.of<MyProvider>(context, listen: false);
 
       try {
         result = await InternetAddress.lookup('google.com'); //verify network
@@ -363,7 +359,7 @@ class _RegisterPageState extends State<RegisterPage> {
             prefs.setString('access_token', jsonResponse['access_token']);
             myProvider.accessTokenDelivery = jsonResponse['access_token'];
             myProvider.statusButton = 2;
-            myProvider.searchAddress = "";
+            myProvider.addressDelivery = "";
             myProvider.statusInitGoogle = false;
             myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context); */

@@ -887,8 +887,8 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
           if(index == 2){
             myProvider.getDataDelivery(false, false, context);
             prefs.remove("codeUrl");
-            prefs.remove("searchAddress");
-            myProvider.searchAddress = "";
+            prefs.remove("addressDelivery");
+            myProvider.addressDelivery = "";
             myProvider.codeUrl = null;
             Navigator.pop(context);
             Navigator.pop(context);

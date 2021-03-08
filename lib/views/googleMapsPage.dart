@@ -7,6 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 
 class GoogleMapsPage extends StatefulWidget {
@@ -22,8 +23,10 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   var geoLocator = Geolocator(), _currentMapType = MapType.normal;
   final Set<Marker> _markers = Set();
 
+  String addressSearch;
+
   void locatePosition() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
     currentPosition = position;
 
     LatLng latLatPosition = LatLng(position.latitude, position.longitude);
@@ -104,7 +107,6 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
                                 ],
                               ),
                               child: TextFormField(
-                                initialValue: myProvider.searchAddress,
                                 decoration: InputDecoration(
                                   hintText: "Ingrese dirección a buscar",
                                   border: InputBorder.none,
@@ -116,7 +118,9 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
                                   ),
                                 ),
                                 onChanged: (val) {
-                                  myProvider.searchAddress = val.trim();
+                                  setState(() {
+                                    addressSearch = val.trim();
+                                  });
                                 },
                                 textInputAction: TextInputAction.done,
                                 cursorColor: colorGreen,
@@ -164,10 +168,9 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   }
 
   searchNavigate() async {
-    var myProvider = Provider.of<MyProvider>(context, listen: false);
-    List<Location> locations = await locationFromAddress(myProvider.searchAddress);
+    List<Location> locations = await locationFromAddress(addressSearch);
     
-    locationFromAddress(myProvider.searchAddress).then((result) {
+    locationFromAddress(addressSearch).then((result) {
       newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           target: LatLng(locations[0].latitude, locations[0].longitude),

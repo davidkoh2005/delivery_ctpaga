@@ -349,7 +349,7 @@ class _LoginPageState extends State<LoginPage> {
             prefs.setString('access_token', jsonResponse['access_token']);
             myProvider.accessTokenDelivery = jsonResponse['access_token'];
             myProvider.statusButton = 2;
-            myProvider.searchAddress = "";
+            myProvider.addressDelivery = "";
             myProvider.statusInitGoogle = false;
             myProvider.statusShedule = false;
             _passwordController.clear();
