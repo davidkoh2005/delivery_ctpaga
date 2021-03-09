@@ -362,7 +362,8 @@ class _RegisterPageState extends State<RegisterPage> {
             myProvider.addressDelivery = "";
             myProvider.statusInitGoogle = false;
             myProvider.getDataAllPaids(context, false);
-            myProvider.getDataDelivery(true, true, context); */
+            myProvider.getDataDelivery(true, true, context);
+            myProvider.getTokenFCM = null; */
 
           } else if(jsonResponse['errors'] != null){
 

@@ -356,6 +356,7 @@ class _LoginPageState extends State<LoginPage> {
             myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context);
             myProvider.codeUrl = null;
+            myProvider.getTokenFCM = null;
 
           } else if(jsonResponse['statusCode'] == 401){
 

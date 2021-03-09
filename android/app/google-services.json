@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "540694189207",
+    "project_id": "test-ctpaga-delivery",
+    "storage_bucket": "test-ctpaga-delivery.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540694189207:android:88f86f5a04ab152c3b85d2",
+        "android_client_info": {
+          "package_name": "com.example.delivery_ctpaga"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "540694189207-bq4obdoam67t2d1s2siqd69i6qksihn0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyz-ZM1mBf9DG2PaZ0WrwYMjAA1f26K0A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "540694189207-bq4obdoam67t2d1s2siqd69i6qksihn0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

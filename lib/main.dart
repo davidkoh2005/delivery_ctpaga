@@ -160,6 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
       myProvider.statusShedule = false;
       myProvider.getDataDelivery(true, false, context);
       myProvider.getDataAllPaids(context, false);
+      myProvider.getTokenFCM = prefs.containsKey('tokenFCM')? prefs.getString('tokenFCM') : null;
     }else{
       Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
     }

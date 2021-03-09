@@ -115,6 +115,14 @@ class MyProvider with ChangeNotifier {
     notifyListeners(); 
   }
 
+  String _tokenFCM;
+  String get getTokenFCM =>_tokenFCM; 
+  
+  set getTokenFCM(String newValue) {
+    _tokenFCM = newValue; 
+    notifyListeners(); 
+  }
+
   
   Delivery delivery = Delivery();
   List listCommerces = new List();
@@ -149,6 +157,7 @@ class MyProvider with ChangeNotifier {
             status: jsonResponse['data']['status']==1? true : false, //==1? true : false
             codeUrlPaid: jsonResponse['data']['codeUrlPaid'],
             statusAvailability : jsonResponse['data']['statusAvailability'],
+            tokenFCM: jsonResponse['data']['token_fcm'],
           );
 
           dataDelivery = delivery;
@@ -159,6 +168,10 @@ class MyProvider with ChangeNotifier {
             dbctpaga.addNewDelivery(delivery);
           else
             dbctpaga.updateDelivery(delivery); 
+
+
+          if(delivery.tokenFCM == null && getTokenFCM != delivery.tokenFCM)
+            updateToken(getTokenFCM, context);
           
           if(jsonResponse['scheduleInitial'] != null && jsonResponse['scheduleFinal'] != null){
             schedule.add(jsonResponse['scheduleInitial']);
@@ -191,6 +204,37 @@ class MyProvider with ChangeNotifier {
         Navigator.pushReplacement(context, SlideLeftRoute(page: MainMenuBar()));
       }
     }
+  }
+
+  updateToken(token, context)async{
+    var result, response, jsonResponse;
+       try {
+        result = await InternetAddress.lookup('google.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+
+          response = await http.post(
+            urlApi+"updateDelivery",
+            headers:{
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+              'authorization': 'Bearer $accessTokenDelivery',
+            },
+            body: jsonEncode({
+              'token_fcm': token,
+            }),
+          ); 
+
+          jsonResponse = jsonDecode(response.body); 
+
+          print(jsonResponse);
+
+          if (jsonResponse['statusCode'] == 201) {
+            getDataDelivery(false, false, context);
+          } 
+        }
+      } on SocketException catch (_) {
+        print("Sin conexión a internet");
+      }
   }
 
   verifySchedule(){

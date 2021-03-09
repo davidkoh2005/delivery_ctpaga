@@ -8,8 +8,10 @@ import 'package:delivery_ctpaga/database.dart';
 import 'package:delivery_ctpaga/env.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
@@ -22,6 +24,8 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class MainPage extends StatefulWidget {
   @override
@@ -30,6 +34,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>{
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final _controllerSearch = TextEditingController();
   ScrollController scrollController;
   var dbctpaga = DBctpaga();
@@ -37,7 +42,6 @@ class _MainPageState extends State<MainPage>{
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
   List _listSales = new List();
   int _positionButton = 0;
-  String _codeUrl;
   double positionScroll = 0.0;
 
   @override
@@ -45,6 +49,7 @@ class _MainPageState extends State<MainPage>{
     super.initState();
     initialNotification();
     initialVariable();
+    registerNotification();
   }
 
   initialVariable(){
@@ -147,6 +152,39 @@ class _MainPageState extends State<MainPage>{
 
   }
 
+  void registerNotification() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    _firebaseMessaging.requestNotificationPermissions();
+
+    _firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
+      print('onMessage: $message');
+      myProvider.getDataDelivery(false, false, context);
+      showNotification(message['notification']['title'],message['notification']['body']);
+      return;
+    }, onResume: (Map<String, dynamic> message) {
+      print('onResume: $message');
+      myProvider.getDataDelivery(false, false, context);
+      showNotification(message['notification']['title'],message['notification']['body']);
+      return;
+    }, onLaunch: (Map<String, dynamic> message) {
+      print('onLaunch: $message');
+      myProvider.getDataDelivery(false, false, context);
+      showNotification(message['notification']['title'],message['notification']['body']);
+      return;
+    });
+
+    _firebaseMessaging.getToken().then((token) {
+      print("token: $token");
+      prefs.setString('tokenFCM', token);
+      myProvider.getTokenFCM = token;
+      if(token != myProvider.dataDelivery.tokenFCM)
+        myProvider.updateToken(token, context);
+    }).catchError((err) {
+      Fluttertoast.showToast(msg: err.message.toString());
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -155,36 +193,39 @@ class _MainPageState extends State<MainPage>{
   void initialNotification() {
     var initializationSettingsAndroid = new AndroidInitializationSettings('app_icon');
     var initializationSettingsIOS = new IOSInitializationSettings();
-    var initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS
+    var initializationSettings = InitializationSettings(initializationSettingsAndroid, initializationSettingsIOS
     );
     flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: selectNotification,);
   }
 
   Future selectNotification(String payload) async {
     if(payload == "true"){
+      _onLoading();
       searchCode(true);
     }
   }
 
-  void showNotification(message) async {
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+  void showNotification(title, message) async {
+
+    var android = AndroidNotificationDetails(
         'Message New id',
         'Message New name',
         'Message New description',
-        importance: Importance.max,
-        priority: Priority.high,
-        playSound: true,
+        priority: Priority.High,
+        importance: Importance.Max,
     );
 
-    var iOS = IOSNotificationDetails();
-    final NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics, iOS:  iOS);
+
+    var iOS = IOSNotificationDetails(presentSound: false);
+
+    var platformChannelSpecifics = NotificationDetails(
+    android, iOS);
 
     await flutterLocalNotificationsPlugin.show(
-        0, "Código Recibido", message, platformChannelSpecifics, payload: "true"
+        0, title, message, platformChannelSpecifics, payload: "true"
       );
+
+    FlutterRingtonePlayer.playNotification();
 
   }
 
@@ -263,13 +304,9 @@ class _MainPageState extends State<MainPage>{
                         onTap: (){
                           _onLoading();
                           myProvider.getDataDelivery(false, false, context).then((_) {
-                            if(myProvider.statusShedule){
-                              setState(() {
-                                _codeUrl = myProvider.dataDelivery.codeUrlPaid;
-                              });
-                              if(myProvider.dataDelivery.codeUrlPaid != null)
+                            if(myProvider.statusShedule && myProvider.dataDelivery.codeUrlPaid != null)
                                 searchCode(true);
-                            }else{
+                            else{
                               Navigator.pop(context);
                               showMessage("El horario es de ${myProvider.schedule[0]['value']} hasta las ${myProvider.schedule[1]['value']}", false);
                             }
@@ -455,8 +492,9 @@ class _MainPageState extends State<MainPage>{
                         if(myProvider.statusShedule){
                           setState(() {
                             _positionButton = index+1;
-                            _codeUrl = myProvider.dataAllPaids[index]['codeUrl'];
                           });
+
+                          myProvider.dataDelivery.codeUrlPaid = myProvider.dataAllPaids[index]['codeUrl'];
                           
                           searchCode(false);
                         }else{
@@ -557,9 +595,6 @@ class _MainPageState extends State<MainPage>{
     prefs.remove("addressDelivery");
     myProvider.addressDelivery = "";
     myProvider.dataDelivery.codeUrlPaid = null;
-    setState(() {
-      _codeUrl = null;
-    });
   }
 
   searchCode(statusOrder)async{
@@ -578,7 +613,7 @@ class _MainPageState extends State<MainPage>{
             'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
           },
           body: jsonEncode({
-            "codeUrl" : _codeUrl,
+            "codeUrl" : myProvider.dataDelivery.codeUrlPaid,
           }),
         ); 
         var jsonResponse = jsonDecode(response.body); 
@@ -628,8 +663,7 @@ class _MainPageState extends State<MainPage>{
           myProvider.selectPaid = _selectPaid;
           myProvider.dataCommerce = _selectCommerce;
           myProvider.dataListSales = _listSales;
-          myProvider.dataDelivery.codeUrlPaid = _codeUrl;
-          prefs.setString('codeUrl', _codeUrl);
+          prefs.setString('codeUrl', myProvider.dataDelivery.codeUrlPaid);
 
           dbctpaga.createOrUpdatePaid(_selectPaid);
           dbctpaga.createOrUpdateCommerces(_selectCommerce);
