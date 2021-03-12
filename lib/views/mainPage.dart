@@ -60,23 +60,27 @@ class _MainPageState extends State<MainPage>{
   verifyShedule(){
     var myProvider = Provider.of<MyProvider>(context, listen: false);
     DateTime _today = DateTime.now();
-
+    DateTime _dateSheduleInitial = new DateTime(_today.year, _today.month, _today.day, 0, 0, 0);
+    DateTime _dateSheduleFinal = new DateTime(_today.year, _today.month, _today.day, 23, 59, 0);
+    
     if(myProvider.schedule.length >0){
+
       var _dateSheduleInitialGet = getTime(myProvider.schedule[0]['value']);
       var _dateSheduleFinalGet = getTime(myProvider.schedule[1]['value']); 
 
       var hoursInitial = getHours(_dateSheduleInitialGet['hours'], _dateSheduleInitialGet['anteMeridiem']);
       var hoursFinal = getHours(_dateSheduleFinalGet['hours'], _dateSheduleFinalGet['anteMeridiem']);
         
-      DateTime _dateSheduleInitial = new DateTime(_today.year, _today.month, _today.day, hoursInitial, int.parse(_dateSheduleInitialGet['min']), 0);
-      DateTime _dateSheduleFinal = new DateTime(_today.year, _today.month, _today.day, hoursFinal, int.parse(_dateSheduleFinalGet['min']), 0);
-
-      if(_today.isAfter(_dateSheduleInitial) && _today.isBefore(_dateSheduleFinal))
-        myProvider.statusShedule = true;
-      else
-        myProvider.statusShedule = false;
+      _dateSheduleInitial = new DateTime(_today.year, _today.month, _today.day, hoursInitial, int.parse(_dateSheduleInitialGet['min']), 0);
+      _dateSheduleFinal = new DateTime(_today.year, _today.month, _today.day, hoursFinal, int.parse(_dateSheduleFinalGet['min']), 0);
     
     }
+
+    if(_today.isAfter(_dateSheduleInitial) && _today.isBefore(_dateSheduleFinal))
+      myProvider.statusShedule = true;
+    else
+      myProvider.statusShedule = false;
+
 
     if(myProvider.statusShedule && myProvider.dataDelivery.statusAvailability==1)
       locatePosition();
