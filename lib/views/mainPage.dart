@@ -441,7 +441,7 @@ class _MainPageState extends State<MainPage>{
     else{
       return ListView.builder(
         shrinkWrap: true, 
-        padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
+        padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
         itemCount: myProvider.dataAllPaids.length,
         itemBuilder:  (BuildContext ctxt, int index) {
           return Padding(

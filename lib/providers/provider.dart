@@ -154,7 +154,7 @@ class MyProvider with ChangeNotifier {
             email: jsonResponse['data']['email'],
             name: jsonResponse['data']['name'],
             phone: jsonResponse['data']['phone'],
-            status: jsonResponse['data']['status']==1? true : false, //==1? true : false
+            status: jsonResponse['data']['status'],
             codeUrlPaid: jsonResponse['data']['codeUrlPaid'],
             statusAvailability : jsonResponse['data']['statusAvailability'],
             tokenFCM: jsonResponse['data']['token_fcm'],
@@ -168,28 +168,32 @@ class MyProvider with ChangeNotifier {
             dbctpaga.addNewDelivery(delivery);
           else
             dbctpaga.updateDelivery(delivery); 
-
-
-          if(delivery.tokenFCM == null && getTokenFCM != delivery.tokenFCM)
-            updateToken(getTokenFCM, context);
           
-          if(jsonResponse['scheduleInitial'] != null && jsonResponse['scheduleFinal'] != null){
-            schedule.add(jsonResponse['scheduleInitial']);
-            schedule.add(jsonResponse['scheduleFinal']);
+          if(dataDelivery.status != 1)
+            removeSession(context, true);
+          else{
 
-            dbctpaga.createOrUpdateSettings(schedule);
-          }
+            if(delivery.tokenFCM == null && getTokenFCM != delivery.tokenFCM)
+              updateToken(getTokenFCM, context);
+            
+            if(jsonResponse['scheduleInitial'] != null && jsonResponse['scheduleFinal'] != null){
+              schedule.add(jsonResponse['scheduleInitial']);
+              schedule.add(jsonResponse['scheduleFinal']);
 
-          //verifySchedule();
+              dbctpaga.createOrUpdateSettings(schedule);
+            }
 
-          await Future.delayed(Duration(seconds: 1));
+            //verifySchedule();
 
-          if(loading){
-            Navigator.pop(context);
-          }
+            await Future.delayed(Duration(seconds: 1));
 
-          if(status){
-            Navigator.pushReplacement(context, SlideLeftRoute(page: MainMenuBar()));
+            if(loading){
+              Navigator.pop(context);
+            }
+
+            if(status){
+              Navigator.pushReplacement(context, SlideLeftRoute(page: MainMenuBar()));
+            }
           }
         }else{
           removeSession(context, true);
@@ -320,7 +324,7 @@ class MyProvider with ChangeNotifier {
     prefs.remove("access_token");
     prefs.remove('codeUrl');
     delivery = Delivery(
-      status: false,
+      status: 0,
     );
     dataDelivery = delivery;
     dbctpaga.deleteAll();

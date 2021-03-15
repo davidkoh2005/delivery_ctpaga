@@ -78,7 +78,7 @@ class DBctpaga{
         email : list[i]['email'],
         name : list[i]['name'],
         phone : list[i]['phone'],
-        status: list[i]['status']==1? true : false,
+        status: list[i]['status'],
         codeUrlPaid: list[i]['codeUrlPaid'],
         statusAvailability: list[i]['statusAvailability'],
       );
@@ -99,7 +99,7 @@ class DBctpaga{
   // Add New Delivery
   void addNewDelivery (Delivery delivery) async{
     var dbConnection = await db;
-    String query = 'INSERT INTO deliveries (email , name, phone, status, codeUrlPaid, statusAvailability, tokenFCM) VALUES (\'${delivery.email}\',\'${delivery.name}\',\'${delivery.phone}\',\'${delivery.status?1:0}\',\'${delivery.codeUrlPaid}\',\'${delivery.statusAvailability}\', \'${delivery.tokenFCM}\')';
+    String query = 'INSERT INTO deliveries (email , name, phone, status, codeUrlPaid, statusAvailability, tokenFCM) VALUES (\'${delivery.email}\',\'${delivery.name}\',\'${delivery.phone}\',\'${delivery.status}\',\'${delivery.codeUrlPaid}\',\'${delivery.statusAvailability}\', \'${delivery.tokenFCM}\')';
     await dbConnection.transaction((transaction) async{
       return await transaction.rawInsert(query);
     });
@@ -108,7 +108,7 @@ class DBctpaga{
   // Update Delivery
   void updateDelivery (Delivery delivery) async{
     var dbConnection = await db;
-    String query = 'UPDATE deliveries SET email=\'${delivery.email}\', name=\'${delivery.name}\', phone=\'${delivery.phone}\', status=\'${delivery.status?1:0}\', codeUrlPaid=\'${delivery.codeUrlPaid}\', statusAvailability=\'${delivery.statusAvailability}\', tokenFCM=\'${delivery.tokenFCM}\',  WHERE id=1';
+    String query = 'UPDATE deliveries SET email=\'${delivery.email}\', name=\'${delivery.name}\', phone=\'${delivery.phone}\', status=\'${delivery.status}\', codeUrlPaid=\'${delivery.codeUrlPaid}\', statusAvailability=\'${delivery.statusAvailability}\', tokenFCM=\'${delivery.tokenFCM}\',  WHERE id=1';
     await dbConnection.transaction((transaction) async{
       return await transaction.rawQuery(query);
     });

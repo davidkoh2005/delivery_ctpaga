@@ -1,7 +1,6 @@
 class Delivery{
-  int id, statusAvailability;
+  int id, status, statusAvailability;
   String email, name, phone, codeUrlPaid, tokenFCM;
-  bool status;
 
   Delivery({this.id, this.email, this.name, this.phone, this.status, this.codeUrlPaid, this.statusAvailability, this.tokenFCM});
 

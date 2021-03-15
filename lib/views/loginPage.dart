@@ -358,16 +358,14 @@ class _LoginPageState extends State<LoginPage> {
             myProvider.codeUrl = null;
             myProvider.getTokenFCM = null;
 
-          } else if(jsonResponse['statusCode'] == 401){
-
+          } else if(jsonResponse['statusCode'] == 400){
             setState(() {
               _passwordController.clear();
               _statusError = true;
-              _messageError = "Por favor contactar con el administrador";
+              _messageError = jsonResponse['message'];
             });
             Navigator.pop(context);
-
-          } else if(jsonResponse['statusCode'] == 400){
+          } else if(jsonResponse['statusCode'] == 401){
 
             setState(() {
               _passwordController.clear();
