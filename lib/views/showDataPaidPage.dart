@@ -844,6 +844,41 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   child: Text('Si'),
                   onPressed: () {
                     Navigator.pop(context);
+                    if(index == 2 && myProvider.dataListSales[0]['statusSale'] == 0)
+                      verifyPayment(index);
+                    else
+                      sendUpdate(index);
+                  },
+                ),
+                FlatButton(
+                  child: Text('No'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
+  }
+
+  verifyPayment(index)
+  {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return WillPopScope(
+            onWillPop: () async =>false,
+            child: AlertDialog(
+              title: Text("Aviso Importante CTpaga"),
+              content: Text("Recibite el pago del pedido?"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Si'),
+                  onPressed: () {
+                    Navigator.pop(context);
                     sendUpdate(index);
                   },
                 ),
@@ -877,7 +912,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
             'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
           },
           body: jsonEncode({
-            "codeUrl" : myProvider.codeUrl,
+            "codeUrl" : myProvider.dataDelivery.codeUrlPaid,
             "statusShipping" : index,
           }),
         ); 
@@ -889,7 +924,6 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
             prefs.remove("codeUrl");
             prefs.remove("addressDelivery");
             myProvider.addressDelivery = "";
-            myProvider.codeUrl = null;
             Navigator.pop(context);
             Navigator.pop(context);
             showMessage("Guardado Correctamente", true);

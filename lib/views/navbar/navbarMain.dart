@@ -45,7 +45,7 @@ class _NavbarMainState extends State<NavbarMain> {
                   ),
                   onPressed: () {
                     var myProvider = Provider.of<MyProvider>(context, listen: false);
-                    if(myProvider.codeUrl != null)
+                    if(myProvider.dataDelivery.codeUrlPaid != null)
                       showMessage("Usted tiene orden Pendiente no puede cerrar session", false);
                     else
                       exit();

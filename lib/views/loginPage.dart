@@ -355,7 +355,6 @@ class _LoginPageState extends State<LoginPage> {
             _passwordController.clear();
             myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context);
-            myProvider.codeUrl = null;
             myProvider.getTokenFCM = null;
 
           } else if(jsonResponse['statusCode'] == 400){
