@@ -54,12 +54,12 @@ class _MainPageState extends State<MainPage>{
   }
 
   initialVariable(){
-    const oneSec = const Duration(seconds:1);
-    new Timer.periodic(oneSec, (Timer t) => verifyShedule());
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    const oneSec = const Duration(seconds:30);
+    new Timer.periodic(oneSec, (Timer t) => verifyShedule(myProvider));
   }
 
-  verifyShedule(){
-    var myProvider = Provider.of<MyProvider>(context, listen: false);
+  verifyShedule(myProvider){
     DateTime _today = DateTime.now();
     DateTime _dateSheduleInitial = new DateTime(_today.year, _today.month, _today.day, 0, 0, 0);
     DateTime _dateSheduleFinal = new DateTime(_today.year, _today.month, _today.day, 23, 59, 0);

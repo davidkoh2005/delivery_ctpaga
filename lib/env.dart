@@ -45,7 +45,7 @@ List listColors = [
     "hex": "#FFFFE0",
   }, 
   {  
-    "name": "Amarillo verde",	
+    "name": "Amarillo verdes",	
     "hex": "#9ACD32",
   },
   {  
@@ -289,7 +289,7 @@ List listColors = [
     "hex": "#8B008B",
   },
   {  
-    "name": "Mar verde",
+    "name": "Mar verdes",
     "hex": "#2E8B57",
   },
   {  
@@ -461,67 +461,63 @@ List listColors = [
     "hex": "#EEE8AA",
   },
   {
-    "name":"Verde",
-    "hex"	: "#08000",
+    "name":"verdes",
+    "hex"	: "#008000",
   },
   {  
-    "name": "Verde amarillo",	
+    "name": "verdes amarillo",	
     "hex": "#ADFF2F",
   },	 	 	 	 	 
   {  
-    "name": "Verde azulado",
+    "name": "verdes azulado",
     "hex": "#008080",
   },		 	 
   {  
-    "name": "Verde bosque",
+    "name": "verdes bosque",
     "hex": "#228B22",
   },
   {  
-    "name": "Verde césped",
+    "name": "verdes césped",
     "hex": "#7CFC00",
-  },	 
+  },	 	 	 	 	 
   {  
-    "name": "Verde césped",
-    "hex": "#7CFC00",
-  },	 	 	 	 
-  {  
-    "name": "Verde claro",	
+    "name": "verdes claro",	
     "hex": "#90EE90",
   },
   {  
-    "name": "Verde lima",
+    "name": "verdes lima",
     "hex": "#32CD32",
   },	 	 	 	 
   {  
-    "name": "Verde mar claro",	
+    "name": "verdes mar claro",	
     "hex": "#20B2AA",
   },	 	 	 	 	 	 	 	 	 	 	 	 	
   {  
-    "name": "Verde mar oscuro",	
+    "name": "verdes mar oscuro",	
     "hex": "#8FBC8F",
   }, 	 	
   {  
-    "name": "Verde medio",	
+    "name": "verdes medio",	
     "hex": "#3CB371",
   }, 	
   {  
-    "name": "Verde oliva",	
+    "name": "verdes oliva",	
     "hex": "#6B8E23",
   }, 	 	  	 	 
   {  
-    "name": "Verde oliva oscuro",
+    "name": "verdes oliva oscuro",
     "hex": "#556B2F",
   },	 	 	 	 	 
   {  
-    "name": "Verde oscuro",
+    "name": "verdes oscuro",
     "hex": "#006400",
   }, 	 
   {  
-    "name": "Verde pálido",
+    "name": "verdes pálido",
     "hex": "#98FB98",
   },	 
   {  
-    "name": "Verde primavera",
+    "name": "verdes primavera",
     "hex": "#00FF7F",
   }, 	 	 	 
   {  

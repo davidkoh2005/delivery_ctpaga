@@ -1,8 +1,8 @@
 class Delivery{
   int id, status, statusAvailability;
-  String email, name, phone, codeUrlPaid, tokenFCM, model, mark, colors, licensePlate;
+  String email, name, phone, codeUrlPaid, tokenFCM, model, mark, colorName, licensePlate;
 
-  Delivery({this.id, this.email, this.name, this.phone, this.status, this.codeUrlPaid, this.statusAvailability, this.tokenFCM, this.model, this.mark, this.colors, this.licensePlate});
+  Delivery({this.id, this.email, this.name, this.phone, this.status, this.codeUrlPaid, this.statusAvailability, this.tokenFCM, this.model, this.mark, this.colorName, this.licensePlate});
 
   factory Delivery.fromMap(dynamic data) => Delivery(
     id: data['id'],
@@ -15,7 +15,7 @@ class Delivery{
     tokenFCM: data['tokenFCM'],
     model: data['model'],
     mark: data['mark'],
-    colors: data['colors'],
+    colorName: data['colorName'],
     licensePlate: data['licensePlate'],
   );
 
@@ -30,7 +30,7 @@ class Delivery{
     'tokenFCM': tokenFCM,
     'model': model,
     'mark': mark,
-    'colors': colors,
+    'colorName': colorName,
     'licensePlate': licensePlate,
   };
 

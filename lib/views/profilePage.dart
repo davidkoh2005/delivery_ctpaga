@@ -33,9 +33,22 @@ class _ProfilePageState extends State<ProfilePage> {
   final FocusNode _markFocus = FocusNode();
   final FocusNode _colorsFocus = FocusNode();
   final FocusNode _licensePlateFocus = FocusNode();
-  String _name, _phone, _email, _statusDropdown = "", _model, _mark, _colors, _licensePlate;
+  String _name, _phone, _email, _statusDropdown = "", _model, _mark, _colorName, _colorHex, _licensePlate;
   var urlProfile;
   bool _statusClickColors = false;
+
+  @override
+  void initState() {
+    super.initState();
+    initialVariable();
+  }
+
+  initialVariable(){
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    setState(() {
+        _colorName = myProvider.dataDelivery.colorName;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,20 +103,31 @@ class _ProfilePageState extends State<ProfilePage> {
     var size = MediaQuery.of(context).size;
     return Consumer<MyProvider>(
       builder: (context, myProvider, child) {
-        if(myProvider.dataDelivery!= null){
+        if(myProvider.dataPicturesDelivery != null && myProvider.dataPicturesDelivery.length != 0){
           //DefaultCacheManager().removeFile(url+"/storage/Users/${myProvider.dataUser.id}/Profile.jpg");
           //DefaultCacheManager().emptyCache();
 
           if(urlProfile != null)
-            if(urlProfile.indexOf('/storage/Users/')<0)
+            if(urlProfile.indexOf('/storage/Delivery/')<0)
               DefaultCacheManager().emptyCache();
               urlProfile = null;
+
+
+          for (var item in myProvider.dataPicturesDelivery) {
+
+            if(item != null && item.description == 'Profile'){
+              urlProfile = item.url;
+              break;
             }
+          }
 
           if (urlProfile != null)
           {
             return GestureDetector(
-              onTap: () => _showSelectionDialog(context),
+              onTap: () {
+                _showSelectionDialog(context);
+                showNotification();
+              },
               child: ClipOval(
                 child: new CachedNetworkImage(
                   imageUrl: "http://"+url+urlProfile,
@@ -123,18 +147,64 @@ class _ProfilePageState extends State<ProfilePage> {
               )
             );
           }
-         
-          return GestureDetector(
-            onTap: () => _showSelectionDialog(context),
-            child: ClipOval(
-              child: Image(
-                image: AssetImage("assets/icons/addPhoto.png"),
-                width: size.width / 3,
-                height: size.width / 3,
-              ),
+        } 
+        return GestureDetector(
+          onTap: () {
+            _showSelectionDialog(context);
+            showNotification();
+          },
+          child: ClipOval(
+            child: Image(
+              image: AssetImage("assets/icons/addPhoto.png"),
+              width: size.width / 3,
+              height: size.width / 3,
             ),
-          );
-        }
+          ),
+        );
+      }
+    );
+  }
+
+  showNotification(){
+    var size = MediaQuery.of(context).size;
+    return showDialog(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async => true,
+          child: AlertDialog(
+            backgroundColor: Colors.white,
+            content: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(5),
+                  child: ClipOval(
+                    child: Image(
+                      image: AssetImage("assets/icons/avatar.png"),
+                      width: size.width / 3.5,
+                    ),
+                  )
+                ),
+                Container(
+                  padding: EdgeInsets.all(5),
+                  child: Text(
+                    'Por Favor tomar o seleccionar foto donde se muestra la cara. (Sin ediciones ni filtros)',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: 'MontserratSemiBold',
+                    )
+                  ),
+                ),
+              ],
+            ),
+          )
+        );
+      },
     );
   }
 
@@ -218,27 +288,26 @@ class _ProfilePageState extends State<ProfilePage> {
         Navigator.of(context).pop();
 
         _onLoading();
-        /* try
+        try
         {
           String base64Image = base64Encode(cropped.readAsBytesSync());
           var response = await http.post(
-            urlApi+"updateUserImg",
+            urlApi+"updateDeliveryImg",
             headers:{
               'X-Requested-With': 'XMLHttpRequest',
-              'authorization': 'Bearer ${myProvider.accessTokenUser}',
+              'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
             },
             body: {
               "image": base64Image,
-              "description": "Profile",
-              "commerce_id": myProvider.dataCommercesUser.length == 0? '0' : myProvider.dataCommercesUser[myProvider.selectCommerce].id.toString(),
               "urlPrevious": urlProfile== null? '' : urlProfile,
+              "description": "Profile",
+              "type": "jpg"
             }
           );
 
           var jsonResponse = jsonDecode(response.body); 
           print(jsonResponse); 
           if (jsonResponse['statusCode'] == 201) {
-            setState(() =>_image = cropped);
             myProvider.getDataDelivery(false, true, context);
             showMessage("Guardado Correctamente", true);
             await Future.delayed(Duration(seconds: 1));
@@ -246,7 +315,7 @@ class _ProfilePageState extends State<ProfilePage> {
           }  
         }on SocketException catch (_) {
           print("error network");
-        } */
+        } 
       }
     }
   }
@@ -409,7 +478,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
-              buttonSave(),
+              buttonSave(0),
             ],
           ),
         );
@@ -418,6 +487,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget formVehicle(){
+    var size = MediaQuery.of(context).size;
     return Consumer<MyProvider>(
       builder: (context, myProvider, child) {
         return new Form(
@@ -485,16 +555,16 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
 
               Padding(
-              padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 0.0),
-              child: AutoSizeText(
-                "Color",
-                style: TextStyle(
-                  color:colorText,
-                  fontFamily: 'MontserratSemiBold',
-                  fontSize:14
+                padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 0.0),
+                child: AutoSizeText(
+                  "Color",
+                  style: TextStyle(
+                    color:colorText,
+                    fontFamily: 'MontserratSemiBold',
+                    fontSize:14
+                  ),
                 ),
               ),
-            ),
 
               Padding(
                 padding: const EdgeInsets.fromLTRB(30.0, 5.0, 30.0, 0.0),
@@ -502,35 +572,47 @@ class _ProfilePageState extends State<ProfilePage> {
                   displayClearIcon: false,
                   items: listColors.map((result) {
                       return (DropdownMenuItem(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            ClipOval(
-                              child: Container(
-                                color: HexColor(result['hex']),
+                        child: Padding(
+                          padding: EdgeInsets.only(top:5, bottom:5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                width: size.width / 10,
+                                height: size.width / 10,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Colors.black),
+                                  color: hexToColor(result['hex']),
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 20),
-                            Expanded(child: AutoSizeText(
-                              result['name'],
-                              style: TextStyle(
-                                fontFamily: 'MontserratSemiBold',
-                                fontSize:14
-                              ),
-                            ),),
-                          ],
+                              SizedBox(width: 20),
+                              Expanded(child: AutoSizeText(
+                                result['name'],
+                                style: TextStyle(
+                                  fontFamily: 'MontserratSemiBold',
+                                  fontSize:14
+                                ),
+                              ),),
+                            ],
+                          )
                         ),
-                        value: result['name'],
+                        value: result,
                       )
                     );
                   }).toList(),
                   closeButton: "Cerrar",
-                  hint: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.colors,
+                  hint: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.colorName,
                   searchHint: "Color",
                   keyboardType: TextInputType.text,
-                  onChanged: (value)=> setState(()=>_colors = value),
+                  onChanged: (value){
+                    setState(() {
+                        _colorName = value['name'];
+                        _colorHex = value['hex'];
+                    });
+                  },
                   isExpanded: true,
-                  validator: (value) => _colors == null && _statusClickColors? "Ingrese el color correctamente": null,
+                  validator: (value) => _colorName == null && _statusClickColors? "Ingrese el color correctamente": null,
                 ),
               ),
 
@@ -539,7 +621,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: new TextFormField(
                   initialValue: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.licensePlate,
                   autofocus: false,
-                  textCapitalization:TextCapitalization.sentences, 
+                  textCapitalization:TextCapitalization.characters, 
                   decoration: InputDecoration(
                     labelText: 'Número de placa',
                     labelStyle: TextStyle(
@@ -550,13 +632,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderSide: BorderSide(color: colorGreen),
                     ),
                   ),
-                  onSaved: (String value) => _name = value,
+                  onSaved: (String value) => _licensePlate = value,
                   validator: _validateName,
                   textInputAction: TextInputAction.done,
                   focusNode: _licensePlateFocus,
                   onFieldSubmitted: (term){
                     FocusScope.of(context).requestFocus(new FocusNode());
-                    buttonClickSave();
+                    buttonClickSaveVehicle();
                   },
                   cursorColor: colorGreen,
                   style: TextStyle(
@@ -565,8 +647,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
-
-              buttonSave(),
+              buttonSave(1),
             ],
           ),
         );
@@ -574,13 +655,16 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget buttonSave(){
+  Widget buttonSave(index){
     var size = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.only(left:30, right:30, bottom:30),
       child: GestureDetector(
         onTap: () {
-          buttonClickSave();
+          if(index == 0)
+            buttonClickSave();
+          else
+            buttonClickSaveVehicle();
         },
         child: Container(
           width:size.width - 100,
@@ -634,6 +718,50 @@ class _ProfilePageState extends State<ProfilePage> {
               'name': _name,
               'phone': _phone,
               'email': _email,
+            }),
+          ); 
+
+          jsonResponse = jsonDecode(response.body); 
+          if (jsonResponse['statusCode'] == 201) {
+            myProvider.getDataDelivery(false, false, context);
+            Navigator.pop(context);
+            showMessage("Guardado Correctamente", true);
+            await Future.delayed(Duration(seconds: 1));
+            Navigator.pop(context);
+          } 
+        }
+      } on SocketException catch (_) {
+        showMessage("Sin conexión a internet", false);
+      } 
+    }
+  }
+
+  void buttonClickSaveVehicle()async{
+    setState(() {
+      _statusClickColors = true;
+    });
+    if (_formKeyVehicle.currentState.validate()) {
+      _formKeyVehicle.currentState.save();
+      _onLoading();
+      var result, response, jsonResponse;
+       try {
+        result = await InternetAddress.lookup('google.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          var myProvider = Provider.of<MyProvider>(context, listen: false);
+
+          response = await http.post(
+            urlApi+"updateDelivery",
+            headers:{
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+              'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
+            },
+            body: jsonEncode({
+              'model': _model,
+              'mark': _mark,
+              'colorName': _colorName,
+              'colorHex': _colorHex,
+              'licensePlate': _licensePlate,
             }),
           ); 
 
@@ -804,17 +932,8 @@ class _ProfilePageState extends State<ProfilePage> {
     return 'Ingrese un email válido';
   }
 
-}
-
-
-class HexColor extends Color {
-  static int _getColorFromHex(String hexColor) {
-    hexColor = hexColor.toUpperCase().replaceAll("#", "");
-    if (hexColor.length == 6) {
-      hexColor = "FF" + hexColor;
-    }
-    return int.parse(hexColor, radix: 16);
+  Color hexToColor(String code) {
+    return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
   }
 
-  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 }

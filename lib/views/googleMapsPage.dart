@@ -25,6 +25,12 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
 
   String addressSearch;
 
+   @override
+  void dispose() {
+    super.dispose();
+    newGoogleMapController.dispose();
+  }
+
   void locatePosition() async {
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
     currentPosition = position;

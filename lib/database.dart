@@ -2,6 +2,7 @@
 import 'package:delivery_ctpaga/models/delivery.dart';
 import 'package:delivery_ctpaga/models/commerce.dart';
 import 'package:delivery_ctpaga/models/paid.dart';
+import 'package:delivery_ctpaga/models/picture.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -13,7 +14,7 @@ import 'dart:async';
 class DBctpaga{
 
   static Database dbInstance;
-  static int versionDB = 7;
+  static int versionDB = 8;
 
   Future<Database> get db async{
     if(dbInstance == null)
@@ -46,6 +47,7 @@ class DBctpaga{
     await db.execute('CREATE TABLE IF NOT EXISTS paids (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), nameClient VARCHAR(50), total text, coin INTEGER, email text, nameShipping VARCHAR(50), numberShipping VARCHAR(50), addressShipping text, detailsShipping text, selectShipping text, priceShipping text, statusShipping INTEGER, percentage INTEGER, nameCompanyPayments VARCHAR(10), date text)');
     await db.execute('CREATE TABLE IF NOT EXISTS sales (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), productService_id INTEGER, name VARCHAR(50), price text, nameClient VARCHAR(50), coinClient INTEGER, coin INTEGER, type INTEGER, quantity INTEGER, statusSale INTEGER, rate text, descriptionShipping text, statusShipping INTEGER)');
     await db.execute('CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(50), value VARCHAR(50))');
+    await db.execute('CREATE TABLE IF NOT EXISTS pictures (id INTEGER PRIMARY KEY AUTOINCREMENT, description VARCHAR(30), url Text)');
   }
 
   /*
@@ -60,6 +62,7 @@ class DBctpaga{
     await dbConnection.execute('DROP TABLE IF EXISTS paids');
     await dbConnection.execute('DROP TABLE IF EXISTS sales');
     await dbConnection.execute('DROP TABLE IF EXISTS settings');
+    await dbConnection.execute('DROP TABLE IF EXISTS pictures');
   
     onCreateFunc(dbConnection, versionDB);
   }
@@ -264,6 +267,40 @@ class DBctpaga{
       }
     }
 
+  }
+
+  // Get pictures Delivery
+  Future <List<dynamic>> getPicturesDelivery() async{
+    List listPicturesDelivery = new List();
+    listPicturesDelivery = [];
+    var dbConnection = await db;
+
+    List<Map> list = await dbConnection.rawQuery('SELECT * FROM pictures');
+    Picture pictureDelivery = new Picture();
+
+    for(int i = 0; i< list.length; i++)
+    {
+      pictureDelivery = Picture(
+        id : list[i]['id'],
+        description : list[i]['description'],
+        url : list[i]['url'],
+      );
+
+      listPicturesDelivery.add(pictureDelivery);
+
+    }
+
+    return listPicturesDelivery;
+  }
+
+  // Create or update pictures
+  void createOrUpdatePicturesDelivery (Picture picture) async{
+    var dbConnection = await db;
+
+    String query = 'INSERT OR REPLACE INTO pictures (id, description, url) VALUES ( (SELECT id FROM pictures WHERE description = \'${picture.description}\'), \'${picture.description}\',\'${picture.url}\')';
+    await dbConnection.transaction((transaction) async{
+      return await transaction.rawInsert(query);
+    });
   }
 
 }

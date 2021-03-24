@@ -2,6 +2,7 @@ import 'package:delivery_ctpaga/animation/slideRoute.dart';
 import 'package:delivery_ctpaga/models/commerce.dart';
 import 'package:delivery_ctpaga/models/delivery.dart';
 import 'package:delivery_ctpaga/models/paid.dart';
+import 'package:delivery_ctpaga/models/picture.dart';
 import 'package:delivery_ctpaga/views/loginPage.dart';
 import 'package:delivery_ctpaga/views/mainMenuBar.dart';
 import 'package:delivery_ctpaga/database.dart';
@@ -123,9 +124,19 @@ class MyProvider with ChangeNotifier {
     notifyListeners(); 
   }
 
+  List _storage = new List();
+  List get dataPicturesDelivery =>_storage;
+
+  set dataPicturesDelivery(List newStorageDelivery){
+    _storage = newStorageDelivery;
+    notifyListeners();
+  }
+
   
   Delivery delivery = Delivery();
   List listCommerces = new List();
+  Picture pictureDelivery = Picture();
+  List listPicturesDelivery = new List();
 
   getDataDelivery(status, loading, context)async{
 
@@ -156,6 +167,11 @@ class MyProvider with ChangeNotifier {
             codeUrlPaid:jsonResponse['data']['codeUrlPaid'],
             statusAvailability : jsonResponse['data']['statusAvailability'],
             tokenFCM: jsonResponse['data']['token_fcm'],
+            model: jsonResponse['data']['model'],
+            mark: jsonResponse['data']['mark'],
+            colorName: jsonResponse['data']['colorName'],
+            licensePlate: jsonResponse['data']['licensePlate'],
+
           );
 
           dataDelivery = delivery;
@@ -187,6 +203,21 @@ class MyProvider with ChangeNotifier {
 
               dbctpaga.createOrUpdateSettings(schedule);
             }
+
+            if(jsonResponse['pictures'] != null){
+              for (var item in jsonResponse['pictures']) {
+                pictureDelivery = Picture(
+                  id: item['id'],
+                  description: item['description'],
+                  url: item['url'],
+                );
+                
+                dbctpaga.createOrUpdatePicturesDelivery(pictureDelivery);
+                listPicturesDelivery.add(pictureDelivery);
+              }
+            }
+
+            dataPicturesDelivery = listPicturesDelivery;
 
             //verifySchedule();
 
