@@ -14,6 +14,11 @@
 
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyC-WxWDG_nZxRBE9vQsKgzK5DHhaE4k1T8"/>
+
+        <activity
+          android:name="com.yalantis.ucrop.UCropActivity"
+          android:screenOrientation="portrait"
+          android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
                
         <activity
             android:name=".MainActivity"

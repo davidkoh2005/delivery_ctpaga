@@ -53,7 +53,10 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Navbar("Código: ${myProvider.dataDelivery.codeUrlPaid}"),
+                myProvider.codeUrl.length != 0?
+                  Navbar("Código: ${myProvider.codeUrl[0]}")
+                :
+                  Navbar("Código: "),
                 Expanded(
                   child: showDataPaid(),
                 ),
@@ -865,6 +868,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
 
   verifyPayment(index)
   {
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
     showDialog(
         barrierDismissible: false,
         context: context,
@@ -873,7 +877,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
             onWillPop: () async =>false,
             child: AlertDialog(
               title: Text("Aviso Importante CTpaga"),
-              content: Text("Recibite el pago del pedido?"),
+              content: Text("Recibite el pago de "+showTotal(myProvider.selectPaid.coin, myProvider.selectPaid.total)+" ?"),
               actions: <Widget>[
                 FlatButton(
                   child: Text('Si'),
@@ -912,7 +916,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
             'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
           },
           body: jsonEncode({
-            "codeUrl" : myProvider.dataDelivery.codeUrlPaid,
+            "codeUrl" : myProvider.codeUrl[0],
             "statusShipping" : index,
           }),
         ); 

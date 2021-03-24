@@ -35,10 +35,10 @@ class MyProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  String _codeUrl;
-  String get codeUrl =>_codeUrl; 
+  List _codeUrl;
+  List get codeUrl =>_codeUrl; 
   
-  set codeUrl(String newcode) {
+  set codeUrl(List newcode) {
     _codeUrl = newcode; 
     notifyListeners(); 
   }
@@ -147,22 +147,27 @@ class MyProvider with ChangeNotifier {
         jsonResponse = jsonDecode(response.body);
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
-          await dbctpaga.deleteAll();
-          await Future.delayed(Duration(milliseconds: 1000));
           delivery = Delivery(
             id: jsonResponse['data']['id'],
             email: jsonResponse['data']['email'],
             name: jsonResponse['data']['name'],
             phone: jsonResponse['data']['phone'],
             status: jsonResponse['data']['status'],
-            codeUrlPaid: jsonResponse['data']['codeUrlPaid'],
+            codeUrlPaid:jsonResponse['data']['codeUrlPaid'],
             statusAvailability : jsonResponse['data']['statusAvailability'],
             tokenFCM: jsonResponse['data']['token_fcm'],
           );
 
           dataDelivery = delivery;
-
-          codeUrl = jsonResponse['paid'] == null? null : jsonResponse['paid']['codeUrl'];
+          
+          if(jsonResponse['data']['codeUrlPaid'] != null){
+            var codeUrlJson = jsonDecode(jsonResponse['data']['codeUrlPaid']);
+            var _listCode = new List();
+            codeUrlJson.forEach((element) => _listCode.add(element));
+            codeUrl = _listCode;
+          }
+          else
+            codeUrl = [];
 
           if(await dbctpaga.existDelivery() == 0)
             dbctpaga.addNewDelivery(delivery);
@@ -202,6 +207,15 @@ class MyProvider with ChangeNotifier {
     } on SocketException catch (_) {
       if(accessTokenDelivery != null){
         dataDelivery = await dbctpaga.getDelivery();
+
+        if(dataDelivery.codeUrlPaid != null){
+            var codeUrlJson = jsonDecode(dataDelivery.codeUrlPaid);
+            var _listCode = new List();
+            codeUrlJson.forEach((element) => _listCode.add(element));
+            codeUrl = _listCode;
+          }
+          else
+            codeUrl = [];
       }
 
       if(status){
@@ -322,7 +336,6 @@ class MyProvider with ChangeNotifier {
   removeSession(BuildContext context, statusLogin)async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("access_token");
-    prefs.remove('codeUrl');
     delivery = Delivery(
       status: 0,
     );

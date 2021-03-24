@@ -345,7 +345,6 @@ class _LoginPageState extends State<LoginPage> {
 
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.remove("access_token");
-            prefs.remove('codeUrl');
             prefs.setString('access_token', jsonResponse['access_token']);
             myProvider.accessTokenDelivery = jsonResponse['access_token'];
             myProvider.statusButton = 2;

@@ -13,7 +13,7 @@ import 'dart:async';
 class DBctpaga{
 
   static Database dbInstance;
-  static int versionDB = 6;
+  static int versionDB = 7;
 
   Future<Database> get db async{
     if(dbInstance == null)
@@ -41,7 +41,7 @@ class DBctpaga{
 
   void onCreateFunc (Database db, int version) async{
     //create table
-    await db.execute('CREATE TABLE IF NOT EXISTS deliveries (id INTEGER PRIMARY KEY AUTOINCREMENT, email Text, name VARCHAR(100), phone VARCHAR(20), status INTEGER, codeUrlPaid VARCHAR(10), statusAvailability INTEGER, tokenFCM TEXT )');
+    await db.execute('CREATE TABLE IF NOT EXISTS deliveries (id INTEGER PRIMARY KEY AUTOINCREMENT, email Text, name VARCHAR(100), phone VARCHAR(20), status INTEGER, codeUrlPaid text, statusAvailability INTEGER, tokenFCM TEXT )');
     await db.execute('CREATE TABLE IF NOT EXISTS commerces (id INTEGER PRIMARY KEY AUTOINCREMENT, rif VARCHAR(15), name Text, address Text, phone VARCHAR(20), userUrl VARCHAR(20))');
     await db.execute('CREATE TABLE IF NOT EXISTS paids (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), nameClient VARCHAR(50), total text, coin INTEGER, email text, nameShipping VARCHAR(50), numberShipping VARCHAR(50), addressShipping text, detailsShipping text, selectShipping text, priceShipping text, statusShipping INTEGER, percentage INTEGER, nameCompanyPayments VARCHAR(10), date text)');
     await db.execute('CREATE TABLE IF NOT EXISTS sales (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), productService_id INTEGER, name VARCHAR(50), price text, nameClient VARCHAR(50), coinClient INTEGER, coin INTEGER, type INTEGER, quantity INTEGER, statusSale INTEGER, rate text, descriptionShipping text, statusShipping INTEGER)');
@@ -108,7 +108,7 @@ class DBctpaga{
   // Update Delivery
   void updateDelivery (Delivery delivery) async{
     var dbConnection = await db;
-    String query = 'UPDATE deliveries SET email=\'${delivery.email}\', name=\'${delivery.name}\', phone=\'${delivery.phone}\', status=\'${delivery.status}\', codeUrlPaid=\'${delivery.codeUrlPaid}\', statusAvailability=\'${delivery.statusAvailability}\', tokenFCM=\'${delivery.tokenFCM}\',  WHERE id=1';
+    String query = 'UPDATE deliveries SET email=\'${delivery.email}\', name=\'${delivery.name}\', phone=\'${delivery.phone}\', status=\'${delivery.status}\', codeUrlPaid=\'${delivery.codeUrlPaid}\', statusAvailability=\'${delivery.statusAvailability}\', tokenFCM=\'${delivery.tokenFCM}\' WHERE id=1';
     await dbConnection.transaction((transaction) async{
       return await transaction.rawQuery(query);
     });

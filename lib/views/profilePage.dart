@@ -4,7 +4,12 @@ import 'package:delivery_ctpaga/views/updatePasswordPage.dart';
 import 'package:delivery_ctpaga/providers/provider.dart';
 import 'package:delivery_ctpaga/env.dart';
 
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -20,10 +25,17 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final _scrollController = ScrollController();
   final _formKeyContact = new GlobalKey<FormState>();
+  final _formKeyVehicle = new GlobalKey<FormState>();
   final FocusNode _nameFocus = FocusNode(); 
   final FocusNode _phoneFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
-  String _name, _phone, _email;
+  final FocusNode _modelFocus = FocusNode();
+  final FocusNode _markFocus = FocusNode();
+  final FocusNode _colorsFocus = FocusNode();
+  final FocusNode _licensePlateFocus = FocusNode();
+  String _name, _phone, _email, _statusDropdown = "", _model, _mark, _colors, _licensePlate;
+  var urlProfile;
+  bool _statusClickColors = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +54,28 @@ class _ProfilePageState extends State<ProfilePage> {
               children: <Widget>[
                 NavbarMain(),
                 Expanded(
-                  child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      formContact(),
-                    ]
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 50, top: 50),
+                          child: showImage()
+                        ),
+                        
+                        dropdownList("Cuenta"),
+                        Visibility(
+                          visible: _statusDropdown == "Cuenta"? true : false,
+                          child: formContact(),
+                        ),
+                          dropdownList("Vehículo"),
+                        Visibility(
+                          visible: _statusDropdown == "Vehículo"? true : false,
+                          child: formVehicle(),
+                        ),
+                      ]
+                    )
                   )
                 ),
               ],
@@ -57,7 +86,210 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Widget showImage(){
+    var size = MediaQuery.of(context).size;
+    return Consumer<MyProvider>(
+      builder: (context, myProvider, child) {
+        if(myProvider.dataDelivery!= null){
+          //DefaultCacheManager().removeFile(url+"/storage/Users/${myProvider.dataUser.id}/Profile.jpg");
+          //DefaultCacheManager().emptyCache();
 
+          if(urlProfile != null)
+            if(urlProfile.indexOf('/storage/Users/')<0)
+              DefaultCacheManager().emptyCache();
+              urlProfile = null;
+            }
+
+          if (urlProfile != null)
+          {
+            return GestureDetector(
+              onTap: () => _showSelectionDialog(context),
+              child: ClipOval(
+                child: new CachedNetworkImage(
+                  imageUrl: "http://"+url+urlProfile,
+                  fit: BoxFit.cover,
+                  height: size.width / 3.5,
+                  width: size.width / 3.5,
+                  placeholder: (context, url) {
+                    return Container(
+                      margin: EdgeInsets.all(15),
+                      child:CircularProgressIndicator(
+                        valueColor: new AlwaysStoppedAnimation<Color>(colorGreen),
+                      ),
+                    );
+                  },
+                  errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red, size: size.width / 8),
+                ),
+              )
+            );
+          }
+         
+          return GestureDetector(
+            onTap: () => _showSelectionDialog(context),
+            child: ClipOval(
+              child: Image(
+                image: AssetImage("assets/icons/addPhoto.png"),
+                width: size.width / 3,
+                height: size.width / 3,
+              ),
+            ),
+          );
+        }
+    );
+  }
+
+  Future<void> _showSelectionDialog(BuildContext context) {
+    
+    return showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(20),
+          topLeft: Radius.circular(20)
+        ),
+      ),
+      backgroundColor: Colors.white,
+      builder: (BuildContext bc){
+          return Container(
+            child: new Wrap(
+              spacing: 20,
+              children: <Widget>[
+                new ListTile(
+                  leading: new Icon(Icons.crop_original, color:Colors.black, size: 30.0),
+                  title: new AutoSizeText(
+                    "Galeria",
+                    style: TextStyle(
+                      fontFamily: 'MontserratSemiBold',
+                      fontSize:14
+                    ),
+                    maxFontSize: 14,
+                    minFontSize: 14,
+                  ),
+                  onTap: () => _getImage(context, ImageSource.gallery),       
+                ),
+                new ListTile(
+                  leading: new Icon(Icons.camera, color:Colors.black, size: 30.0),
+                  title: new AutoSizeText(
+                    "Camara",
+                    style: TextStyle(
+                      fontFamily: 'MontserratSemiBold',
+                      fontSize:14
+                    ),
+                    maxFontSize: 14,
+                    minFontSize: 14,
+                  ),
+                  onTap: () => _getImage(context, ImageSource.camera),          
+                ),
+              ],
+            ),
+          );
+      }
+    );
+  }
+
+  _getImage(BuildContext context, ImageSource source) async {
+    var picture = await ImagePicker().getImage(source: source,  imageQuality: 50, maxHeight: 600, maxWidth: 900);
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+
+    var cropped;
+
+    if(picture != null){
+      cropped = await ImageCropper.cropImage(
+        sourcePath: picture.path,
+        aspectRatio:  CropAspectRatio(
+          ratioX: 1, ratioY: 1
+        ),
+        compressQuality: 100,
+        maxWidth: 700,
+        maxHeight: 700,
+        compressFormat: ImageCompressFormat.jpg,
+        androidUiSettings: AndroidUiSettings(
+          toolbarTitle: "Editar Foto",
+          backgroundColor: Colors.black,
+          toolbarWidgetColor: Colors.black,
+        ),
+        iosUiSettings: IOSUiSettings(
+          title: 'Editar Foto',
+        )
+      );
+
+      if(cropped != null){
+
+        Navigator.of(context).pop();
+
+        _onLoading();
+        /* try
+        {
+          String base64Image = base64Encode(cropped.readAsBytesSync());
+          var response = await http.post(
+            urlApi+"updateUserImg",
+            headers:{
+              'X-Requested-With': 'XMLHttpRequest',
+              'authorization': 'Bearer ${myProvider.accessTokenUser}',
+            },
+            body: {
+              "image": base64Image,
+              "description": "Profile",
+              "commerce_id": myProvider.dataCommercesUser.length == 0? '0' : myProvider.dataCommercesUser[myProvider.selectCommerce].id.toString(),
+              "urlPrevious": urlProfile== null? '' : urlProfile,
+            }
+          );
+
+          var jsonResponse = jsonDecode(response.body); 
+          print(jsonResponse); 
+          if (jsonResponse['statusCode'] == 201) {
+            setState(() =>_image = cropped);
+            myProvider.getDataDelivery(false, true, context);
+            showMessage("Guardado Correctamente", true);
+            await Future.delayed(Duration(seconds: 1));
+            Navigator.pop(context);
+          }  
+        }on SocketException catch (_) {
+          print("error network");
+        } */
+      }
+    }
+  }
+
+  Widget dropdownList(_title){
+    var size = MediaQuery.of(context).size;
+    return Padding(
+      padding: 	EdgeInsets.only(top: 5, bottom: 5),
+      child: GestureDetector(
+        onTap: () => setState(() {
+          if(_statusDropdown == _title){
+            _statusDropdown = "";
+          }else{
+            _statusDropdown = _title;
+          }
+        }),
+        child: Container(
+          padding: EdgeInsets.only(left: 30, right: 30),
+          width: size.width,
+          height: 50,
+          color: colorGreyOpacity,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              AutoSizeText(
+                _title,
+                style: TextStyle(
+                  fontFamily: 'MontserratSemiBold',
+                  fontSize:14
+                ),
+                maxFontSize: 14,
+                minFontSize: 14,
+              ),
+              Icon(
+                _statusDropdown == _title? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                color: colorGreen,
+              ),
+            ]
+          ),
+        )
+      )
+    );
+  }
 
   Widget formContact(){
     
@@ -70,21 +302,6 @@ class _ProfilePageState extends State<ProfilePage> {
             controller: _scrollController,
             shrinkWrap: true,
             children: <Widget>[
-              
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 30.0),
-                child: Center(
-                  child: AutoSizeText(
-                    "Perfil",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold
-                    ),
-                    maxFontSize: 24,
-                    minFontSize: 24,
-                  ),
-                ) 
-              ),
 
               Padding(
                 padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 0.0),
@@ -191,6 +408,163 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
+
+              buttonSave(),
+            ],
+          ),
+        );
+      }
+    );
+  }
+
+  Widget formVehicle(){
+    return Consumer<MyProvider>(
+      builder: (context, myProvider, child) {
+        return new Form(
+          key: _formKeyVehicle,
+          child: new ListView(
+            padding: EdgeInsets.only(top: 0),
+            controller: _scrollController,
+            shrinkWrap: true,
+            children: <Widget>[
+              
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 0.0),
+                child: new TextFormField(
+                  initialValue: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.mark,
+                  autofocus: false,
+                  textCapitalization:TextCapitalization.sentences, 
+                  decoration: InputDecoration(
+                    labelText: 'Marca',
+                    labelStyle: TextStyle(
+                      color: colorText,
+                      fontFamily: 'MontserratSemiBold',
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: colorGreen),
+                    ),
+                  ),
+                  onSaved: (String value) => _mark = value,
+                  validator: _validateName,
+                  textInputAction: TextInputAction.next,
+                  focusNode: _markFocus,
+                  onEditingComplete: () => FocusScope.of(context).requestFocus(_modelFocus),
+                  cursorColor: colorGreen,
+                  style: TextStyle(
+                    fontFamily: 'MontserratSemiBold',
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 0.0),
+                child: new TextFormField(
+                  initialValue: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.model,
+                  autofocus: false,
+                  textCapitalization:TextCapitalization.sentences, 
+                  decoration: InputDecoration(
+                    labelText: 'Modelo',
+                    labelStyle: TextStyle(
+                      color: colorText,
+                      fontFamily: 'MontserratSemiBold',
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: colorGreen),
+                    ),
+                  ),
+                  onSaved: (String value) => _model = value,
+                  validator: _validateName,
+                  textInputAction: TextInputAction.next,
+                  focusNode: _modelFocus,
+                  onEditingComplete: () => FocusScope.of(context).requestFocus(_colorsFocus),
+                  cursorColor: colorGreen,
+                  style: TextStyle(
+                    fontFamily: 'MontserratSemiBold',
+                  ),
+                ),
+              ),
+
+              Padding(
+              padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 0.0),
+              child: AutoSizeText(
+                "Color",
+                style: TextStyle(
+                  color:colorText,
+                  fontFamily: 'MontserratSemiBold',
+                  fontSize:14
+                ),
+              ),
+            ),
+
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30.0, 5.0, 30.0, 0.0),
+                child: SearchableDropdown.single(
+                  displayClearIcon: false,
+                  items: listColors.map((result) {
+                      return (DropdownMenuItem(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            ClipOval(
+                              child: Container(
+                                color: HexColor(result['hex']),
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(child: AutoSizeText(
+                              result['name'],
+                              style: TextStyle(
+                                fontFamily: 'MontserratSemiBold',
+                                fontSize:14
+                              ),
+                            ),),
+                          ],
+                        ),
+                        value: result['name'],
+                      )
+                    );
+                  }).toList(),
+                  closeButton: "Cerrar",
+                  hint: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.colors,
+                  searchHint: "Color",
+                  keyboardType: TextInputType.text,
+                  onChanged: (value)=> setState(()=>_colors = value),
+                  isExpanded: true,
+                  validator: (value) => _colors == null && _statusClickColors? "Ingrese el color correctamente": null,
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 40.0),
+                child: new TextFormField(
+                  initialValue: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.licensePlate,
+                  autofocus: false,
+                  textCapitalization:TextCapitalization.sentences, 
+                  decoration: InputDecoration(
+                    labelText: 'Número de placa',
+                    labelStyle: TextStyle(
+                      color: colorText,
+                      fontFamily: 'MontserratSemiBold',
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: colorGreen),
+                    ),
+                  ),
+                  onSaved: (String value) => _name = value,
+                  validator: _validateName,
+                  textInputAction: TextInputAction.done,
+                  focusNode: _licensePlateFocus,
+                  onFieldSubmitted: (term){
+                    FocusScope.of(context).requestFocus(new FocusNode());
+                    buttonClickSave();
+                  },
+                  cursorColor: colorGreen,
+                  style: TextStyle(
+                    fontFamily: 'MontserratSemiBold',
+                  ),
+                ),
+              ),
+
 
               buttonSave(),
             ],
@@ -432,3 +806,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
 }
 
+
+class HexColor extends Color {
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+}

@@ -43,6 +43,7 @@ class _MainPageState extends State<MainPage>{
   List _listSales = new List();
   int _positionButton = 0;
   double positionScroll = 0.0;
+  String _selectCodeUrl ='';
 
   @override
   void initState() {
@@ -303,12 +304,12 @@ class _MainPageState extends State<MainPage>{
                       ),
                     ),
                     Visibility(
-                      visible: myProvider.dataDelivery.codeUrlPaid != null? true : myProvider.dataDelivery.statusAvailability ==1? true : false,
+                      visible: myProvider.codeUrl.length != 0? true : myProvider.dataDelivery.statusAvailability ==1? true : false,
                       child: GestureDetector(
                         onTap: (){
                           _onLoading();
                           myProvider.getDataDelivery(false, false, context).then((_) {
-                            if(myProvider.statusShedule && myProvider.dataDelivery.codeUrlPaid != null)
+                            if(myProvider.statusShedule && myProvider.codeUrl.length != 0)
                                 searchCode(true);
                             else{
                               Navigator.pop(context);
@@ -351,7 +352,7 @@ class _MainPageState extends State<MainPage>{
                                     ),
                                     children: <TextSpan>[
                                       TextSpan(
-                                        text: myProvider.dataDelivery.codeUrlPaid != null? myProvider.dataDelivery.codeUrlPaid : "Sin Orden",
+                                        text: myProvider.codeUrl.length != 0? myProvider.codeUrl[0] : "Sin Orden",
                                         style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.normal,
@@ -400,7 +401,7 @@ class _MainPageState extends State<MainPage>{
                       child: Expanded(
                         child: Center(
                           child: AutoSizeText(
-                             myProvider.dataDelivery.codeUrlPaid == null? "Debe estar disponible para recibir pedidos" : "Debe completar el orden pendiente",
+                            myProvider.codeUrl.length == 0? "Debe estar disponible para recibir pedidos" : "Debe completar el orden pendiente",
                             style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w500,
@@ -488,7 +489,7 @@ class _MainPageState extends State<MainPage>{
                 ),
                 trailing: GestureDetector(
                   onTap: () async {
-                    if(myProvider.dataDelivery.codeUrlPaid != null)
+                    if(myProvider.codeUrl.length != 0)
                       showMessage("Usted tiene orden Pendiente no puede seleccionar una orden", false);
                     else{
                       _onLoading();
@@ -498,8 +499,8 @@ class _MainPageState extends State<MainPage>{
                             _positionButton = index+1;
                           });
 
-                          myProvider.dataDelivery.codeUrlPaid = myProvider.dataAllPaids[index]['codeUrl'];
-                          
+                          _selectCodeUrl= myProvider.dataAllPaids[index]['codeUrl'];
+
                           searchCode(false);
                         }else{
                           Navigator.pop(context);
@@ -542,7 +543,7 @@ class _MainPageState extends State<MainPage>{
 
   verifyStatus(myProvider) async {
     if(myProvider.statusShedule){
-      if(myProvider.dataDelivery.codeUrlPaid == null)
+      if(myProvider.codeUrl.length == 0)
         if(myProvider.dataDelivery.statusAvailability==0){
           myProvider.getDataAllPaids(context, false);
           changeStatus();
@@ -551,7 +552,7 @@ class _MainPageState extends State<MainPage>{
         }
       else{
         Navigator.pop(context);
-        showMessage("Debe completar el orden pendiente: ${myProvider.dataDelivery.codeUrlPaid}", false);
+        showMessage("Debe completar el orden pendiente: ${myProvider.codeUrl[0]}", false);
       }
     }else{
       Navigator.pop(context);
@@ -602,9 +603,8 @@ class _MainPageState extends State<MainPage>{
   }
 
   searchCode(statusOrder)async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     var myProvider = Provider.of<MyProvider>(context, listen: false);
-    var response, result;
+    var response, result; 
     try
     {
       result = await InternetAddress.lookup('google.com'); //verify network
@@ -617,14 +617,13 @@ class _MainPageState extends State<MainPage>{
             'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
           },
           body: jsonEncode({
-            "codeUrl" : myProvider.dataDelivery.codeUrlPaid,
+            "codeUrl" : statusOrder? myProvider.codeUrl[0] : _selectCodeUrl,
           }),
         ); 
         var jsonResponse = jsonDecode(response.body); 
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
           myProvider.getDataDelivery(false, false, context);
-          myProvider.getDataAllPaids(context, false);
 
           _controllerSearch.clear();
           _listSales = [];
@@ -667,11 +666,12 @@ class _MainPageState extends State<MainPage>{
           myProvider.selectPaid = _selectPaid;
           myProvider.dataCommerce = _selectCommerce;
           myProvider.dataListSales = _listSales;
-          prefs.setString('codeUrl', myProvider.dataDelivery.codeUrlPaid);
 
           dbctpaga.createOrUpdatePaid(_selectPaid);
           dbctpaga.createOrUpdateCommerces(_selectCommerce);
           dbctpaga.createOrUpdateSales(_listSales);
+
+          await Future.delayed(Duration(seconds: 2));
 
           setState(() {
             _positionButton = 0;
@@ -701,7 +701,7 @@ class _MainPageState extends State<MainPage>{
     myProvider.selectPaid = await dbctpaga.getPaid();
     myProvider.dataCommerce = await dbctpaga.getCommerce();
     myProvider.dataListSales = await dbctpaga.getSales();
-    if(myProvider.selectPaid.codeUrl != myProvider.dataDelivery.codeUrlPaid){
+    if(myProvider.selectPaid.codeUrl != myProvider.codeUrl[0]){
       myProvider.selectPaid = null;
       myProvider.dataCommerce = null;
       myProvider.dataListSales = [];

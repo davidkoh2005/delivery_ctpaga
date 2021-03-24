@@ -43,9 +43,17 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Permitir el acceso a la biblioteca de fotos.</string>
+
+	<key>NSCameraUsageDescription</key>
+	<string>Permitir el acceso a la cámara para capturar fotos.</string>
+
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Esta aplicación necesita acceso a la ubicación cuando está abierta.</string>
+
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Esta aplicación necesita acceso a la ubicación cuando está en segundo plano.</string>
+	
 </dict>
 </plist>
