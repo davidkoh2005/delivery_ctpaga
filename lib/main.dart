@@ -135,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
             content: Text("Versión Actual es $versionApp y la nueva versión es $newVersionApp "),
             actions: <Widget>[
               FlatButton(
-                child: Text('Update'),
+                child: Text('Actualizar'),
                 onPressed: () {
                   launch(urlApp);
                 },
@@ -161,6 +161,10 @@ class _MyHomePageState extends State<MyHomePage> {
       myProvider.getDataDelivery(true, false, context);
       myProvider.getDataAllPaids(context, false);
       myProvider.getTokenFCM = prefs.containsKey('tokenFCM')? prefs.getString('tokenFCM') : null;
+      myProvider.statusLicense = false;
+      myProvider.statusDrivingLicense = false;
+      myProvider.statusCivilLiability = false;
+      myProvider.statusSelfie = false;
     }else{
       Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
     }

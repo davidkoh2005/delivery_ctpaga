@@ -55,5 +55,11 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Esta aplicación necesita acceso a la ubicación cuando está en segundo plano.</string>
 	
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+
 </dict>
 </plist>

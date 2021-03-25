@@ -13,7 +13,7 @@
         android:icon="@mipmap/ic_launcher">
 
         <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyC-WxWDG_nZxRBE9vQsKgzK5DHhaE4k1T8"/>
+               android:value="AIzaSyBITbx7R38xm9HjVwuR8OMjy7IPmahsGkA"/>
 
         <activity
           android:name="com.yalantis.ucrop.UCropActivity"

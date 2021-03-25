@@ -3,6 +3,7 @@ import 'package:delivery_ctpaga/models/delivery.dart';
 import 'package:delivery_ctpaga/models/commerce.dart';
 import 'package:delivery_ctpaga/models/paid.dart';
 import 'package:delivery_ctpaga/models/picture.dart';
+import 'package:delivery_ctpaga/models/document.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -14,7 +15,7 @@ import 'dart:async';
 class DBctpaga{
 
   static Database dbInstance;
-  static int versionDB = 8;
+  static int versionDB = 9;
 
   Future<Database> get db async{
     if(dbInstance == null)
@@ -48,6 +49,7 @@ class DBctpaga{
     await db.execute('CREATE TABLE IF NOT EXISTS sales (id INTEGER, user_id INTEGER, commerce_id INTEGER, codeUrl VARCHAR(10), productService_id INTEGER, name VARCHAR(50), price text, nameClient VARCHAR(50), coinClient INTEGER, coin INTEGER, type INTEGER, quantity INTEGER, statusSale INTEGER, rate text, descriptionShipping text, statusShipping INTEGER)');
     await db.execute('CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(50), value VARCHAR(50))');
     await db.execute('CREATE TABLE IF NOT EXISTS pictures (id INTEGER PRIMARY KEY AUTOINCREMENT, description VARCHAR(30), url Text)');
+    await db.execute('CREATE TABLE IF NOT EXISTS documents (id INTEGER PRIMARY KEY AUTOINCREMENT, description VARCHAR(30), url Text)');
   }
 
   /*
@@ -63,6 +65,7 @@ class DBctpaga{
     await dbConnection.execute('DROP TABLE IF EXISTS sales');
     await dbConnection.execute('DROP TABLE IF EXISTS settings');
     await dbConnection.execute('DROP TABLE IF EXISTS pictures');
+    await dbConnection.execute('DROP TABLE IF EXISTS documents');
   
     onCreateFunc(dbConnection, versionDB);
   }
@@ -298,6 +301,41 @@ class DBctpaga{
     var dbConnection = await db;
 
     String query = 'INSERT OR REPLACE INTO pictures (id, description, url) VALUES ( (SELECT id FROM pictures WHERE description = \'${picture.description}\'), \'${picture.description}\',\'${picture.url}\')';
+    await dbConnection.transaction((transaction) async{
+      return await transaction.rawInsert(query);
+    });
+  }
+
+
+  // Get Document Delivery
+  Future <List<dynamic>> getDocumentsDelivery() async{
+    List listDocumentsDelivery = new List();
+    listDocumentsDelivery = [];
+    var dbConnection = await db;
+
+    List<Map> list = await dbConnection.rawQuery('SELECT * FROM documents');
+    Document documentDelivery = new Document();
+
+    for(int i = 0; i< list.length; i++)
+    {
+      documentDelivery = Document(
+        id : list[i]['id'],
+        description : list[i]['description'],
+        url : list[i]['url'],
+      );
+
+      listDocumentsDelivery.add(documentDelivery);
+
+    }
+
+    return listDocumentsDelivery;
+  }
+
+  // Create or update Documents
+  void createOrUpdateDocumentsDelivery(Document document) async{
+    var dbConnection = await db;
+
+    String query = 'INSERT OR REPLACE INTO documents (id, description, url) VALUES ( (SELECT id FROM pictures WHERE description = \'${document.description}\'), \'${document.description}\',\'${document.url}\')';
     await dbConnection.transaction((transaction) async{
       return await transaction.rawInsert(query);
     });

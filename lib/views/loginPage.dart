@@ -355,6 +355,10 @@ class _LoginPageState extends State<LoginPage> {
             myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context);
             myProvider.getTokenFCM = null;
+            myProvider.statusLicense = false;
+            myProvider.statusDrivingLicense = false;
+            myProvider.statusCivilLiability = false;
+            myProvider.statusSelfie = false;
 
           } else if(jsonResponse['statusCode'] == 400){
             setState(() {

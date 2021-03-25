@@ -363,7 +363,11 @@ class _RegisterPageState extends State<RegisterPage> {
             myProvider.statusInitGoogle = false;
             myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context);
-            myProvider.getTokenFCM = null; */
+            myProvider.getTokenFCM = null; 
+            myProvider.statusLicense = false;
+            myProvider.statusDrivingLicense = false;
+            myProvider.statusCivilLiability = false;
+            myProvider.statusSelfie = false; */
 
           } else if(jsonResponse['errors'] != null){
 

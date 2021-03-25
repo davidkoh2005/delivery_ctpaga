@@ -3,6 +3,7 @@ import 'package:delivery_ctpaga/models/commerce.dart';
 import 'package:delivery_ctpaga/models/delivery.dart';
 import 'package:delivery_ctpaga/models/paid.dart';
 import 'package:delivery_ctpaga/models/picture.dart';
+import 'package:delivery_ctpaga/models/document.dart';
 import 'package:delivery_ctpaga/views/loginPage.dart';
 import 'package:delivery_ctpaga/views/mainMenuBar.dart';
 import 'package:delivery_ctpaga/database.dart';
@@ -132,11 +133,53 @@ class MyProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  List _document = new List();
+  List get dataDocumentsDelivery =>_document;
+
+  set dataDocumentsDelivery(List newStorageDelivery){
+    _document = newStorageDelivery;
+    notifyListeners();
+  }
+
+  bool _statusLicense;
+  bool get statusLicense =>_statusLicense; 
+  
+  set statusLicense(bool newStatus) {
+    _statusLicense = newStatus; 
+    notifyListeners(); 
+  }
+
+  bool _statusDrivingLicense;
+  bool get statusDrivingLicense =>_statusDrivingLicense; 
+  
+  set statusDrivingLicense(bool newStatus) {
+    _statusDrivingLicense = newStatus; 
+    notifyListeners(); 
+  }
+
+  bool _statusCivilLiability;
+  bool get statusCivilLiability =>_statusCivilLiability; 
+  
+  set statusCivilLiability(bool newStatus) {
+    _statusCivilLiability = newStatus; 
+    notifyListeners(); 
+  }
+
+  bool _statusSelfie;
+  bool get statusSelfie =>_statusSelfie; 
+  
+  set statusSelfie(bool newStatus) {
+    _statusSelfie = newStatus; 
+    notifyListeners(); 
+  }
+
   
   Delivery delivery = Delivery();
   List listCommerces = new List();
   Picture pictureDelivery = Picture();
   List listPicturesDelivery = new List();
+  Document documentDelivery = Document();
+  List listDocumentsDelivery = new List();
 
   getDataDelivery(status, loading, context)async{
 
@@ -219,6 +262,21 @@ class MyProvider with ChangeNotifier {
 
             dataPicturesDelivery = listPicturesDelivery;
 
+            if(jsonResponse['documents'] != null){
+              for (var item in jsonResponse['documents']) {
+                documentDelivery = Document(
+                  id: item['id'],
+                  description: item['description'],
+                  url: item['url'],
+                );
+                
+                dbctpaga.createOrUpdateDocumentsDelivery(documentDelivery);
+                listDocumentsDelivery.add(documentDelivery);
+              }
+            }
+
+            dataDocumentsDelivery = listDocumentsDelivery;
+
             //verifySchedule();
 
             await Future.delayed(Duration(seconds: 1));
@@ -238,6 +296,8 @@ class MyProvider with ChangeNotifier {
     } on SocketException catch (_) {
       if(accessTokenDelivery != null){
         dataDelivery = await dbctpaga.getDelivery();
+        dataPicturesDelivery = await dbctpaga.getPicturesDelivery();
+        dataDocumentsDelivery = await dbctpaga.getDocumentsDelivery();
 
         if(dataDelivery.codeUrlPaid != null){
             var codeUrlJson = jsonDecode(dataDelivery.codeUrlPaid);

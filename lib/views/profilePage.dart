@@ -2,6 +2,7 @@ import 'package:delivery_ctpaga/animation/slideRoute.dart';
 import 'package:delivery_ctpaga/views/navbar/navbarMain.dart';
 import 'package:delivery_ctpaga/views/updatePasswordPage.dart';
 import 'package:delivery_ctpaga/providers/provider.dart';
+import 'package:delivery_ctpaga/service/fileDocuments.dart';
 import 'package:delivery_ctpaga/env.dart';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -10,6 +11,7 @@ import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -26,6 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final _scrollController = ScrollController();
   final _formKeyContact = new GlobalKey<FormState>();
   final _formKeyVehicle = new GlobalKey<FormState>();
+  final _formKeyDocuments = new GlobalKey<FormState>();
   final FocusNode _nameFocus = FocusNode(); 
   final FocusNode _phoneFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
@@ -33,21 +36,52 @@ class _ProfilePageState extends State<ProfilePage> {
   final FocusNode _markFocus = FocusNode();
   final FocusNode _colorsFocus = FocusNode();
   final FocusNode _licensePlateFocus = FocusNode();
-  String _name, _phone, _email, _statusDropdown = "", _model, _mark, _colorName, _colorHex, _licensePlate;
-  var urlProfile;
+  final FocusNode _licenseFocus = FocusNode();
+  final FocusNode _drivingLicenseFocus = FocusNode();
+  final FocusNode _civilLiabilityFocus = FocusNode();
+  
+  String _name, _phone, _email, _statusDropdown = "", 
+        _model, _mark, _colorName, _colorHex, _licensePlate,
+        _license, _drivingLicense, _civilLiability, urlFile, fileName;
+
+  var urlProfile, urlLicense, urlDrivingLicense, urlCivilLiability;
   bool _statusClickColors = false;
 
   @override
   void initState() {
     super.initState();
-    initialVariable();
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    initialVariable(myProvider);
   }
 
-  initialVariable(){
-    var myProvider = Provider.of<MyProvider>(context, listen: false);
-    setState(() {
-        _colorName = myProvider.dataDelivery.colorName;
-    });
+  initialVariable(myProvider){
+    FileDocuments classFile = new FileDocuments();
+
+    for (var item in myProvider.dataDocumentsDelivery) {
+      if(item != null && item.description == 'License'){
+        urlLicense = item.url;
+        _license = classFile.getName(item.url);
+        myProvider.statusLicense = true;
+      }
+      else if(item != null && item.description == 'Driving License'){
+        urlDrivingLicense = item.url;
+        _drivingLicense = classFile.getName(item.url);
+        myProvider.statusDrivingLicense = true;
+      }
+      else if(item != null && item.description == 'Civil Liability'){
+        urlCivilLiability = item.url;
+        _civilLiability = classFile.getName(item.url);
+        myProvider.statusCivilLiability = true;
+      }
+    }
+
+    for (var item in myProvider.dataPicturesDelivery) {
+      if(item != null && item.description == 'Selfie'){
+        myProvider.statusSelfie = true;
+        break;
+      }
+    }
+    _colorName = myProvider.dataDelivery.colorName;
   }
 
   @override
@@ -82,11 +116,20 @@ class _ProfilePageState extends State<ProfilePage> {
                           visible: _statusDropdown == "Cuenta"? true : false,
                           child: formContact(),
                         ),
-                          dropdownList("Vehículo"),
+
+                        dropdownList("Vehículo"),
                         Visibility(
                           visible: _statusDropdown == "Vehículo"? true : false,
                           child: formVehicle(),
                         ),
+
+                        dropdownList("Documentos"),
+                        Visibility(
+                          visible: _statusDropdown == "Documentos"? true : false,
+                          child: formDocuments(),
+                        ),
+
+                        dropdownList("Selfie de Verificación"),
                       ]
                     )
                   )
@@ -235,7 +278,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     maxFontSize: 14,
                     minFontSize: 14,
                   ),
-                  onTap: () => _getImage(context, ImageSource.gallery),       
+                  onTap: () => _getImage(context, ImageSource.gallery, 'Profile'),       
                 ),
                 new ListTile(
                   leading: new Icon(Icons.camera, color:Colors.black, size: 30.0),
@@ -248,7 +291,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     maxFontSize: 14,
                     minFontSize: 14,
                   ),
-                  onTap: () => _getImage(context, ImageSource.camera),          
+                  onTap: () => _getImage(context, ImageSource.camera, 'Profile'),          
                 ),
               ],
             ),
@@ -257,9 +300,73 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _getImage(BuildContext context, ImageSource source) async {
+  Future<void> _showSelectionDialogDocuments(BuildContext context, description) {
+    
+    return showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(20),
+          topLeft: Radius.circular(20)
+        ),
+      ),
+      backgroundColor: Colors.white,
+      builder: (BuildContext bc){
+          return Container(
+            child: new Wrap(
+              spacing: 20,
+              children: <Widget>[
+                new ListTile(
+                  leading: new Icon(Icons.file_present, color:Colors.black, size: 30.0),
+                  title: new AutoSizeText(
+                    "Archivo",
+                    style: TextStyle(
+                      fontFamily: 'MontserratSemiBold',
+                      fontSize:14
+                    ),
+                    maxFontSize: 14,
+                    minFontSize: 14,
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _getFile(description);
+                  }       
+                ),
+                new ListTile(
+                  leading: new Icon(Icons.crop_original, color:Colors.black, size: 30.0),
+                  title: new AutoSizeText(
+                    "Galeria",
+                    style: TextStyle(
+                      fontFamily: 'MontserratSemiBold',
+                      fontSize:14
+                    ),
+                    maxFontSize: 14,
+                    minFontSize: 14,
+                  ),
+                  onTap: () => _getImage(context, ImageSource.gallery, description),       
+                ),
+                new ListTile(
+                  leading: new Icon(Icons.camera, color:Colors.black, size: 30.0),
+                  title: new AutoSizeText(
+                    "Camara",
+                    style: TextStyle(
+                      fontFamily: 'MontserratSemiBold',
+                      fontSize:14
+                    ),
+                    maxFontSize: 14,
+                    minFontSize: 14,
+                  ),
+                  onTap: () => _getImage(context, ImageSource.camera, description),          
+                ),
+              ],
+            ),
+          );
+      }
+    );
+  }
+
+  _getImage(BuildContext context, ImageSource source, String description) async {
     var picture = await ImagePicker().getImage(source: source,  imageQuality: 50, maxHeight: 600, maxWidth: 900);
-    var myProvider = Provider.of<MyProvider>(context, listen: false);
 
     var cropped;
 
@@ -288,19 +395,22 @@ class _ProfilePageState extends State<ProfilePage> {
         Navigator.of(context).pop();
 
         _onLoading();
+        var urlPrevius = getUrl(description);
+
         try
         {
+          var myProvider = Provider.of<MyProvider>(context, listen: false);
           String base64Image = base64Encode(cropped.readAsBytesSync());
           var response = await http.post(
-            urlApi+"updateDeliveryImg",
+            description == 'profile' ? urlApi+"updateDeliveryImg" : urlApi+"updateDeliveryDocuments",
             headers:{
               'X-Requested-With': 'XMLHttpRequest',
               'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
             },
             body: {
               "image": base64Image,
-              "urlPrevious": urlProfile== null? '' : urlProfile,
-              "description": "Profile",
+              "urlPrevious": urlPrevius== null? '' : urlPrevius,
+              "description": description,
               "type": "jpg"
             }
           );
@@ -315,23 +425,84 @@ class _ProfilePageState extends State<ProfilePage> {
           }  
         }on SocketException catch (_) {
           print("error network");
-        } 
+        }
       }
     }
   }
 
+  _getFile(String description)async{
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    if(result != null) {
+      File file = File(result.files.single.path);
+      
+      FileDocuments classFile = new FileDocuments();
+
+      urlFile = file.path;
+      fileName = classFile.getName(file.path);
+
+
+      _onLoading();
+      var urlPrevius = getUrl(description);
+
+      try
+      {
+        var myProvider = Provider.of<MyProvider>(context, listen: false);
+        String base64File = base64Encode(file.readAsBytesSync());
+        var response = await http.post(
+          urlApi+"updateDeliveryDocuments",
+          headers:{
+            'X-Requested-With': 'XMLHttpRequest',
+            'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
+          },
+          body: {
+            "fileDocument": base64File,
+            "urlPrevious": urlPrevius== null? '' : urlPrevius,
+            "description": description,
+            "type": "pdf",
+          }
+        );
+
+        var jsonResponse = jsonDecode(response.body); 
+        print(jsonResponse); 
+        if (jsonResponse['statusCode'] == 201) {
+              myProvider.getDataDelivery(false, true, context);
+              showMessage("Guardado Correctamente", true);
+              await Future.delayed(Duration(seconds: 1));
+              Navigator.pop(context);
+          }
+
+
+      }on SocketException catch (_) {
+        print("error network");
+      }
+
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
   Widget dropdownList(_title){
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
     var size = MediaQuery.of(context).size;
     return Padding(
       padding: 	EdgeInsets.only(top: 5, bottom: 5),
       child: GestureDetector(
-        onTap: () => setState(() {
-          if(_statusDropdown == _title){
-            _statusDropdown = "";
-          }else{
-            _statusDropdown = _title;
-          }
-        }),
+        onTap: () {
+          if(_title != 'Selfie de Verificación')
+            setState(() {
+              if(_statusDropdown == _title){
+                _statusDropdown = "";
+              }else{
+                _statusDropdown = _title;
+              }
+            });
+          else
+            showDialogSelfie(context);
+        },
         child: Container(
           padding: EdgeInsets.only(left: 30, right: 30),
           width: size.width,
@@ -349,9 +520,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 maxFontSize: 14,
                 minFontSize: 14,
               ),
-              Icon(
-                _statusDropdown == _title? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                color: colorGreen,
+              Visibility(
+                visible : _title != 'Selfie de Verificación' ? true : false,
+                child: Icon(
+                  _statusDropdown == _title? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  color: colorGreen,
+                ),
+              ),
+
+              Visibility(
+                visible : _title == 'Selfie de Verificación' ? true : false,
+                child: Icon(
+                  myProvider.statusSelfie? Icons.add_a_photo : Icons.check_circle,
+                  color: colorGreen,
+                ),
               ),
             ]
           ),
@@ -655,6 +837,170 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Widget formDocuments(){
+
+    return Consumer<MyProvider>(
+      builder: (context, myProvider, child) {
+        initialVariable(myProvider);
+        return new Form(
+          key: _formKeyDocuments,
+          child: new ListView(
+            padding: EdgeInsets.only(top: 0),
+            controller: _scrollController,
+            shrinkWrap: true,
+            children: <Widget>[
+              
+              Visibility(
+                visible: !myProvider.statusLicense,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 0.0),
+                  child: new TextFormField(
+                    initialValue: 'SELECCIONAR ARCHIVO',
+                    autofocus: false,
+                    textCapitalization:TextCapitalization.sentences, 
+                    decoration: InputDecoration(
+                      labelText: 'Licencia',
+                      labelStyle: TextStyle(
+                        color: colorText,
+                        fontFamily: 'MontserratSemiBold',
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: colorGreen),
+                      ),
+                    ),
+                    onSaved: (String value) => _license = value,
+                    textInputAction: TextInputAction.next,
+                    focusNode: _licenseFocus,
+                    onEditingComplete: () => FocusScope.of(context).requestFocus(_drivingLicenseFocus),
+                    cursorColor: colorGreen,
+                    style: TextStyle(
+                      fontFamily: 'MontserratSemiBold',
+                    ),
+                    readOnly: true,
+                    onTap: (){
+                      _showSelectionDialogDocuments(context, 'License');
+                    },
+                  ),
+                )
+              ),
+
+              Visibility(
+                visible: myProvider.statusLicense,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 0.0),
+                  child: showCheck('Licencia'),
+                ),
+              ),
+
+              Visibility(
+                visible: !myProvider.statusDrivingLicense,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 0.0),
+                  child: new TextFormField(
+                    initialValue: 'SELECCIONAR ARCHIVO',
+                    autofocus: false,
+                    textCapitalization:TextCapitalization.sentences, 
+                    decoration: InputDecoration(
+                      labelText: 'Carnet de Circulación',
+                      labelStyle: TextStyle(
+                        color: colorText,
+                        fontFamily: 'MontserratSemiBold',
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: colorGreen),
+                      ),
+                    ),
+                    textInputAction: TextInputAction.next,
+                    focusNode: _drivingLicenseFocus,
+                    onEditingComplete: () => FocusScope.of(context).requestFocus(_civilLiabilityFocus),
+                    cursorColor: colorGreen,
+                    style: TextStyle(
+                      fontFamily: 'MontserratSemiBold',
+                    ),
+                    readOnly: true,
+                    onTap: (){
+                      _showSelectionDialogDocuments(context, 'Driving License');
+                    },
+                  ),
+                )
+              ),
+
+              Visibility(
+                visible: myProvider.statusDrivingLicense,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 0.0),
+                  child: showCheck('Carnet de Circulación'),
+                ),
+              ),
+
+              Visibility(
+                visible: !myProvider.statusCivilLiability,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 30.0),
+                  child: new TextFormField(
+                    initialValue: 'SELECCIONAR ARCHIVO',
+                    autofocus: false,
+                    textCapitalization:TextCapitalization.sentences, 
+                    decoration: InputDecoration(
+                      labelText: 'Responsabilidad Civil',
+                      labelStyle: TextStyle(
+                        color: colorText,
+                        fontFamily: 'MontserratSemiBold',
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: colorGreen),
+                      ),
+                    ),
+                    onSaved: (String value) => _civilLiability = value,
+                    textInputAction: TextInputAction.next,
+                    focusNode: _civilLiabilityFocus,
+                    cursorColor: colorGreen,
+                    style: TextStyle(
+                      fontFamily: 'MontserratSemiBold',
+                    ),
+                    readOnly: true,
+                    onTap: (){
+                      _showSelectionDialogDocuments(context, 'Civil Liability');
+                    },
+                  ),
+                )
+              ),
+
+              Visibility(
+                visible: myProvider.statusCivilLiability,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 30.0),
+                  child: showCheck('Responsabilidad Civil'),
+                ),
+              ),
+
+
+            ],
+          ),
+        );
+      }
+    );
+  }
+
+  showCheck(title){
+    return ListTile(
+      title: AutoSizeText(
+        title,
+        style: TextStyle(
+          color:  colorText,
+          fontWeight: FontWeight.normal,
+          fontFamily: 'MontserratSemiBold',
+        ),
+        minFontSize: 14,
+        maxFontSize: 14,
+      ),
+      trailing: Icon(
+        Icons.check_circle,
+        color: colorGreen,
+      ),
+    );
+  }
+
   Widget buttonSave(index){
     var size = MediaQuery.of(context).size;
     return Padding(
@@ -871,6 +1217,68 @@ class _ProfilePageState extends State<ProfilePage> {
                     fontFamily: 'MontserratSemiBold',
                   )
                 ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  getUrl(description){
+    if(description == 'Profile')
+      return urlProfile;
+    else if(description == 'License')
+      return urlLicense;
+    else if(description == 'Driving License')
+      return urlDrivingLicense;
+    else if(description == 'Civil Liability')
+      return urlCivilLiability;
+  }
+
+  showDialogSelfie(context)
+  {
+    var size = MediaQuery.of(context).size;
+    showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async =>true,
+          child: AlertDialog(
+            title: Text("Importante"),
+            content: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(5),
+                  child: Image(
+                    image: AssetImage("assets/icons/selfie.png"),
+                    width: size.width,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(5),
+                  child: Text(
+                    'Por Favor tomar foto donde se muestra la cara sosteniendo en un papel con el nombre CTpaga y la fecha actual',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: 'MontserratSemiBold',
+                    )
+                  ),
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Aceptar'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _getImage(context, ImageSource.camera, 'Selfie'); 
+                },
               ),
             ],
           ),
