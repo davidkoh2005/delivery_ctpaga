@@ -352,13 +352,9 @@ class _LoginPageState extends State<LoginPage> {
             myProvider.statusInitGoogle = false;
             myProvider.statusShedule = false;
             _passwordController.clear();
+            myProvider.getTokenFCM = null;
             myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context);
-            myProvider.getTokenFCM = null;
-            myProvider.statusLicense = false;
-            myProvider.statusDrivingLicense = false;
-            myProvider.statusCivilLiability = false;
-            myProvider.statusSelfie = false;
 
           } else if(jsonResponse['statusCode'] == 400){
             setState(() {

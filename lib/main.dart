@@ -158,13 +158,9 @@ class _MyHomePageState extends State<MyHomePage> {
       myProvider.statusButton = 2;
       myProvider.statusInitGoogle = false;
       myProvider.statusShedule = false;
+      myProvider.getTokenFCM = prefs.containsKey('tokenFCM')? prefs.getString('tokenFCM') : null;
       myProvider.getDataDelivery(true, false, context);
       myProvider.getDataAllPaids(context, false);
-      myProvider.getTokenFCM = prefs.containsKey('tokenFCM')? prefs.getString('tokenFCM') : null;
-      myProvider.statusLicense = false;
-      myProvider.statusDrivingLicense = false;
-      myProvider.statusCivilLiability = false;
-      myProvider.statusSelfie = false;
     }else{
       Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
     }

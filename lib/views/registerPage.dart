@@ -1,8 +1,9 @@
-import 'package:delivery_ctpaga/animation/slideRoute.dart';
-import 'package:delivery_ctpaga/views/loginPage.dart';
+import 'package:delivery_ctpaga/providers/provider.dart';
 import 'package:delivery_ctpaga/env.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -352,22 +353,19 @@ class _RegisterPageState extends State<RegisterPage> {
           jsonResponse = jsonDecode(response.body);
           print(jsonResponse);
           if (jsonResponse['statusCode'] == 201) {
-            Navigator.pop(context);
+            /* Navigator.pop(context);
             showMessage("La cuenta fue registrado correctamente!, Debe contactar con el administrador para la aoturización de la aplicación", true);
-            Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
-            /* SharedPreferences prefs = await SharedPreferences.getInstance();
+            Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage())); */
+            var myProvider = Provider.of<MyProvider>(context, listen: false);
+            SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setString('access_token', jsonResponse['access_token']);
             myProvider.accessTokenDelivery = jsonResponse['access_token'];
             myProvider.statusButton = 2;
             myProvider.addressDelivery = "";
             myProvider.statusInitGoogle = false;
-            myProvider.getDataAllPaids(context, false);
-            myProvider.getDataDelivery(true, true, context);
             myProvider.getTokenFCM = null; 
-            myProvider.statusLicense = false;
-            myProvider.statusDrivingLicense = false;
-            myProvider.statusCivilLiability = false;
-            myProvider.statusSelfie = false; */
+            myProvider.getDataAllPaids(context, false);
+            myProvider.getDataDelivery(true, true, context); 
 
           } else if(jsonResponse['errors'] != null){
 

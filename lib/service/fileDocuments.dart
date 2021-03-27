@@ -3,7 +3,6 @@ import 'package:delivery_ctpaga/env.dart';
 
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import 'package:async/async.dart';
 import 'package:path/path.dart';
 import 'dart:convert';
 import 'dart:io';

@@ -125,6 +125,46 @@ class MyProvider with ChangeNotifier {
     notifyListeners(); 
   }
 
+  String _statusDropdown;
+  String get statusDropdown =>_statusDropdown; 
+  
+  set statusDropdown(String newValue) {
+    _statusDropdown = newValue; 
+    notifyListeners(); 
+  }
+
+  String _urlLicense;
+  String get urlLicense =>_urlLicense; 
+  
+  set urlLicense(String newValue) {
+    _urlLicense = newValue; 
+    notifyListeners(); 
+  }
+
+  String _urlDrivingLicense;
+  String get urlDrivingLicense =>_urlDrivingLicense; 
+  
+  set urlDrivingLicense(String newValue) {
+    _urlDrivingLicense = newValue; 
+    notifyListeners(); 
+  }
+
+  String _urlCivilLiability;
+  String get urlCivilLiability =>_urlCivilLiability; 
+  
+  set urlCivilLiability(String newValue) {
+    _urlCivilLiability = newValue; 
+    notifyListeners(); 
+  }
+
+  String _urlSelfie;
+  String get urlSelfie =>_urlSelfie; 
+  
+  set urlSelfie(String newValue) {
+    _urlSelfie = newValue; 
+    notifyListeners(); 
+  }
+
   List _storage = new List();
   List get dataPicturesDelivery =>_storage;
 
@@ -185,6 +225,16 @@ class MyProvider with ChangeNotifier {
 
     var result, response, jsonResponse;
     schedule = [];
+    delivery = Delivery();
+    pictureDelivery = Picture();
+    documentDelivery = Document();
+
+    dataPicturesDelivery = null;
+    dataDocumentsDelivery = null;
+    dataDelivery = null;
+
+    listPicturesDelivery = [];
+    listDocumentsDelivery = [];
 
     try {
       result = await InternetAddress.lookup('google.com');
@@ -279,6 +329,8 @@ class MyProvider with ChangeNotifier {
 
             //verifySchedule();
 
+            updateDataDelivery();
+
             await Future.delayed(Duration(seconds: 1));
 
             if(loading){
@@ -299,6 +351,8 @@ class MyProvider with ChangeNotifier {
         dataPicturesDelivery = await dbctpaga.getPicturesDelivery();
         dataDocumentsDelivery = await dbctpaga.getDocumentsDelivery();
 
+        updateDataDelivery();
+
         if(dataDelivery.codeUrlPaid != null){
             var codeUrlJson = jsonDecode(dataDelivery.codeUrlPaid);
             var _listCode = new List();
@@ -311,6 +365,36 @@ class MyProvider with ChangeNotifier {
 
       if(status){
         Navigator.pushReplacement(context, SlideLeftRoute(page: MainMenuBar()));
+      }
+    }
+  }
+
+  updateDataDelivery(){
+    statusLicense = false;
+    statusDrivingLicense = false;
+    statusCivilLiability = false;
+    statusSelfie = false;
+    urlLicense = null;
+    urlDrivingLicense = null;
+    urlCivilLiability = null;
+    urlSelfie = null;
+    
+    for (var item in dataDocumentsDelivery) {
+      if(item != null && item.description == 'License'){
+        urlLicense = item.url;
+        statusLicense = true;
+      }
+      else if(item != null && item.description == 'Driving License'){
+        urlDrivingLicense = item.url;
+        statusDrivingLicense = true;
+      }
+      else if(item != null && item.description == 'Civil Liability'){
+        urlCivilLiability = item.url;
+        statusCivilLiability = true;
+      }
+      else if(item != null && item.description == 'Selfie'){
+        urlSelfie = item.url;
+        statusSelfie = true;
       }
     }
   }
@@ -433,7 +517,10 @@ class MyProvider with ChangeNotifier {
     dataDelivery = delivery;
     dbctpaga.deleteAll();
     codeUrl = null;
-
+    urlLicense = null;
+    urlDrivingLicense = null;
+    urlCivilLiability = null;
+    urlSelfie = null;
     if(statusLogin)
       Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
   }

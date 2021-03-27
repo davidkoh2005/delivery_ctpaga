@@ -42,7 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
   
   String _name, _phone, _email, _statusDropdown = "", 
         _model, _mark, _colorName, _colorHex, _licensePlate,
-        _license, _drivingLicense, _civilLiability, urlFile, fileName;
+        urlFile, fileName;
 
   var urlProfile, urlLicense, urlDrivingLicense, urlCivilLiability;
   bool _statusClickColors = false;
@@ -50,39 +50,8 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    var myProvider = Provider.of<MyProvider>(context, listen: false);
-    initialVariable(myProvider);
   }
 
-  initialVariable(myProvider){
-    FileDocuments classFile = new FileDocuments();
-
-    for (var item in myProvider.dataDocumentsDelivery) {
-      if(item != null && item.description == 'License'){
-        urlLicense = item.url;
-        _license = classFile.getName(item.url);
-        myProvider.statusLicense = true;
-      }
-      else if(item != null && item.description == 'Driving License'){
-        urlDrivingLicense = item.url;
-        _drivingLicense = classFile.getName(item.url);
-        myProvider.statusDrivingLicense = true;
-      }
-      else if(item != null && item.description == 'Civil Liability'){
-        urlCivilLiability = item.url;
-        _civilLiability = classFile.getName(item.url);
-        myProvider.statusCivilLiability = true;
-      }
-    }
-
-    for (var item in myProvider.dataPicturesDelivery) {
-      if(item != null && item.description == 'Selfie'){
-        myProvider.statusSelfie = true;
-        break;
-      }
-    }
-    _colorName = myProvider.dataDelivery.colorName;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,13 +116,11 @@ class _ProfilePageState extends State<ProfilePage> {
     return Consumer<MyProvider>(
       builder: (context, myProvider, child) {
         if(myProvider.dataPicturesDelivery != null && myProvider.dataPicturesDelivery.length != 0){
-          //DefaultCacheManager().removeFile(url+"/storage/Users/${myProvider.dataUser.id}/Profile.jpg");
-          //DefaultCacheManager().emptyCache();
-
-          if(urlProfile != null)
-            if(urlProfile.indexOf('/storage/Delivery/')<0)
-              DefaultCacheManager().emptyCache();
-              urlProfile = null;
+          
+          if(urlProfile != null){
+            DefaultCacheManager().emptyCache();
+            urlProfile = null;
+          }
 
 
           for (var item in myProvider.dataPicturesDelivery) {
@@ -371,28 +338,48 @@ class _ProfilePageState extends State<ProfilePage> {
     var cropped;
 
     if(picture != null){
-      cropped = await ImageCropper.cropImage(
-        sourcePath: picture.path,
-        aspectRatio:  CropAspectRatio(
-          ratioX: 1, ratioY: 1
-        ),
-        compressQuality: 100,
-        maxWidth: 700,
-        maxHeight: 700,
-        compressFormat: ImageCompressFormat.jpg,
-        androidUiSettings: AndroidUiSettings(
-          toolbarTitle: "Editar Foto",
-          backgroundColor: Colors.black,
-          toolbarWidgetColor: Colors.black,
-        ),
-        iosUiSettings: IOSUiSettings(
-          title: 'Editar Foto',
-        )
-      );
+      if(description == 'Profile')
+        cropped = await ImageCropper.cropImage(
+          sourcePath: picture.path,
+          aspectRatio:  CropAspectRatio(
+            ratioX: 1, ratioY: 1
+          ),
+          compressQuality: 100,
+          maxWidth: 700,
+          maxHeight: 700,
+          cropStyle: CropStyle.circle,
+          compressFormat: ImageCompressFormat.jpg,
+          androidUiSettings: AndroidUiSettings(
+            toolbarTitle: "Editar Foto",
+            backgroundColor: Colors.black,
+            toolbarWidgetColor: Colors.black,
+          ),
+          iosUiSettings: IOSUiSettings(
+            title: 'Editar Foto',
+          )
+        );
+      else
+        cropped = await ImageCropper.cropImage(
+          sourcePath: picture.path,
+          compressQuality: 100,
+          maxWidth: 700,
+          maxHeight: 700,
+          compressFormat: ImageCompressFormat.jpg,
+          androidUiSettings: AndroidUiSettings(
+            toolbarTitle: "Editar Foto",
+            backgroundColor: Colors.black,
+            toolbarWidgetColor: Colors.black,
+          ),
+          iosUiSettings: IOSUiSettings(
+            title: 'Editar Foto',
+          )
+        );
 
       if(cropped != null){
-
-        Navigator.of(context).pop();
+        if(description == 'Selfie')
+          Navigator.pop(context);
+        else
+          Navigator.of(context).pop();
 
         _onLoading();
         var urlPrevius = getUrl(description);
@@ -402,7 +389,7 @@ class _ProfilePageState extends State<ProfilePage> {
           var myProvider = Provider.of<MyProvider>(context, listen: false);
           String base64Image = base64Encode(cropped.readAsBytesSync());
           var response = await http.post(
-            description == 'profile' ? urlApi+"updateDeliveryImg" : urlApi+"updateDeliveryDocuments",
+            description == 'Profile' ? urlApi+"updateDeliveryImg" : urlApi+"updateDeliveryDocuments",
             headers:{
               'X-Requested-With': 'XMLHttpRequest',
               'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
@@ -443,7 +430,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
       urlFile = file.path;
       fileName = classFile.getName(file.path);
-
 
       _onLoading();
       var urlPrevius = getUrl(description);
@@ -500,7 +486,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 _statusDropdown = _title;
               }
             });
-          else
+          else if (!myProvider.statusSelfie)
             showDialogSelfie(context);
         },
         child: Container(
@@ -520,21 +506,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 maxFontSize: 14,
                 minFontSize: 14,
               ),
-              Visibility(
-                visible : _title != 'Selfie de Verificación' ? true : false,
-                child: Icon(
-                  _statusDropdown == _title? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                  color: colorGreen,
-                ),
-              ),
 
-              Visibility(
-                visible : _title == 'Selfie de Verificación' ? true : false,
-                child: Icon(
-                  myProvider.statusSelfie? Icons.add_a_photo : Icons.check_circle,
+              Icon(
+                  _title == 'Selfie de Verificación' ? myProvider.statusSelfie? Icons.check_circle : Icons.add_a_photo :_statusDropdown == _title? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                   color: colorGreen,
-                ),
-              ),
+                ),           
             ]
           ),
         )
@@ -788,10 +764,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   searchHint: "Color",
                   keyboardType: TextInputType.text,
                   onChanged: (value){
-                    setState(() {
-                        _colorName = value['name'];
-                        _colorHex = value['hex'];
-                    });
+                    _colorName = value['name'];
+                    _colorHex = value['hex'];
                   },
                   isExpanded: true,
                   validator: (value) => _colorName == null && _statusClickColors? "Ingrese el color correctamente": null,
@@ -841,7 +815,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Consumer<MyProvider>(
       builder: (context, myProvider, child) {
-        initialVariable(myProvider);
         return new Form(
           key: _formKeyDocuments,
           child: new ListView(
@@ -868,7 +841,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         borderSide: BorderSide(color: colorGreen),
                       ),
                     ),
-                    onSaved: (String value) => _license = value,
                     textInputAction: TextInputAction.next,
                     focusNode: _licenseFocus,
                     onEditingComplete: () => FocusScope.of(context).requestFocus(_drivingLicenseFocus),
@@ -951,7 +923,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         borderSide: BorderSide(color: colorGreen),
                       ),
                     ),
-                    onSaved: (String value) => _civilLiability = value,
                     textInputAction: TextInputAction.next,
                     focusNode: _civilLiabilityFocus,
                     cursorColor: colorGreen,
@@ -1226,14 +1197,17 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   getUrl(description){
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
     if(description == 'Profile')
       return urlProfile;
     else if(description == 'License')
-      return urlLicense;
+      return myProvider.urlLicense;
     else if(description == 'Driving License')
-      return urlDrivingLicense;
+      return myProvider.urlDrivingLicense;
     else if(description == 'Civil Liability')
-      return urlCivilLiability;
+      return myProvider.urlCivilLiability;
+    else
+      return null;
   }
 
   showDialogSelfie(context)
@@ -1276,7 +1250,6 @@ class _ProfilePageState extends State<ProfilePage> {
               FlatButton(
                 child: Text('Aceptar'),
                 onPressed: () {
-                  Navigator.of(context).pop();
                   _getImage(context, ImageSource.camera, 'Selfie'); 
                 },
               ),

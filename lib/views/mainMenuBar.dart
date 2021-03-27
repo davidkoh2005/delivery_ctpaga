@@ -83,6 +83,9 @@ class _MainMenuBarState extends State<MainMenuBar> {
     var myProvider = Provider.of<MyProvider>(context, listen: false);
     return GestureDetector(
       onTap: () async {
+        if(code == 3)
+          myProvider.getDataDelivery(false, false, context);
+          
         myProvider.statusButton = code;
       },
       child: Container(
