@@ -48,14 +48,15 @@ class _MainPageState extends State<MainPage>{
   @override
   void initState() {
     super.initState();
-    initialNotification();
     initialVariable();
+    initialNotification();
     registerNotification();
   }
 
   initialVariable(){
     var myProvider = Provider.of<MyProvider>(context, listen: false);
-    const oneSec = const Duration(seconds:30);
+
+    const oneSec = const Duration(seconds:1);
     new Timer.periodic(oneSec, (Timer t) => verifyShedule(myProvider));
   }
 
@@ -74,7 +75,7 @@ class _MainPageState extends State<MainPage>{
         
       _dateSheduleInitial = new DateTime(_today.year, _today.month, _today.day, hoursInitial, int.parse(_dateSheduleInitialGet['min']), 0);
       _dateSheduleFinal = new DateTime(_today.year, _today.month, _today.day, hoursFinal, int.parse(_dateSheduleFinalGet['min']), 0);
-    
+
     }
 
     if(_today.isAfter(_dateSheduleInitial) && _today.isBefore(_dateSheduleFinal))
@@ -295,7 +296,19 @@ class _MainPageState extends State<MainPage>{
                             value: myProvider.statusShedule? myProvider.dataDelivery.statusAvailability==0? false: true : false,
                             onChanged: (value) {
                               _onLoading();
-                              myProvider.getDataDelivery(false, false, context).then((_) => verifyStatus(myProvider));
+                              myProvider.getDataDelivery(false, false, context).then((_) {
+                                if(myProvider.dataDelivery.status == 0){
+                                  Navigator.pop(context);
+                                  showMessage("No está autorizado para trabajar como delivery", false);
+                                }else if(myProvider.dataDelivery.status == 2){
+                                  Navigator.pop(context);
+                                  showMessage("Tu cuenta se encuentra en revisión", false);
+                                }else if(myProvider.dataDelivery.status == 3){
+                                  myProvider.removeSession(context);
+                                  showMessage("Tu cuenta se encuentra en revisión", false);
+                                }else
+                                  verifyStatus(myProvider);
+                              });
                             },
                             activeTrackColor: colorGrey,
                             activeColor: colorGreen
@@ -543,14 +556,12 @@ class _MainPageState extends State<MainPage>{
 
   verifyStatus(myProvider) async {
     if(myProvider.statusShedule){
-      if(myProvider.codeUrl.length == 0)
+      if(myProvider.codeUrl.length == 0){
         if(myProvider.dataDelivery.statusAvailability==0){
           myProvider.getDataAllPaids(context, false);
-          changeStatus();
-        }else{
-          changeStatus();
         }
-      else{
+        changeStatus();
+      }else{
         Navigator.pop(context);
         showMessage("Debe completar el orden pendiente: ${myProvider.codeUrl[0]}", false);
       }
@@ -680,7 +691,7 @@ class _MainPageState extends State<MainPage>{
           Navigator.pop(context);
           Navigator.push(context, SlideLeftRoute(page: ShowDataPaidPage()));
         }else if (jsonResponse['statusCode'] == 401) {
-          myProvider.removeSession(context, true);
+          myProvider.removeSession(context);
           Navigator.pop(context);
         }else{
           setState(() {

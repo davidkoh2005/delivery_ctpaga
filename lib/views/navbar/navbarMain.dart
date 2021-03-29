@@ -1,6 +1,4 @@
-import 'package:delivery_ctpaga/animation/slideRoute.dart';
 import 'package:delivery_ctpaga/providers/provider.dart';
-import 'package:delivery_ctpaga/views/loginPage.dart';
 import 'package:delivery_ctpaga/env.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,8 +93,7 @@ class _NavbarMainState extends State<NavbarMain> {
         print(jsonResponse);
         Navigator.pop(context);
         prefs.remove("access_token");
-        myProvider.removeSession(context, false);
-        Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
+        myProvider.removeSession(context);
       }
     } on SocketException catch (_) {
       Navigator.pop(context);

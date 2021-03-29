@@ -231,7 +231,6 @@ class MyProvider with ChangeNotifier {
 
     dataPicturesDelivery = null;
     dataDocumentsDelivery = null;
-    dataDelivery = null;
 
     listPicturesDelivery = [];
     listDocumentsDelivery = [];
@@ -251,6 +250,8 @@ class MyProvider with ChangeNotifier {
         jsonResponse = jsonDecode(response.body);
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
+          delivery = Delivery();
+          dataDelivery = null;
           delivery = Delivery(
             id: jsonResponse['data']['id'],
             email: jsonResponse['data']['email'],
@@ -283,66 +284,62 @@ class MyProvider with ChangeNotifier {
           else
             dbctpaga.updateDelivery(delivery); 
           
-          if(dataDelivery.status != 1)
-            removeSession(context, true);
-          else{
 
-            if(delivery.tokenFCM == null && getTokenFCM != delivery.tokenFCM)
-              updateToken(getTokenFCM, context);
-            
-            if(jsonResponse['scheduleInitial'] != null && jsonResponse['scheduleFinal'] != null){
-              schedule.add(jsonResponse['scheduleInitial']);
-              schedule.add(jsonResponse['scheduleFinal']);
+          if(delivery.tokenFCM == null && getTokenFCM != delivery.tokenFCM)
+            updateToken(getTokenFCM, context);
+          
+          if(jsonResponse['scheduleInitial'] != null && jsonResponse['scheduleFinal'] != null){
+            schedule.add(jsonResponse['scheduleInitial']);
+            schedule.add(jsonResponse['scheduleFinal']);
 
-              dbctpaga.createOrUpdateSettings(schedule);
-            }
+            dbctpaga.createOrUpdateSettings(schedule);
+          }
 
-            if(jsonResponse['pictures'] != null){
-              for (var item in jsonResponse['pictures']) {
-                pictureDelivery = Picture(
-                  id: item['id'],
-                  description: item['description'],
-                  url: item['url'],
-                );
-                
-                dbctpaga.createOrUpdatePicturesDelivery(pictureDelivery);
-                listPicturesDelivery.add(pictureDelivery);
-              }
-            }
-
-            dataPicturesDelivery = listPicturesDelivery;
-
-            if(jsonResponse['documents'] != null){
-              for (var item in jsonResponse['documents']) {
-                documentDelivery = Document(
-                  id: item['id'],
-                  description: item['description'],
-                  url: item['url'],
-                );
-                
-                dbctpaga.createOrUpdateDocumentsDelivery(documentDelivery);
-                listDocumentsDelivery.add(documentDelivery);
-              }
-            }
-
-            dataDocumentsDelivery = listDocumentsDelivery;
-
-            //verifySchedule();
-
-            updateDataDelivery();
-
-            await Future.delayed(Duration(seconds: 1));
-
-            if(loading){
-              Navigator.pop(context);
-            }
-
-            if(status){
-              Navigator.pushReplacement(context, SlideLeftRoute(page: MainMenuBar()));
+          if(jsonResponse['pictures'] != null){
+            for (var item in jsonResponse['pictures']) {
+              pictureDelivery = Picture(
+                id: item['id'],
+                description: item['description'],
+                url: item['url'],
+              );
+              
+              dbctpaga.createOrUpdatePicturesDelivery(pictureDelivery);
+              listPicturesDelivery.add(pictureDelivery);
             }
           }
+
+          dataPicturesDelivery = listPicturesDelivery;
+
+          if(jsonResponse['documents'] != null){
+            for (var item in jsonResponse['documents']) {
+              documentDelivery = Document(
+                id: item['id'],
+                description: item['description'],
+                url: item['url'],
+              );
+              
+              dbctpaga.createOrUpdateDocumentsDelivery(documentDelivery);
+              listDocumentsDelivery.add(documentDelivery);
+            }
+          }
+
+          dataDocumentsDelivery = listDocumentsDelivery;
+
+          //verifySchedule();
+
+          updateDataDelivery();
+
+          await Future.delayed(Duration(seconds: 1));
+
+          if(loading){
+            Navigator.pop(context);
+          }
+
+          if(status){
+            Navigator.pushReplacement(context, SlideLeftRoute(page: MainMenuBar()));
+          }
         }else{
-          removeSession(context, true);
+          removeSession(context);
         }
       }
     } on SocketException catch (_) {
@@ -496,7 +493,7 @@ class MyProvider with ChangeNotifier {
         if (jsonResponse['statusCode'] == 201) {
           dataAllPaids = jsonResponse['data'];
         }else if (jsonResponse['statusCode'] == 401) {
-          removeSession(context, true);
+          removeSession(context);
         }
         if(status)
           Navigator.pop(context);
@@ -508,7 +505,7 @@ class MyProvider with ChangeNotifier {
   }
 
  
-  removeSession(BuildContext context, statusLogin)async{
+  removeSession(BuildContext context)async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("access_token");
     delivery = Delivery(
@@ -521,8 +518,8 @@ class MyProvider with ChangeNotifier {
     urlDrivingLicense = null;
     urlCivilLiability = null;
     urlSelfie = null;
-    if(statusLogin)
-      Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
+    
+    Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
   }
 
 }
