@@ -335,7 +335,7 @@ class DBctpaga{
   void createOrUpdateDocumentsDelivery(Document document) async{
     var dbConnection = await db;
 
-    String query = 'INSERT OR REPLACE INTO documents (id, description, url) VALUES ( (SELECT id FROM pictures WHERE description = \'${document.description}\'), \'${document.description}\',\'${document.url}\')';
+    String query = 'INSERT OR REPLACE INTO documents (id, description, url) VALUES ( (SELECT id FROM documents WHERE description = \'${document.description}\'), \'${document.description}\',\'${document.url}\')';
     await dbConnection.transaction((transaction) async{
       return await transaction.rawInsert(query);
     });

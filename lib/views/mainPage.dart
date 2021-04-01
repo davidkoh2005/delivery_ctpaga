@@ -85,7 +85,7 @@ class _MainPageState extends State<MainPage>{
 
 
     if(myProvider.statusShedule && myProvider.dataDelivery.statusAvailability==1)
-      locatePosition();
+      locatePosition(myProvider);
   }
 
   getHours(hours, anteMeridiem){
@@ -114,9 +114,8 @@ class _MainPageState extends State<MainPage>{
     return result;
   }
 
-  void locatePosition() async {
+  void locatePosition(myProvider) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var myProvider = Provider.of<MyProvider>(context, listen: false);
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
 
     final coordinates = new Coordinates(position.latitude, position.longitude);
@@ -132,7 +131,6 @@ class _MainPageState extends State<MainPage>{
        try {
         result = await InternetAddress.lookup('google.com');
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-          var myProvider = Provider.of<MyProvider>(context, listen: false);
 
           response = await http.post(
             urlApi+"updateDelivery",

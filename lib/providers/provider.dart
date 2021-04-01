@@ -350,7 +350,7 @@ class MyProvider with ChangeNotifier {
 
         updateDataDelivery();
 
-        if(dataDelivery.codeUrlPaid != null){
+        if(dataDelivery.codeUrlPaid != "null"){
             var codeUrlJson = jsonDecode(dataDelivery.codeUrlPaid);
             var _listCode = new List();
             codeUrlJson.forEach((element) => _listCode.add(element));
