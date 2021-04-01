@@ -10,6 +10,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:install_plugin/install_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:package_info/package_info.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:ext_storage/ext_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
@@ -170,6 +172,13 @@ class _MyHomePageState extends State<MyHomePage> {
             content: Text("Versión Actual es $versionApp y la nueva versión es $newVersionApp "),
             actions: <Widget>[
               FlatButton(
+                child: Text('Abrir'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  launch(urlApp);
+                },
+              ),
+              FlatButton(
                 child: Text('Actualizar'),
                 onPressed: () {
                   Navigator.pop(context);
@@ -184,14 +193,27 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   updateApk()async{
-    final dir = await _getDownloadDirectory();
+    setState(() {
+      statusApp = "Cargando...";
+    });
+    var dir;
+    if (Platform.isAndroid) {
+      dir = await ExtStorage.getExternalStoragePublicDirectory(
+            ExtStorage.DIRECTORY_DOWNLOADS);
+    }else{
+      dir = (await getApplicationDocumentsDirectory()).path;
+    }
+
 
     PermissionStatus permissionStatus = await _getStoragePermission();
     if (permissionStatus == PermissionStatus.granted) {
       setState(() {
-        statusApp = "Solicitando Permiso del Almacenamiento";
+        statusApp = "Solicitando permiso del almacenamiento";
       });
-      final savePath = path.join(dir.path, 'delivery ctpaga.apk');
+
+      await deleteFile(File(dir+'/ctpaga.apk'));
+      
+      final savePath = path.join(dir, 'delivery ctpaga.apk');
       final Dio _dio = Dio();
 
       try{
@@ -212,22 +234,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
       }catch (ex) {
         print(ex.toString());
+        updateApk();
       } 
 
-
-      print("print entro instalar");
       setState(() {
         statusApp = "Instalando...";
       });
-
       await InstallPlugin.installApk(
         savePath,
         'com.example.delivery_ctpaga',
       );
 
-
     } else {
-      print("entro error permiso");
+      updateApk();
+    }
+  }
+
+  Future<void> deleteFile(File file) async {
+    try {
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (e) {
       updateApk();
     }
   }
@@ -243,20 +271,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       return permission;
     }
-  }
-
-
-  Future<Directory> _getDownloadDirectory() async {
-    if (Platform.isAndroid) {
-      return await getApplicationDocumentsDirectory();
-    }
-
-    // in this example we are using only Android and iOS so I can assume
-    // that you are not trying it for other platforms and the if statement
-    // for iOS is unnecessary
-
-    // iOS directory visible to user
-    return await getApplicationDocumentsDirectory();
   }
 
   changePage() async{
