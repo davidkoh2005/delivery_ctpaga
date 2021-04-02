@@ -3,6 +3,8 @@ import 'package:delivery_ctpaga/providers/provider.dart';
 import 'package:delivery_ctpaga/views/loginPage.dart';
 import 'package:delivery_ctpaga/env.dart';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider( 
       create: (_) => MyProvider(),
       child: MaterialApp(
-        title: 'Delivery ctpaga',
+        title: 'Delivery CTpaga',
         theme: ThemeData(
           primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -41,7 +43,7 @@ class MyApp extends StatelessWidget {
           Locale('es','ES'),
         ],
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        home: MyHomePage(title: 'Ctpaga'),
+        home: MyHomePage(title: 'Delivery CTpaga'),
       )
     );
   }
@@ -56,12 +58,49 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  String versionApp = "", newVersionApp = "" , urlApp, statusApp = "Cargando...", statusProgress = "0%";
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+  String versionApp = "", newVersionApp = "" , urlApp, statusApp = "Cargando...", statusProgress = "0%", savePath;
+  int progressDownloader = 0, statusObserver = 0;
+  bool statusInstall = false;
+
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    initialNotification();
     //changePage();
     checkVersion();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  } 
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    setState(() {
+      statusObserver = state.index;
+    });
+    if(state.index == 0 && progressDownloader == 100 && !statusInstall){
+      print("print observer");
+      installApp();
+    }
+  }
+
+  void initialNotification() {
+    var initializationSettingsAndroid = new AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = InitializationSettings(initializationSettingsAndroid, initializationSettingsIOS
+    );
+    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: selectNotification,);
+  }
+
+  Future selectNotification(String payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: $payload');
+    }
   }
 
   @override
@@ -192,10 +231,65 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _showCompleteNotification() async {
+
+    var android = AndroidNotificationDetails(
+        'Complete Downloaded id',
+        'Complete Downloaded name',
+        'Complete Downloaded description',
+        priority: Priority.High,
+        importance: Importance.Max,
+    );
+
+
+    var iOS = IOSNotificationDetails(presentSound: false);
+
+    var platformChannelSpecifics = NotificationDetails(
+    android, iOS);
+
+    await flutterLocalNotificationsPlugin.show(
+        0, 'Delivery CTpaga', "Descarga Completado", platformChannelSpecifics, payload: "complete"
+      );
+
+    FlutterRingtonePlayer.playNotification();
+
+  }
+
+  Future<void> _showProgressNotification(percentage) async {
+      await Future<void>.delayed(const Duration(seconds: 1), () async {
+        final AndroidNotificationDetails androidPlatformChannelSpecifics =
+            AndroidNotificationDetails('progress channel', 'progress channel',
+                'progress channel description',
+                channelShowBadge: false,
+                importance: Importance.Max,
+                priority: Priority.High,
+                onlyAlertOnce: true,
+                showProgress: true,
+                maxProgress: 100,
+                progress: percentage);
+
+        var iOS = IOSNotificationDetails(presentSound: false);
+        var platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOS);
+        await flutterLocalNotificationsPlugin.show(
+            0,
+            'Delivery CTpaga',
+            'Descargando...',
+            platformChannelSpecifics,
+            payload: 'progress x');
+      });
+  }
+
+  Future<void> _cancelNotification() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+  }
+
   updateApk()async{
     setState(() {
+      statusInstall = false;
+      progressDownloader = 0;
       statusApp = "Cargando...";
     });
+
     var dir;
     if (Platform.isAndroid) {
       dir = await ExtStorage.getExternalStoragePublicDirectory(
@@ -207,13 +301,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     PermissionStatus permissionStatus = await _getStoragePermission();
     if (permissionStatus == PermissionStatus.granted) {
-      setState(() {
-        statusApp = "Solicitando permiso del almacenamiento";
-      });
 
       await deleteFile(File(dir+'/ctpaga.apk'));
       
-      final savePath = path.join(dir, 'delivery ctpaga.apk');
+      setState(() {
+        savePath = path.join(dir, 'delivery ctpaga.apk');
+      });
+
       final Dio _dio = Dio();
 
       try{
@@ -223,11 +317,24 @@ class _MyHomePageState extends State<MyHomePage> {
         await _dio.download(
           'http://www.ctpaga.app/apk/delivery%20ctpaga.apk',
           savePath,
-          onReceiveProgress: (received, total) {
+          onReceiveProgress: (received, total) async {
             if (total != -1) {
+              if ((received / total * 100).toInt() <99)
+                _showProgressNotification((received / total * 100).toInt());
+
               setState(() {
+                progressDownloader = (received / total * 100).toInt();
                 statusProgress = (received / total * 100).toStringAsFixed(0) + "%";
               });
+              if(progressDownloader == 100 && statusObserver == 0){
+                await Future.delayed(Duration(seconds: 2));
+                await _cancelNotification();
+              }
+              else if(progressDownloader == 100 && statusObserver != 0){
+                await Future.delayed(Duration(seconds: 2));
+                await _cancelNotification();
+                _showCompleteNotification();
+              }
             }
           }
         );
@@ -240,14 +347,32 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         statusApp = "Instalando...";
       });
-      await InstallPlugin.installApk(
-        savePath,
-        'com.example.delivery_ctpaga',
-      );
+
+      if(!statusInstall && statusObserver == 0){
+        installApp();
+      }
 
     } else {
-      updateApk();
+      showAlert();
     }
+  }
+
+  installApp() async
+  {
+    await _cancelNotification();
+    setState(() {
+      statusInstall = true;
+    });
+
+    await InstallPlugin.installApk(
+      savePath,
+      'com.example.delivery_ctpaga',
+    ).then((result) {
+      setState(() {
+        statusApp = "Cargando...";
+      });
+      showAlert();
+    });
   }
 
   Future<void> deleteFile(File file) async {
