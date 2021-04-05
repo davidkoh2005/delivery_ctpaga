@@ -925,6 +925,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
         if (jsonResponse['statusCode'] == 201) {
           if(index == 2){
             myProvider.getDataDelivery(false, false, context);
+            myProvider.getDataAllPaids(context, false);
             prefs.remove("codeUrl");
             prefs.remove("addressDelivery");
             myProvider.addressDelivery = "";
