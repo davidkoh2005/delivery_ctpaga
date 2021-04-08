@@ -117,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (context, myProvider, child) {
         if(myProvider.dataPicturesDelivery != null && myProvider.dataPicturesDelivery.length != 0){
           
-          if(urlProfile != null){
+          if(urlProfile == null){
             DefaultCacheManager().emptyCache();
             urlProfile = null;
           }
@@ -405,7 +405,12 @@ class _ProfilePageState extends State<ProfilePage> {
           var jsonResponse = jsonDecode(response.body); 
           print(jsonResponse); 
           if (jsonResponse['statusCode'] == 201) {
-            myProvider.getDataDelivery(false, true, context);
+            if(description == 'Profile'){
+              setState(() {
+                urlProfile = null;
+              });
+            }
+            await myProvider.getDataDelivery(false, true, context);
             showMessage("Guardado Correctamente", true);
             await Future.delayed(Duration(seconds: 1));
             Navigator.pop(context);

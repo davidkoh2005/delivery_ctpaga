@@ -12,11 +12,11 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="Delivery CTpaga"
+        android:label="CTenvia"
         android:icon="@mipmap/ic_launcher">
 
         <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyBITbx7R38xm9HjVwuR8OMjy7IPmahsGkA"/>
+               android:value="AIzaSyBkQ2QZLLOnFHmrHLkm3LrZOM6obSQ2FHs"/>
 
         <activity
           android:name="com.yalantis.ucrop.UCropActivity"

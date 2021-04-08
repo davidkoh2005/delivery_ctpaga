@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider( 
       create: (_) => MyProvider(),
       child: MaterialApp(
-        title: 'Delivery CTpaga',
+        title: 'CTenvia',
         theme: ThemeData(
           primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
           Locale('es','ES'),
         ],
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        home: MyHomePage(title: 'Delivery CTpaga'),
+        home: MyHomePage(title: 'CTenvia'),
       )
     );
   }
@@ -248,7 +248,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     android, iOS);
 
     await flutterLocalNotificationsPlugin.show(
-        0, 'Delivery CTpaga', "Descarga Completado", platformChannelSpecifics, payload: "complete"
+        0, 'CTenvia', "Descarga Completado", platformChannelSpecifics, payload: "complete"
       );
 
     FlutterRingtonePlayer.playNotification();
@@ -272,7 +272,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         var platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOS);
         await flutterLocalNotificationsPlugin.show(
             0,
-            'Delivery CTpaga',
+            'CTenvia',
             'Descargando...',
             platformChannelSpecifics,
             payload: 'progress x');
@@ -302,10 +302,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     PermissionStatus permissionStatus = await _getStoragePermission();
     if (permissionStatus == PermissionStatus.granted) {
 
-      await deleteFile(File(dir+'/ctpaga.apk'));
+      await deleteFile(File(dir+'/ctenvia.apk'));
       
       setState(() {
-        savePath = path.join(dir, 'delivery ctpaga.apk');
+        savePath = path.join(dir, 'ctenvia.apk');
       });
 
       final Dio _dio = Dio();
@@ -315,7 +315,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           statusApp = "Descargando...";
         });
         await _dio.download(
-          'http://www.ctpaga.app/apk/delivery%20ctpaga.apk',
+          'http://www.ctpaga.app/apk/ctenvia.apk',
           savePath,
           onReceiveProgress: (received, total) async {
             if (total != -1) {

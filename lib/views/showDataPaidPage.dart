@@ -924,14 +924,16 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
           if(index == 2){
-            myProvider.getDataDelivery(false, false, context);
-            myProvider.getDataAllPaids(context, false);
+            await myProvider.getDataDelivery(false, false, context);
+            await myProvider.getDataAllPaids(context, false);
             prefs.remove("codeUrl");
             prefs.remove("addressDelivery");
             myProvider.addressDelivery = "";
             Navigator.pop(context);
-            Navigator.pop(context);
             showMessage("Guardado Correctamente", true);
+            await Future.delayed(Duration(seconds: 1));
+            Navigator.of(context).pop();
+            Navigator.pop(context);
           }else{
             var _selectPaid;
             _selectPaid = Paid(
@@ -961,6 +963,8 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
 
             Navigator.pop(context);
             showMessage("Guardado Correctamente", true);
+            await Future.delayed(Duration(seconds: 1));
+            Navigator.of(context).pop();
           }
           
         }else{
