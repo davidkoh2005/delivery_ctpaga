@@ -256,7 +256,7 @@ class _MainPageState extends State<MainPage>{
             floatingActionButton: new Visibility(
               visible: myProvider.statusShedule? myProvider.dataDelivery.statusAvailability==0? false: true : false,
               child:  FloatingActionButton(
-                backgroundColor: colorGreen,
+                backgroundColor: colorLogo,
                 onPressed: () {
                   _onLoading();
                   myProvider.getDataDelivery(false, false, context);
@@ -309,7 +309,7 @@ class _MainPageState extends State<MainPage>{
                               });
                             },
                             activeTrackColor: colorGrey,
-                            activeColor: colorGreen
+                            activeColor: colorLogo
                           ),
                         ],
                       ),
@@ -334,7 +334,7 @@ class _MainPageState extends State<MainPage>{
                             padding: EdgeInsets.all(20),
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              border: Border.all(color: colorGreen),
+                              border: Border.all(color: colorLogo),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Column(
@@ -471,7 +471,7 @@ class _MainPageState extends State<MainPage>{
                       return Container(
                         margin: EdgeInsets.all(15),
                         child:CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation<Color>(colorGreen),
+                          valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
                         ),
                       );
                     },
@@ -524,7 +524,7 @@ class _MainPageState extends State<MainPage>{
                     width: size.width / 5,
                     height: 40,
                     decoration: BoxDecoration(
-                      color:  _positionButton == index+1? colorGrey : colorGreen,
+                      color:  _positionButton == index+1? colorGrey : colorLogo,
                     borderRadius: BorderRadius.circular(30),
                     ),
                     child: Center(
@@ -539,9 +539,8 @@ class _MainPageState extends State<MainPage>{
                         minFontSize: 14,
                       ),
                     ),
-                  ) : Image.asset(
-                    "assets/icons/loadingTransparent.gif",
-                    width: size.width/8,
+                  ) : CircularProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
                   ),
                 ),
               )
@@ -740,7 +739,7 @@ class _MainPageState extends State<MainPage>{
                 padding: EdgeInsets.all(5),
                 child: Icon(
                   Icons.check_circle,
-                  color: colorGreen,
+                  color: colorLogo,
                   size: size.width / 8,
                 )
               )
@@ -788,7 +787,7 @@ class _MainPageState extends State<MainPage>{
                 Container(
                   padding: EdgeInsets.all(5),
                   child: CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(colorGreen),
+                    valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
                   ),
                 ),
                 Container(
@@ -806,7 +805,7 @@ class _MainPageState extends State<MainPage>{
                         TextSpan(
                           text: "...",
                           style: TextStyle(
-                            color: colorGreen,
+                            color: colorLogo,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),

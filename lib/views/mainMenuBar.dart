@@ -100,7 +100,7 @@ class _MainMenuBarState extends State<MainMenuBar> {
                   _icon,
                   width: size.width / 15,
                   height: size.width / 15,
-                  color: _status == code? colorGreen : colorGreyLogo,
+                  color: _status == code? colorLogo : colorGreyLogo,
                 )
               )
             ),

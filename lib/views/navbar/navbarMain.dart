@@ -60,8 +60,8 @@ class _NavbarMainState extends State<NavbarMain> {
             padding: EdgeInsets.only(top: 50, left: 30),
             child: Container(
               child: Image(
-                image: AssetImage("assets/logo/logo.png"),
-                width: size.width/3.5,
+                image: AssetImage("assets/logo/logo-CTLLEVA.png"),
+                height: size.height/10,
               ),
             )
           )
@@ -119,7 +119,7 @@ class _NavbarMainState extends State<NavbarMain> {
                 padding: EdgeInsets.all(5),
                 child: Icon(
                   Icons.check_circle,
-                  color: colorGreen,
+                  color: colorLogo,
                   size: size.width / 8,
                 )
               )
@@ -167,7 +167,7 @@ class _NavbarMainState extends State<NavbarMain> {
                 Container(
                   padding: EdgeInsets.all(5),
                   child: CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(colorGreen),
+                    valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
                   ),
                 ),
                 Container(
@@ -185,7 +185,7 @@ class _NavbarMainState extends State<NavbarMain> {
                         TextSpan(
                           text: "...",
                           style: TextStyle(
-                            color: colorGreen,
+                            color: colorLogo,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),

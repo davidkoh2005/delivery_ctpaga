@@ -59,7 +59,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
                 locatePosition();
               },
               child: Icon(Icons.gps_fixed),
-              backgroundColor: colorGreen,
+              backgroundColor: colorLogo,
             ),
             body: Stack(
               children: <Widget> [
@@ -129,7 +129,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
                                   });
                                 },
                                 textInputAction: TextInputAction.done,
-                                cursorColor: colorGreen,
+                                cursorColor: colorLogo,
                                 onFieldSubmitted: (term){
                                   FocusScope.of(context).requestFocus(new FocusNode());
                                   searchNavigate();
@@ -147,7 +147,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
                             child: FloatingActionButton(
                               onPressed: _onMapTypeButtonPressed,
                               materialTapTargetSize: MaterialTapTargetSize.padded,
-                              backgroundColor: colorGreen,
+                              backgroundColor: colorLogo,
                               child: Icon(
                                 Icons.public,
                                 size: 36.0,

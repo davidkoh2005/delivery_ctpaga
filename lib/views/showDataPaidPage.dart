@@ -80,7 +80,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
             alignment: Alignment.center,
             height: size.height / 20,
             decoration: BoxDecoration(
-              color: colorGreen,
+              color: colorLogo,
               borderRadius: BorderRadius.circular(30),
             ),
             child: Center(
@@ -192,7 +192,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
               padding: EdgeInsets.only(right:0),
               child: IconButton(
                 icon: Icon(Icons.phone), 
-                color: colorGreen,
+                color: colorLogo,
                 onPressed: () => launch("tel://${myProvider.dataCommerce.phone}"),
               ),
             ),
@@ -203,7 +203,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   "assets/icons/mapa.png",
                   width: size.width / 15,
                   height: size.width / 15,
-                  color: colorGreen,
+                  color: colorLogo,
                 ), 
                 onPressed: () async{
               /*  SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -225,7 +225,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
             alignment: Alignment.center,
             height: size.height / 20,
             decoration: BoxDecoration(
-              color: colorGreen,
+              color: colorLogo,
               borderRadius: BorderRadius.circular(30),
             ),
             child: Center(
@@ -303,7 +303,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
             alignment: Alignment.center,
             height: size.height / 20,
             decoration: BoxDecoration(
-              color: colorGreen,
+              color: colorLogo,
               borderRadius: BorderRadius.circular(30),
             ),
             child: Center(
@@ -445,7 +445,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 padding: EdgeInsets.only(right:0),
                 child: IconButton(
                   icon: Icon(Icons.phone), 
-                  color: colorGreen,
+                  color: colorLogo,
                   onPressed: () => launch("tel://${myProvider.selectPaid.numberShipping}"),
                 ),
               ),
@@ -459,7 +459,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                     "assets/icons/mapa.png",
                     width: size.width / 15,
                     height: size.width / 15,
-                    color: colorGreen,
+                    color: colorLogo,
                   ), 
                   onPressed: () async{
                     /* SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -483,7 +483,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
             alignment: Alignment.center,
             height: size.height / 20,
             decoration: BoxDecoration(
-              color: colorGreen,
+              color: colorLogo,
               borderRadius: BorderRadius.circular(30),
             ),
             child: Center(
@@ -528,7 +528,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   minFontSize: 14,
                 ),
                 value: myProvider.selectPaid.statusShipping >=0? true: false,
-                activeColor: colorGreen,
+                activeColor: colorLogo,
                 onChanged: (newValue) { 
                   verifyUpdate(0);
                 },
@@ -547,7 +547,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   minFontSize: 14,
                 ),
                 value:myProvider.selectPaid.statusShipping >=1? true: false,
-                activeColor: colorGreen,
+                activeColor: colorLogo,
                 onChanged: (newValue) { 
                   verifyUpdate(1);
                 },
@@ -566,7 +566,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   minFontSize: 14,
                 ),
                 value:myProvider.selectPaid.statusShipping >= 2? true: false,
-                activeColor: colorGreen,
+                activeColor: colorLogo,
                 onChanged: (newValue) { 
                   verifyUpdate(2);
                 },
@@ -714,7 +714,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
             alignment: Alignment.center,
             height: size.height / 20,
             decoration: BoxDecoration(
-              color: colorGreen,
+              color: colorLogo,
               borderRadius: BorderRadius.circular(30),
             ),
             child: Center(
@@ -996,7 +996,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 padding: EdgeInsets.all(5),
                 child: Icon(
                   Icons.check_circle,
-                  color: colorGreen,
+                  color: colorLogo,
                   size: size.width / 8,
                 )
               )
@@ -1043,7 +1043,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 Container(
                   padding: EdgeInsets.all(5),
                   child: CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(colorGreen),
+                    valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
                   ),
                 ),
                 Container(
@@ -1061,7 +1061,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                         TextSpan(
                           text: "...",
                           style: TextStyle(
-                            color: colorGreen,
+                            color: colorLogo,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),

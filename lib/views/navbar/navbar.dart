@@ -43,7 +43,7 @@ class _NavbarState extends State<Navbar> {
                           width: size.width / 10,
                           height: size.width / 10,
                           decoration: BoxDecoration(
-                            color: colorGreen,
+                            color: colorLogo,
                             shape: BoxShape.circle,
                           ),
                           child: Center(

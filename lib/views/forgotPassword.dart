@@ -66,7 +66,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   hintText: "Email",
                   icon: new Icon(
                     Icons.mail,
-                    color: colorGreen,
+                    color: colorLogo,
                   )
               ),
               validator: _validateEmail ,
@@ -98,13 +98,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         height: size.height / 14,
         decoration: BoxDecoration(
           border: Border.all(
-            color: colorGreen, 
+            color: colorLogo, 
             width: 1.0,
           ),
           gradient: LinearGradient(
             colors: [
-              colorGreen,
-              colorGreen,
+              colorLogo,
+              colorLogo,
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -187,7 +187,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 Container(
                   padding: EdgeInsets.all(5),
                   child: CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(colorGreen),
+                    valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
                   ),
                 ),
                 Container(
@@ -205,7 +205,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         TextSpan(
                           text: "...",
                           style: TextStyle(
-                            color: colorGreen,
+                            color: colorLogo,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),
@@ -239,7 +239,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 padding: EdgeInsets.all(5),
                 child: Icon(
                   Icons.check_circle,
-                  color: colorGreen,
+                  color: colorLogo,
                   size: size.width / 8,
                 )
               )

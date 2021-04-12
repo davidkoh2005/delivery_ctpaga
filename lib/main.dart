@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider( 
       create: (_) => MyProvider(),
       child: MaterialApp(
-        title: 'CTenvia',
+        title: 'CTlleva',
         theme: ThemeData(
           primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
           Locale('es','ES'),
         ],
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        home: MyHomePage(title: 'CTenvia'),
+        home: MyHomePage(title: 'CTlleva'),
       )
     );
   }
@@ -149,9 +149,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   ),
                 )
               ),
-              Image.asset(
-                "assets/icons/loadingTransparent.gif",
-                width: size.width/6,
+              CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
               ),
             ]
           ),
@@ -248,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     android, iOS);
 
     await flutterLocalNotificationsPlugin.show(
-        0, 'CTenvia', "Descarga Completado", platformChannelSpecifics, payload: "complete"
+        0, 'CTlleva', "Descarga Completado", platformChannelSpecifics, payload: "complete"
       );
 
     FlutterRingtonePlayer.playNotification();
@@ -272,7 +271,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         var platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOS);
         await flutterLocalNotificationsPlugin.show(
             0,
-            'CTenvia',
+            'CTlleva',
             'Descargando...',
             platformChannelSpecifics,
             payload: 'progress x');
@@ -302,10 +301,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     PermissionStatus permissionStatus = await _getStoragePermission();
     if (permissionStatus == PermissionStatus.granted) {
 
-      await deleteFile(File(dir+'/ctenvia.apk'));
+      await deleteFile(File(dir+'/ctlleva.apk'));
       
       setState(() {
-        savePath = path.join(dir, 'ctenvia.apk');
+        savePath = path.join(dir, 'ctlleva.apk');
       });
 
       final Dio _dio = Dio();
@@ -315,7 +314,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           statusApp = "Descargando...";
         });
         await _dio.download(
-          'http://www.ctpaga.app/apk/ctenvia.apk',
+          'http://www.ctpaga.app/apk/ctlleva.apk',
           savePath,
           onReceiveProgress: (received, total) async {
             if (total != -1) {

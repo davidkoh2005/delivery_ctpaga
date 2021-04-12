@@ -148,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     return Container(
                       margin: EdgeInsets.all(15),
                       child:CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(colorGreen),
+                        valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
                       ),
                     );
                   },
@@ -514,7 +514,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
               Icon(
                   _title == 'Selfie de Verificación' ? myProvider.statusSelfie? Icons.check_circle : Icons.add_a_photo :_statusDropdown == _title? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                  color: colorGreen,
+                  color: colorLogo,
                 ),           
             ]
           ),
@@ -548,7 +548,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       fontFamily: 'MontserratSemiBold',
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: colorGreen),
+                      borderSide: BorderSide(color: colorLogo),
                     ),
                   ),
                   onSaved: (String value) => _name = value,
@@ -556,7 +556,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   textInputAction: TextInputAction.next,
                   focusNode: _nameFocus,
                   onEditingComplete: () => FocusScope.of(context).requestFocus(_phoneFocus),
-                  cursorColor: colorGreen,
+                  cursorColor: colorLogo,
                   style: TextStyle(
                     fontFamily: 'MontserratSemiBold',
                   ),
@@ -577,7 +577,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       fontFamily: 'MontserratSemiBold',
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: colorGreen),
+                      borderSide: BorderSide(color: colorLogo),
                     ),
                   ),
                   onSaved: (String value) => _phone = value,
@@ -585,7 +585,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   focusNode: _phoneFocus,
                   textInputAction: TextInputAction.done,
                   onEditingComplete: () => FocusScope.of(context).requestFocus(_emailFocus),
-                  cursorColor: colorGreen,
+                  cursorColor: colorLogo,
                   style: TextStyle(
                     fontFamily: 'MontserratSemiBold',
                   ),
@@ -606,7 +606,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         fontFamily: 'MontserratSemiBold',
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: colorGreen),
+                        borderSide: BorderSide(color: colorLogo),
                       ),
                   ),
                   validator: _validateEmail,
@@ -616,7 +616,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     FocusScope.of(context).requestFocus(new FocusNode());
                     buttonClickSave();
                   },
-                  cursorColor: colorGreen,
+                  cursorColor: colorLogo,
                   style: TextStyle(
                     fontFamily: 'MontserratSemiBold',
                   ),
@@ -674,7 +674,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       fontFamily: 'MontserratSemiBold',
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: colorGreen),
+                      borderSide: BorderSide(color: colorLogo),
                     ),
                   ),
                   onSaved: (String value) => _mark = value,
@@ -682,7 +682,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   textInputAction: TextInputAction.next,
                   focusNode: _markFocus,
                   onEditingComplete: () => FocusScope.of(context).requestFocus(_modelFocus),
-                  cursorColor: colorGreen,
+                  cursorColor: colorLogo,
                   style: TextStyle(
                     fontFamily: 'MontserratSemiBold',
                   ),
@@ -702,7 +702,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       fontFamily: 'MontserratSemiBold',
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: colorGreen),
+                      borderSide: BorderSide(color: colorLogo),
                     ),
                   ),
                   onSaved: (String value) => _model = value,
@@ -710,7 +710,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   textInputAction: TextInputAction.next,
                   focusNode: _modelFocus,
                   onEditingComplete: () => FocusScope.of(context).requestFocus(_colorsFocus),
-                  cursorColor: colorGreen,
+                  cursorColor: colorLogo,
                   style: TextStyle(
                     fontFamily: 'MontserratSemiBold',
                   ),
@@ -790,7 +790,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       fontFamily: 'MontserratSemiBold',
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: colorGreen),
+                      borderSide: BorderSide(color: colorLogo),
                     ),
                   ),
                   onSaved: (String value) => _licensePlate = value,
@@ -801,7 +801,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     FocusScope.of(context).requestFocus(new FocusNode());
                     buttonClickSaveVehicle();
                   },
-                  cursorColor: colorGreen,
+                  cursorColor: colorLogo,
                   style: TextStyle(
                     fontFamily: 'MontserratSemiBold',
                   ),
@@ -843,13 +843,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         fontFamily: 'MontserratSemiBold',
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: colorGreen),
+                        borderSide: BorderSide(color: colorLogo),
                       ),
                     ),
                     textInputAction: TextInputAction.next,
                     focusNode: _licenseFocus,
                     onEditingComplete: () => FocusScope.of(context).requestFocus(_drivingLicenseFocus),
-                    cursorColor: colorGreen,
+                    cursorColor: colorLogo,
                     style: TextStyle(
                       fontFamily: 'MontserratSemiBold',
                     ),
@@ -884,13 +884,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         fontFamily: 'MontserratSemiBold',
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: colorGreen),
+                        borderSide: BorderSide(color: colorLogo),
                       ),
                     ),
                     textInputAction: TextInputAction.next,
                     focusNode: _drivingLicenseFocus,
                     onEditingComplete: () => FocusScope.of(context).requestFocus(_civilLiabilityFocus),
-                    cursorColor: colorGreen,
+                    cursorColor: colorLogo,
                     style: TextStyle(
                       fontFamily: 'MontserratSemiBold',
                     ),
@@ -925,12 +925,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         fontFamily: 'MontserratSemiBold',
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: colorGreen),
+                        borderSide: BorderSide(color: colorLogo),
                       ),
                     ),
                     textInputAction: TextInputAction.next,
                     focusNode: _civilLiabilityFocus,
-                    cursorColor: colorGreen,
+                    cursorColor: colorLogo,
                     style: TextStyle(
                       fontFamily: 'MontserratSemiBold',
                     ),
@@ -972,7 +972,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       trailing: Icon(
         Icons.check_circle,
-        color: colorGreen,
+        color: colorLogo,
       ),
     );
   }
@@ -994,8 +994,8 @@ class _ProfilePageState extends State<ProfilePage> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                colorGreen,
-                colorGreen
+                colorLogo,
+                colorLogo
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -1120,7 +1120,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   padding: EdgeInsets.all(5),
                   child: CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(colorGreen),
+                    valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
                   ),
                 ),
                 Container(
@@ -1138,7 +1138,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         TextSpan(
                           text: "...",
                           style: TextStyle(
-                            color: colorGreen,
+                            color: colorLogo,
                             fontFamily: 'MontserratSemiBold',
                           )
                         ),
@@ -1172,7 +1172,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 padding: EdgeInsets.all(5),
                 child: Icon(
                   Icons.check_circle,
-                  color: colorGreen,
+                  color: colorLogo,
                   size: size.width / 8,
                 )
               )
