@@ -32,8 +32,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             children: <Widget>[
 
               Image(
-                image: AssetImage("assets/logo/logo.png"),
-                width: size.width/2,
+                image: AssetImage("assets/logo/logo-CTLLEVA.png"),
+                height: size.height/5,
               ),
 
               formEmail(),// form Email

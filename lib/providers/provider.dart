@@ -213,6 +213,14 @@ class MyProvider with ChangeNotifier {
     notifyListeners(); 
   }
 
+  String _urlProfile;
+  String get urlProfile =>_urlProfile; 
+  
+  set urlProfile(String newUrl) {
+    _urlProfile = newUrl; 
+    notifyListeners(); 
+  }
+
   
   Delivery delivery = Delivery();
   List listCommerces = new List();
@@ -309,6 +317,17 @@ class MyProvider with ChangeNotifier {
           }
 
           dataPicturesDelivery = listPicturesDelivery;
+
+          if(dataPicturesDelivery != null && dataPicturesDelivery.length != 0){
+
+            for (var item in dataPicturesDelivery) {
+
+              if(item != null && item.description == 'Profile'){
+                urlProfile = item.url;
+                break;
+              }
+            }
+          }
 
           if(jsonResponse['documents'] != null){
             for (var item in jsonResponse['documents']) {

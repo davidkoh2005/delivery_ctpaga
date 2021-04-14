@@ -39,11 +39,11 @@ class _RegisterPageState extends State<RegisterPage> {
           alignment: Alignment.center,
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                   Image(
-                  image: AssetImage("assets/logo/logo.png"),
-                  width: size.width/2,
+                  image: AssetImage("assets/logo/logo-CTLLEVA.png"),
+                  height: size.height/5,
                 ),
                 
                 formRegister(), //form Register

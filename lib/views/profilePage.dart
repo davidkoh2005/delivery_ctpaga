@@ -8,6 +8,7 @@ import 'package:delivery_ctpaga/env.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -50,12 +51,16 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    initialVariable();
   }
 
+  initialVariable(){
+    var myProvider = Provider.of<MyProvider>(context, listen: false);
+    urlProfile = myProvider.urlProfile;
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
       onWillPop: () async {        
         return false;
@@ -113,65 +118,44 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget showImage(){
     var size = MediaQuery.of(context).size;
-    return Consumer<MyProvider>(
-      builder: (context, myProvider, child) {
-        if(myProvider.dataPicturesDelivery != null && myProvider.dataPicturesDelivery.length != 0){
-          
-          if(urlProfile == null){
-            DefaultCacheManager().emptyCache();
-            urlProfile = null;
-          }
-
-
-          for (var item in myProvider.dataPicturesDelivery) {
-
-            if(item != null && item.description == 'Profile'){
-              urlProfile = item.url;
-              break;
-            }
-          }
-
-          if (urlProfile != null)
-          {
-            return GestureDetector(
-              onTap: () {
-                _showSelectionDialog(context);
-                showNotification();
-              },
-              child: ClipOval(
-                child: new CachedNetworkImage(
-                  imageUrl: "http://"+url+urlProfile,
-                  fit: BoxFit.cover,
-                  height: size.width / 3.5,
-                  width: size.width / 3.5,
-                  placeholder: (context, url) {
-                    return Container(
-                      margin: EdgeInsets.all(15),
-                      child:CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
-                      ),
-                    );
-                  },
-                  errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red, size: size.width / 8),
+    if (urlProfile != null){
+      return GestureDetector(
+        onTap: () {
+          _showSelectionDialog(context);
+          showNotification();
+        },
+        child: ClipOval(
+          child: new CachedNetworkImage(
+            imageUrl: "http://"+url+urlProfile,
+            fit: BoxFit.cover,
+            height: size.width / 3.5,
+            width: size.width / 3.5,
+            placeholder: (context, url) {
+              return Container(
+                margin: EdgeInsets.all(15),
+                child:CircularProgressIndicator(
+                  valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
                 ),
-              )
-            );
-          }
-        } 
-        return GestureDetector(
-          onTap: () {
-            _showSelectionDialog(context);
-            showNotification();
-          },
-          child: ClipOval(
-            child: Image(
-              image: AssetImage("assets/icons/addPhoto.png"),
-              width: size.width / 3,
-              height: size.width / 3,
-            ),
+              );
+            },
+            errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red, size: size.width / 8),
           ),
-        );
-      }
+        )
+      );
+    }
+
+    return GestureDetector(
+      onTap: () {
+        _showSelectionDialog(context);
+        showNotification();
+      },
+      child: ClipOval(
+        child: Image(
+          image: AssetImage("assets/icons/addPhoto.png"),
+          width: size.width / 3,
+          height: size.width / 3,
+        ),
+      ),
     );
   }
 
@@ -333,6 +317,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   _getImage(BuildContext context, ImageSource source, String description) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     var picture = await ImagePicker().getImage(source: source,  imageQuality: 50, maxHeight: 600, maxWidth: 900);
 
     var cropped;
@@ -406,11 +391,14 @@ class _ProfilePageState extends State<ProfilePage> {
           print(jsonResponse); 
           if (jsonResponse['statusCode'] == 201) {
             if(description == 'Profile'){
-              setState(() {
-                urlProfile = null;
-              });
+              DefaultCacheManager().emptyCache();
+              prefs.remove("urlProfile");
+              myProvider.urlProfile = null;
             }
             await myProvider.getDataDelivery(false, true, context);
+            setState(() {
+              urlProfile = myProvider.urlProfile;
+            });
             showMessage("Guardado Correctamente", true);
             await Future.delayed(Duration(seconds: 1));
             Navigator.pop(context);
@@ -1204,7 +1192,7 @@ class _ProfilePageState extends State<ProfilePage> {
   getUrl(description){
     var myProvider = Provider.of<MyProvider>(context, listen: false);
     if(description == 'Profile')
-      return urlProfile;
+      return myProvider.urlProfile;
     else if(description == 'License')
       return myProvider.urlLicense;
     else if(description == 'Driving License')
@@ -1241,7 +1229,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   padding: EdgeInsets.all(5),
                   child: Text(
-                    'Por Favor tomar foto donde se muestra la cara sosteniendo en un papel con el nombre CTpaga y la fecha actual',
+                    'Por Favor tomar una foto donde se muestre su rostro sosteniendo una hoja con la palabra CTlleva con la fecha actual',
                     textAlign: TextAlign.justify,
                     style: TextStyle(
                       color: Colors.black,
