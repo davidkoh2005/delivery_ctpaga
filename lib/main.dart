@@ -365,7 +365,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     await InstallPlugin.installApk(
       savePath,
-      'com.example.delivery_ctpaga',
+      'ctpaga.ctlleva',
     ).then((result) {
       setState(() {
         statusApp = "Cargando...";
