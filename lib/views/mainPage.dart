@@ -400,7 +400,7 @@ class _MainPageState extends State<MainPage>{
                             ),
                           ),
                           Container(
-                            height: size.height /1.9,
+                            height: size.height /2.3,
                             child: showList(myProvider)
                           )
                         ],
