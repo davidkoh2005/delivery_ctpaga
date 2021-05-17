@@ -1274,7 +1274,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   String _validatePhone(String value) {
     // This is just a regular expression for phone*$
-    String p = r'^(?:(\+)58|0)(?:2(?:12|4[0-9]|5[1-9]|6[0-9]|7[0-8]|8[1-35-8]|9[1-5]|3[45789])|4(?:1[246]|2[46]))\d{7}$';
+    //String p = r'^(?:(\+)58|0)(?:2(?:12|4[0-9]|5[1-9]|6[0-9]|7[0-8]|8[1-35-8]|9[1-5]|3[45789])|4(?:1[246]|2[46]))\d{7}$';
+    String p = r'^(0414|0424|0412|0416|0426)[0-9]{7}$';
     RegExp regExp = new RegExp(p);
 
     if (value.isNotEmpty && regExp.hasMatch(value) && value.length >=9) {
