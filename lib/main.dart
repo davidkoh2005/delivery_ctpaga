@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'dart:io';
 
 void main() {
@@ -182,7 +183,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           if(info.version != jsonResponse['data']['version']){
             versionApp = info.version;
             newVersionApp = jsonResponse['data']['version'];
-            urlApp = jsonResponse['data']['url'];
+            if(Platform.isAndroid)
+              urlApp = jsonResponse['data']['url'];
+            else
+              urlApp = jsonResponse['data']['url_ios'];
             showAlert();
           }else{
             changePage();
