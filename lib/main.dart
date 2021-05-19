@@ -220,13 +220,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   launch(urlApp);
                 },
               ),
-              FlatButton(
+              Platform.isAndroid? FlatButton(
                 child: Text('Actualizar'),
                 onPressed: () {
                   Navigator.pop(context);
                   updateApk();
                 },
-              ),
+              ): FlatButton(onPressed: null, child: null),
             ],
           ),
         );
