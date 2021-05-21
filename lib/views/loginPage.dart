@@ -36,23 +36,25 @@ class _LoginPageState extends State<LoginPage> {
       child: Center(
         child: Scaffold(
           backgroundColor: Colors.white,
-          body: Container(
-            alignment: Alignment.center,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
+          body: SafeArea(
+            child: Container(
+              alignment: Alignment.center,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
                     Image(
-                    image: AssetImage("assets/logo/logo-CTLLEVA.png"),
-                    height: size.height/5,
-                  ),
-                  formLogin(), //form login
-                  buttonLogin(), //button login
-                  SizedBox(height:20), //separation between two buttons
-                  buttonRegister(), //button Register
-                ]
+                      image: AssetImage("assets/logo/logo-CTLLEVA.png"),
+                      height: size.height/5,
+                    ),
+                    formLogin(), //form login
+                    buttonLogin(), //button login
+                    SizedBox(height:20), //separation between two buttons
+                    buttonRegister(), //button Register
+                  ]
+                ),
               ),
-            ),
+            )
           ),
         ),
       )

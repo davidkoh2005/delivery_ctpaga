@@ -3,7 +3,7 @@ description: Ctlleva.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.23+2
+version: 1.0.24+3
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -23,7 +23,7 @@ dependencies:
   flutter_ringtone_player: ^2.0.0
   fluttertoast: ^7.1.8
   file_picker: ^2.1.7
-  #firebase_messaging: ^7.0.3
+  firebase_messaging: ^7.0.3
   geocoding: ^1.0.5
   geolocator: ^6.1.13
   geocoder: ^0.2.1
@@ -41,6 +41,7 @@ dependencies:
   pusher_websocket_flutter: ^0.2.0
   sqflite: ^1.1.6
   url_launcher: ^5.5.2
+  webview_flutter: ^1.0.7
 
 dev_dependencies:
   flutter_test:

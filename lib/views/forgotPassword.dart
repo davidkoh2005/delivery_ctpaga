@@ -26,21 +26,20 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     return Center(
       child: Scaffold(
         backgroundColor: Colors.white,
-        body:Container(
-          child:Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-
-              Image(
-                image: AssetImage("assets/logo/logo-CTLLEVA.png"),
-                height: size.height/5,
-              ),
-
-              formEmail(),// form Email
-              buttonSend(), //button send
-
-            ]
-          ),
+        body:SafeArea(
+          child: Container(
+            child:Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image(
+                  image: AssetImage("assets/logo/logo-CTLLEVA.png"),
+                  height: size.height/5,
+                ),
+                formEmail(),// form Email
+                buttonSend(), //button send
+                ]
+            ),
+          )
         ),
       ),
     );

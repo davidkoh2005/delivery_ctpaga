@@ -11,7 +11,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
@@ -34,7 +34,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>{
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-  //final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final _controllerSearch = TextEditingController();
   ScrollController scrollController;
   var dbctpaga = DBctpaga();
@@ -50,7 +50,7 @@ class _MainPageState extends State<MainPage>{
     super.initState();
     initialVariable();
     initialNotification();
-    //registerNotification();
+    registerNotification();
   }
 
   initialVariable(){
@@ -156,7 +156,7 @@ class _MainPageState extends State<MainPage>{
 
   }
 
-  /* void registerNotification() async {
+  void registerNotification() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var myProvider = Provider.of<MyProvider>(context, listen: false);
     _firebaseMessaging.requestNotificationPermissions();
@@ -187,7 +187,7 @@ class _MainPageState extends State<MainPage>{
     }).catchError((err) {
       Fluttertoast.showToast(msg: err.message.toString());
     });
-  } */
+  }
 
   @override
   void dispose() {
