@@ -17,6 +17,7 @@ class _PolicyPrivacyState extends State<PolicyPrivacy> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Navbar("Política de Privacidad"),
@@ -24,7 +25,7 @@ class _PolicyPrivacyState extends State<PolicyPrivacy> {
             child: Stack(
               children: <Widget>[
                 WebView(
-                  initialUrl: 'https://ctpaga.app/privacy/ctpaga',
+                  initialUrl: 'https://ctpaga.app/privacy/ctlleva',
                   javascriptMode: JavascriptMode.unrestricted,
                   onPageFinished: (finish) {
                     setState(() {
