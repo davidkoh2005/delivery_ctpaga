@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1091745554022:android:cda2460a13315e89fc17a7",
+        "mobilesdk_app_id": "1:1091745554022:android:223e58da6115e0c7fc17a7",
         "android_client_info": {
-          "package_name": "com.example.delivery_ctpaga"
+          "package_name": "ctlleva.ctlleva"
         }
       },
       "oauth_client": [
@@ -29,35 +29,13 @@
             {
               "client_id": "1091745554022-8vudvpp2urpipe15h1rfj0tal40gk8ou.apps.googleusercontent.com",
               "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1091745554022:android:50bddb9886e8312bfc17a7",
-        "android_client_info": {
-          "package_name": "ctpaga.ctlleva"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1091745554022-8vudvpp2urpipe15h1rfj0tal40gk8ou.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCEWupT2UJBA-AARHzimkFmS7JwxXkbxGA"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
+            },
             {
-              "client_id": "1091745554022-8vudvpp2urpipe15h1rfj0tal40gk8ou.apps.googleusercontent.com",
-              "client_type": 3
+              "client_id": "1091745554022-99ipicrjbooeqlmqjkv244oedrn5btkl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "ctpaga.ctlleva"
+              }
             }
           ]
         }
