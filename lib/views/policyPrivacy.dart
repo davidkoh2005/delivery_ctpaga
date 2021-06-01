@@ -1,52 +1,80 @@
-import 'package:delivery_ctpaga/views/navbar/navbar.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:delivery_ctpaga/env.dart';
 
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+class PolicyPrivacy extends StatelessWidget {
+  PolicyPrivacy({
+    Key key,
+    this.radius = 8,
+    @required this.mdFileName,
+  })  : assert(mdFileName.contains('.md'), 'The file must contain the .md extension'),
+        super(key: key);
 
-class PolicyPrivacy extends StatefulWidget {
+  final double radius;
+  final String mdFileName;
 
-  @override
-  _PolicyPrivacyState createState() => _PolicyPrivacyState();
-}
-
-class _PolicyPrivacyState extends State<PolicyPrivacy> {
-  bool isLoading = true;
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
+      child: Column(
         children: [
-          Navbar("Política de Privacidad"),
           Expanded(
-            child: Stack(
-              children: <Widget>[
-                WebView(
-                  initialUrl: 'https://ctpaga.app/privacy/ctlleva',
-                  javascriptMode: JavascriptMode.unrestricted,
-                  onPageFinished: (finish) {
-                    setState(() {
-                      isLoading = false;
-                    });
-                  },
-                ),
-                Visibility(
-                  visible: isLoading,
-                  child: Center( 
-                    child: CircularProgressIndicator(
-                      valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
+            child: FutureBuilder(
+              future: Future.delayed(Duration(milliseconds: 150)).then((value) {
+                return rootBundle.loadString('assets/$mdFileName');
+              }),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Markdown(
+                    styleSheet: MarkdownStyleSheet(
+                      textAlign: WrapAlignment.spaceBetween,
                     ),
-                  )
-                )
-              ],
-            )
+                    data: snapshot.data,
+                  );
+                }
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation<Color>(colorLogo),
+                  ),
+                );
+              },
+            ),
+          ),
+          FlatButton(
+            padding: EdgeInsets.all(0),
+            color: Theme.of(context).buttonColor,
+            onPressed: () => Navigator.of(context).pop(),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(radius),
+                bottomRight: Radius.circular(radius),
+              ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(radius),
+                  bottomRight: Radius.circular(radius),
+                ),
+              ),
+              alignment: Alignment.center,
+              height: 50,
+              width: double.infinity,
+              child: Text(
+                "CERRAR",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.button.color,
+                ),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
-
 }

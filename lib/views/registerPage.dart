@@ -298,7 +298,14 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 recognizer: TapGestureRecognizer()
                 ..onTap = () {
-                  Navigator.push(context, SlideLeftRoute(page: PolicyPrivacy()));
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return PolicyPrivacy(
+                        mdFileName: 'policyPrivacy.md',
+                      );
+                    },
+                  );
                 }
               ),
               TextSpan(
