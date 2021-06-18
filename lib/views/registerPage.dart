@@ -1,4 +1,3 @@
-import 'package:delivery_ctpaga/animation/slideRoute.dart';
 import 'package:delivery_ctpaga/views/policyPrivacy.dart';
 import 'package:delivery_ctpaga/providers/provider.dart';
 import 'package:delivery_ctpaga/env.dart';
