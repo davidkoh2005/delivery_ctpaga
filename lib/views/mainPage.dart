@@ -159,7 +159,15 @@ class _MainPageState extends State<MainPage>{
   void registerNotification() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var myProvider = Provider.of<MyProvider>(context, listen: false);
-    _firebaseMessaging.requestNotificationPermissions();
+    _firebaseMessaging.requestNotificationPermissions(
+      const IosNotificationSettings(
+        sound: true, badge: true, alert: true, provisional: true
+      )
+    );
+
+    _firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    });
 
     _firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
       print('onMessage: $message');
@@ -246,7 +254,6 @@ class _MainPageState extends State<MainPage>{
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return Consumer<MyProvider>(
         builder: (context, myProvider, child) {
           return WillPopScope(
@@ -383,27 +390,26 @@ class _MainPageState extends State<MainPage>{
                     ),
                     Visibility(
                       visible: myProvider.statusShedule? myProvider.dataDelivery.statusAvailability==0? false: true : false,
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(left: 20, bottom: 10),
-                            alignment: Alignment.centerLeft,
-                            child: AutoSizeText(
-                              "Orden Disponible:",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'MontserratSemiBold',
-                              ),
-                              maxFontSize: 20,
-                              minFontSize: 20,
-                            ),
+                      child: Container(
+                        padding: EdgeInsets.only(left: 20, bottom: 10),
+                        alignment: Alignment.centerLeft,
+                        child: AutoSizeText(
+                          "Orden Disponible:",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'MontserratSemiBold',
                           ),
-                          Container(
-                            height: size.height /2.3,
-                            child: showList(myProvider)
-                          )
-                        ],
+                          maxFontSize: 20,
+                          minFontSize: 20,
+                        ),
+                      ),
+                    ),
+
+                    Visibility(
+                      visible: myProvider.statusShedule? myProvider.dataDelivery.statusAvailability==0? false: true : false,
+                      child: Expanded(
+                        child: showList(myProvider),
                       ),
                     ),
 
