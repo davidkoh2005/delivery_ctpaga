@@ -116,7 +116,7 @@ class _MainPageState extends State<MainPage>{
 
   void locatePosition(myProvider) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
+    Position position = await _determinePosition();
 
     final coordinates = new Coordinates(position.latitude, position.longitude);
 
@@ -154,6 +154,33 @@ class _MainPageState extends State<MainPage>{
       } 
     }
 
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Los servicios de ubicación están inhabilitados.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Los permisos de ubicación están permanentemente denegados, no podemos solicitar permisos.');
+    }
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return Future.error(
+            'Se deniegan los permisos de ubicación (valor real: $permission).');
+      }
+    }
+
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
   }
 
   void registerNotification() async {
