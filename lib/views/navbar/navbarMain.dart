@@ -55,7 +55,7 @@ class _NavbarMainState extends State<NavbarMain> {
         ),
 
         GestureDetector(
-          onTap: () => launch("http://$url"),
+          onTap: () => launchUrl(Uri.parse("http://$url")),
           child: Padding(
             padding: EdgeInsets.only(top: 50, left: 30),
             child: Container(
@@ -81,7 +81,7 @@ class _NavbarMainState extends State<NavbarMain> {
       result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.post(
-          urlApi+"logoutDelivery",
+          Uri.parse(urlApi+"logoutDelivery"),
           headers:{
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',

@@ -3,9 +3,13 @@ import 'package:delivery_ctpaga/providers/provider.dart';
 import 'package:delivery_ctpaga/views/loginPage.dart';
 import 'package:delivery_ctpaga/env.dart';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:package_info/package_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -14,9 +18,71 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 
-void main() {
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+
+void main() async {
   runApp(MyApp());
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(messageHandler);
 }
+
+Future<void> messageHandler(RemoteMessage message) async {
+  print('onMessage: $message');
+  showNotification(message.notification.title, message.notification.body);
+  return;
+}
+
+void initialNotification() {
+    var initializationSettingsAndroid = new AndroidInitializationSettings('app_icon');
+    
+    var initializationSettingsIOS = IOSInitializationSettings(
+      onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+    
+    var initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid, 
+      iOS: initializationSettingsIOS,
+    );
+
+    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: selectNotification);
+}
+
+ Future onDidReceiveLocalNotification(
+      int id, String title, String body, String payload) async {
+    print('onDidReceiveLocalNotification');
+  }
+
+Future selectNotification(String payload) async {
+    
+}
+
+void showNotification(title, message) async {
+
+    var androidNotificationDetails = AndroidNotificationDetails(
+        'Message New id',
+        'Message New name',
+        priority: Priority.max,
+        importance: Importance.max,
+        playSound: true,
+    );
+
+
+    var iOSNotificationDetails = IOSNotificationDetails(presentSound: false);
+
+    var platformChannelSpecifics = NotificationDetails(
+      android: androidNotificationDetails,
+      iOS:iOSNotificationDetails
+    );
+
+   await flutterLocalNotificationsPlugin.show(
+        0, title, message, platformChannelSpecifics, payload: "true"
+      );
+
+    FlutterRingtonePlayer.play(
+      android: AndroidSounds.notification,
+      ios: IosSounds.glass,
+    ); 
+
+  }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -27,7 +93,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Ctlleva',
         theme: ThemeData(
-          primarySwatch: Colors.green,
+          primarySwatch: Colors.orange,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         supportedLocales: [
@@ -110,13 +176,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.post(
-          urlApi+"version",
+          Uri.parse(urlApi+"version"),
           headers:{
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
           },
           body: jsonEncode({
-            'app': 'delivery ctpaga',
+            'app': nameAppApi,
           }),
         ); 
 

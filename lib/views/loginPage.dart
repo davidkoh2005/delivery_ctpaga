@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
-            child: FlatButton(
+            child: TextButton(
               onPressed: () {
                 setState(() {
                   _passwordController.clear();
@@ -329,7 +329,7 @@ class _LoginPageState extends State<LoginPage> {
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
 
           response = await http.post(
-            urlApi+"loginDelivery",
+            Uri.parse(urlApi+"loginDelivery"),
             headers:{
               'Accept': 'application/json',
               'Content-Type': 'application/json',

@@ -16,7 +16,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -318,7 +317,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   _getImage(BuildContext context, ImageSource source, String description) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var picture = await ImagePicker().getImage(source: source,  imageQuality: 50, maxHeight: 600, maxWidth: 900);
+    var picture = await ImagePicker().pickImage(source: source,  imageQuality: 50, maxHeight: 600, maxWidth: 900);
 
     var cropped;
 
@@ -374,7 +373,7 @@ class _ProfilePageState extends State<ProfilePage> {
           var myProvider = Provider.of<MyProvider>(context, listen: false);
           String base64Image = base64Encode(cropped.readAsBytesSync());
           var response = await http.post(
-            description == 'Profile' ? urlApi+"updateDeliveryImg" : urlApi+"updateDeliveryDocuments",
+            description == 'Profile' ? Uri.parse(urlApi+"updateDeliveryImg") : Uri.parse(urlApi+"updateDeliveryDocuments"),
             headers:{
               'X-Requested-With': 'XMLHttpRequest',
               'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
@@ -432,7 +431,7 @@ class _ProfilePageState extends State<ProfilePage> {
         var myProvider = Provider.of<MyProvider>(context, listen: false);
         String base64File = base64Encode(file.readAsBytesSync());
         var response = await http.post(
-          urlApi+"updateDeliveryDocuments",
+          Uri.parse(urlApi+"updateDeliveryDocuments"),
           headers:{
             'X-Requested-With': 'XMLHttpRequest',
             'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
@@ -613,7 +612,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
               Align(
                 alignment: Alignment.center,
-                child: FlatButton(
+                child: TextButton(
               
                   onPressed: () => nextPage(),
                   child: AutoSizeText(
@@ -1018,7 +1017,7 @@ class _ProfilePageState extends State<ProfilePage> {
           var myProvider = Provider.of<MyProvider>(context, listen: false);
 
           response = await http.post(
-            urlApi+"updateDelivery",
+            Uri.parse(urlApi+"updateDelivery"),
             headers:{
               'Content-Type': 'application/json',
               'X-Requested-With': 'XMLHttpRequest',
@@ -1060,7 +1059,7 @@ class _ProfilePageState extends State<ProfilePage> {
           var myProvider = Provider.of<MyProvider>(context, listen: false);
 
           response = await http.post(
-            urlApi+"updateDelivery",
+            Uri.parse(urlApi+"updateDelivery"),
             headers:{
               'Content-Type': 'application/json',
               'X-Requested-With': 'XMLHttpRequest',
@@ -1240,7 +1239,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text('Aceptar'),
                 onPressed: () {
                   _getImage(context, ImageSource.camera, 'Selfie'); 

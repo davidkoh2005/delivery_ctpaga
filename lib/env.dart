@@ -7,7 +7,10 @@ import 'package:flutter/material.dart';
 //String url = "54.196.181.42";
 
 //TODO: Url Api (hosting)
-String url = "ctpaga.app";
+//String url = "ctpaga.app";
+String url = "compralotodo.com";
+
+String nameAppApi = "delivery"; 
 
 String urlApi = "http://$url/api/auth/";
 
@@ -17,9 +20,6 @@ Color colorGrey = Color.fromRGBO(182,182,182,1);
 Color colorGreyLogo = Color.fromRGBO(69, 69, 94, 1);
 Color colorGreyOpacity = Color.fromRGBO(230,230,230,1);
 Color colorText = Colors.grey;
-
-
-
 
 List listColors = [
   {  

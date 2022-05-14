@@ -3,7 +3,6 @@ import 'package:delivery_ctpaga/env.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -144,7 +143,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
 
           response = await http.get(
-            "http://$url/password/delivery/create?email=$_email",
+            Uri.parse("http://$url/password/delivery/create?email=$_email"),
             headers:{
               'Content-Type': 'application/json',
               'X-Requested-With': 'XMLHttpRequest',

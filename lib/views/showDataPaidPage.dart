@@ -193,7 +193,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
               child: IconButton(
                 icon: Icon(Icons.phone), 
                 color: colorLogo,
-                onPressed: () => launch("tel://${myProvider.dataCommerce.phone}"),
+                onPressed: () => launchUrl(Uri.parse("tel://${myProvider.dataCommerce.phone}")),
               ),
             ),
             Padding(
@@ -446,7 +446,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 child: IconButton(
                   icon: Icon(Icons.phone), 
                   color: colorLogo,
-                  onPressed: () => launch("tel://${myProvider.selectPaid.numberShipping}"),
+                  onPressed: () => launchUrl(Uri.parse("tel://${myProvider.selectPaid.numberShipping}")),
                 ),
               ),
             ),
@@ -797,7 +797,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
     _onLoading();
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     Navigator.pop(context);
-    launch("https://www.google.com/maps/dir/?api=1&origin=${position.latitude}+${position.longitude}&destination=${destination.replaceAll(' ','%20')}&travelmode=driving&dir_action=navigat");
+    launchUrl(Uri.parse("https://www.google.com/maps/dir/?api=1&origin=${position.latitude}+${position.longitude}&destination=${destination.replaceAll(' ','%20')}&travelmode=driving&dir_action=navigat"));
   }
 
   showTotal(coin, price){
@@ -843,7 +843,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
               title: Text("Cambiar Estado de Envio"),
               content: Text("Está seguro que desea cambiar estado de envio a ${elements[index]}"),
               actions: <Widget>[
-                FlatButton(
+                TextButton(
                   child: Text('Si'),
                   onPressed: () {
                     Navigator.pop(context);
@@ -853,7 +853,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       sendUpdate(index);
                   },
                 ),
-                FlatButton(
+                TextButton(
                   child: Text('No'),
                   onPressed: () {
                     Navigator.pop(context);
@@ -879,14 +879,14 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
               title: Text("Aviso Importante CTpaga"),
               content: Text("Recibite el pago de "+showTotal(myProvider.selectPaid.coin, myProvider.selectPaid.total)+" ?"),
               actions: <Widget>[
-                FlatButton(
+                TextButton(
                   child: Text('Si'),
                   onPressed: () {
                     Navigator.pop(context);
                     sendUpdate(index);
                   },
                 ),
-                FlatButton(
+                TextButton(
                   child: Text('No'),
                   onPressed: () {
                     Navigator.pop(context);
@@ -909,7 +909,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
       result = await InternetAddress.lookup('google.com'); //verify network
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.post(
-          urlApi+"changeStatus",
+          Uri.parse(urlApi+"changeStatus"),
           headers:{
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',

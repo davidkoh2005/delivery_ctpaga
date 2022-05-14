@@ -274,7 +274,7 @@ class DBctpaga{
 
   // Get pictures Delivery
   Future <List<dynamic>> getPicturesDelivery() async{
-    List listPicturesDelivery = new List();
+    List listPicturesDelivery = [];
     listPicturesDelivery = [];
     var dbConnection = await db;
 
@@ -309,7 +309,7 @@ class DBctpaga{
 
   // Get Document Delivery
   Future <List<dynamic>> getDocumentsDelivery() async{
-    List listDocumentsDelivery = new List();
+    List listDocumentsDelivery = [];
     listDocumentsDelivery = [];
     var dbConnection = await db;
 

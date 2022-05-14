@@ -10,7 +10,6 @@ import 'package:delivery_ctpaga/database.dart';
 import 'package:delivery_ctpaga/env.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -85,7 +84,7 @@ class MyProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List _listSales = new List();
+  List _listSales = [];
   List get dataListSales =>_listSales;
 
   set dataListSales(List newListSales){
@@ -93,7 +92,7 @@ class MyProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List _listAllPaids = new List();
+  List _listAllPaids = [];
   List get dataAllPaids =>_listAllPaids;
 
   set dataAllPaids(List newListAllPaids){
@@ -101,7 +100,7 @@ class MyProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List schedule = new List();
+  List schedule = [];
   List get getScheduleInitial =>schedule;
 
   set getScheduleInitial(List newScheduleInitial){
@@ -165,7 +164,7 @@ class MyProvider with ChangeNotifier {
     notifyListeners(); 
   }
 
-  List _storage = new List();
+  List _storage = [];
   List get dataPicturesDelivery =>_storage;
 
   set dataPicturesDelivery(List newStorageDelivery){
@@ -173,7 +172,7 @@ class MyProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List _document = new List();
+  List _document = [];
   List get dataDocumentsDelivery =>_document;
 
   set dataDocumentsDelivery(List newStorageDelivery){
@@ -223,11 +222,11 @@ class MyProvider with ChangeNotifier {
 
   
   Delivery delivery = Delivery();
-  List listCommerces = new List();
+  List listCommerces = [];
   Picture pictureDelivery = Picture();
-  List listPicturesDelivery = new List();
+  List listPicturesDelivery = [];
   Document documentDelivery = Document();
-  List listDocumentsDelivery = new List();
+  List listDocumentsDelivery = [];
 
   getDataDelivery(status, loading, context)async{
 
@@ -247,7 +246,7 @@ class MyProvider with ChangeNotifier {
       result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.post(
-          urlApi+"delivery",
+          Uri.parse(urlApi+"delivery"),
           headers:{
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
@@ -280,7 +279,7 @@ class MyProvider with ChangeNotifier {
           
           if(jsonResponse['data']['codeUrlPaid'] != null){
             var codeUrlJson = jsonDecode(jsonResponse['data']['codeUrlPaid']);
-            var _listCode = new List();
+            var _listCode = [];
             codeUrlJson.forEach((element) => _listCode.add(element));
             codeUrl = _listCode;
           }
@@ -371,7 +370,7 @@ class MyProvider with ChangeNotifier {
 
         if(dataDelivery.codeUrlPaid != "null"){
             var codeUrlJson = jsonDecode(dataDelivery.codeUrlPaid);
-            var _listCode = new List();
+            var _listCode = [];
             codeUrlJson.forEach((element) => _listCode.add(element));
             codeUrl = _listCode;
           }
@@ -422,7 +421,7 @@ class MyProvider with ChangeNotifier {
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
 
           response = await http.post(
-            urlApi+"updateDelivery",
+            Uri.parse(urlApi+"updateDelivery"),
             headers:{
               'Content-Type': 'application/json',
               'X-Requested-With': 'XMLHttpRequest',
@@ -499,7 +498,7 @@ class MyProvider with ChangeNotifier {
       result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.get(
-          urlApi+"showPaidAll",
+          Uri.parse(urlApi+"showPaidAll"),
           headers:{
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',

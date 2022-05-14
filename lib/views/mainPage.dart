@@ -8,7 +8,6 @@ import 'package:delivery_ctpaga/database.dart';
 import 'package:delivery_ctpaga/env.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -34,13 +33,13 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>{
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final _controllerSearch = TextEditingController();
   ScrollController scrollController;
   var dbctpaga = DBctpaga();
   DateTime currentBackPressTime;
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
-  List _listSales = new List();
+  List _listSales = [];
   int _positionButton = 0;
   double positionScroll = 0.0;
   String _selectCodeUrl ='';
@@ -49,7 +48,6 @@ class _MainPageState extends State<MainPage>{
   void initState() {
     super.initState();
     initialVariable();
-    initialNotification();
     registerNotification();
   }
 
@@ -133,7 +131,7 @@ class _MainPageState extends State<MainPage>{
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
 
           response = await http.post(
-            urlApi+"updateDelivery",
+            Uri.parse(urlApi+"updateDelivery"),
             headers:{
               'Content-Type': 'application/json',
               'X-Requested-With': 'XMLHttpRequest',
@@ -186,32 +184,6 @@ class _MainPageState extends State<MainPage>{
   void registerNotification() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var myProvider = Provider.of<MyProvider>(context, listen: false);
-    _firebaseMessaging.requestNotificationPermissions(
-      const IosNotificationSettings(
-        sound: true, badge: true, alert: true, provisional: true
-      )
-    );
-
-    _firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
-      print("Settings registered: $settings");
-    });
-
-    _firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
-      print('onMessage: $message');
-      myProvider.getDataDelivery(false, false, context);
-      showNotification(message['notification']['title'],message['notification']['body']);
-      return;
-    }, onResume: (Map<String, dynamic> message) {
-      print('onResume: $message');
-      myProvider.getDataDelivery(false, false, context);
-      showNotification(message['notification']['title'],message['notification']['body']);
-      return;
-    }, onLaunch: (Map<String, dynamic> message) {
-      print('onLaunch: $message');
-      myProvider.getDataDelivery(false, false, context);
-      showNotification(message['notification']['title'],message['notification']['body']);
-      return;
-    });
 
     _firebaseMessaging.getToken().then((token) {
       print("token: $token");
@@ -220,53 +192,15 @@ class _MainPageState extends State<MainPage>{
       if(token != myProvider.dataDelivery.tokenFCM || myProvider.getTokenFCM != token)
         myProvider.updateToken(token, context);
     }).catchError((err) {
-      Fluttertoast.showToast(msg: err.message.toString());
+      print("print error ${err.message}");
     });
-  }
+  } 
 
   @override
   void dispose() {
     super.dispose();
   }  
 
-  void initialNotification() {
-    var initializationSettingsAndroid = new AndroidInitializationSettings('app_icon');
-    var initializationSettingsIOS = new IOSInitializationSettings();
-    var initializationSettings = InitializationSettings(initializationSettingsAndroid, initializationSettingsIOS
-    );
-    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: selectNotification,);
-  }
-
-  Future selectNotification(String payload) async {
-    if(payload == "true"){
-      _onLoading();
-      searchCode(true);
-    }
-  }
-
-  void showNotification(title, message) async {
-
-    var android = AndroidNotificationDetails(
-        'Message New id',
-        'Message New name',
-        'Message New description',
-        priority: Priority.High,
-        importance: Importance.Max,
-    );
-
-
-    var iOS = IOSNotificationDetails(presentSound: false);
-
-    var platformChannelSpecifics = NotificationDetails(
-    android, iOS);
-
-    await flutterLocalNotificationsPlugin.show(
-        0, title, message, platformChannelSpecifics, payload: "true"
-      );
-
-    FlutterRingtonePlayer.playNotification();
-
-  }
 
   // ignore: missing_return
   Future<bool> _onBackPressed(){
@@ -609,7 +543,7 @@ class _MainPageState extends State<MainPage>{
       result = await InternetAddress.lookup('google.com'); //verify network
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.post(
-          urlApi+"updateDelivery",
+          Uri.parse(urlApi+"updateDelivery"),
           headers:{
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
@@ -651,7 +585,7 @@ class _MainPageState extends State<MainPage>{
       result = await InternetAddress.lookup('google.com'); //verify network
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         response = await http.post(
-          statusOrder? urlApi+"showPaidDelivery" : urlApi+"orderPaidDelivery",
+          statusOrder? Uri.parse(urlApi+"showPaidDelivery") : Uri.parse(urlApi+"orderPaidDelivery"),
           headers:{
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
