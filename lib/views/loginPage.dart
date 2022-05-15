@@ -123,8 +123,8 @@ class _LoginPageState extends State<LoginPage> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       passwordVisible
-                      ? Icons.visibility_off
-                      : Icons.visibility,
+                      ? Icons.visibility
+                      : Icons.visibility_off,
                       color: colorLogo,
                       ),
                     onPressed: () {

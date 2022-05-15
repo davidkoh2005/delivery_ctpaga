@@ -93,7 +93,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Ctlleva',
         theme: ThemeData(
-          primarySwatch: Colors.orange,
+          primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         supportedLocales: [

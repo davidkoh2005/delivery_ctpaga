@@ -14,7 +14,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoder/geocoder.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -53,9 +53,11 @@ class _MainPageState extends State<MainPage>{
 
   initialVariable(){
     var myProvider = Provider.of<MyProvider>(context, listen: false);
-
-    const oneSec = const Duration(seconds:1);
-    new Timer.periodic(oneSec, (Timer t) => verifyShedule(myProvider));
+    locatePosition(myProvider);
+    const timeSheduleSec = const Duration(seconds:1);
+    new Timer.periodic(timeSheduleSec, (Timer t) => verifyShedule(myProvider));
+    const timePositionSec = const Duration(seconds:60);
+    new Timer.periodic(timePositionSec, (Timer t) => locatePosition(myProvider));
   }
 
   verifyShedule(myProvider){
@@ -80,10 +82,6 @@ class _MainPageState extends State<MainPage>{
       myProvider.statusShedule = true;
     else
       myProvider.statusShedule = false;
-
-
-    if(myProvider.statusShedule && myProvider.dataDelivery.statusAvailability==1)
-      locatePosition(myProvider);
   }
 
   getHours(hours, anteMeridiem){
@@ -113,45 +111,42 @@ class _MainPageState extends State<MainPage>{
   }
 
   void locatePosition(myProvider) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    Position position = await _determinePosition();
+    if(myProvider.statusShedule && myProvider.dataDelivery.statusAvailability==1){
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      Position position = await _determinePosition();
 
-    final coordinates = new Coordinates(position.latitude, position.longitude);
+      String addressDelivery = await getAddressFromLatLong(position);  
 
-    var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
-    var first = addresses.first;
-    var addressDelivery = "${first.subLocality}, ${first.addressLine}";
+      if(addressDelivery != myProvider.addressDelivery){
+        myProvider.addressDelivery = addressDelivery;
+        prefs.setString("addressDelivery", addressDelivery);
+        var result, response, jsonResponse;
+        try {
+          result = await InternetAddress.lookup('google.com');
+          if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
 
-    if(addressDelivery != myProvider.addressDelivery){
-      myProvider.addressDelivery = addressDelivery;
-      prefs.setString("addressDelivery", addressDelivery);
-      var result, response, jsonResponse;
-       try {
-        result = await InternetAddress.lookup('google.com');
-        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+            response = await http.post(
+              Uri.parse(urlApi+"updateDelivery"),
+              headers:{
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
+              },
+              body: jsonEncode({
+                'addressposition': addressDelivery,
+              }),
+            ); 
 
-          response = await http.post(
-            Uri.parse(urlApi+"updateDelivery"),
-            headers:{
-              'Content-Type': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest',
-              'authorization': 'Bearer ${myProvider.accessTokenDelivery}',
-            },
-            body: jsonEncode({
-              'addressposition': addressDelivery,
-            }),
-          ); 
-
-          jsonResponse = jsonDecode(response.body); 
-          if (jsonResponse['statusCode'] == 201) {
-            myProvider.getDataDelivery(false, false, context);
-          } 
-        }
-      } on SocketException catch (_) {
-        print("Sin conexión a internet");
+            jsonResponse = jsonDecode(response.body); 
+            if (jsonResponse['statusCode'] == 201) {
+              myProvider.getDataDelivery(false, false, context);
+            } 
+          }
+        } on SocketException catch (_) {
+          print("Sin conexión a internet");
+        } 
       } 
     }
-
   }
 
   Future<Position> _determinePosition() async {
@@ -179,6 +174,12 @@ class _MainPageState extends State<MainPage>{
     }
 
     return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
+  }
+
+  Future<String> getAddressFromLatLong(Position position)async {
+    List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+    Placemark place = placemarks[0];
+    return '${place.subLocality}, ${place.locality}';
   }
 
   void registerNotification() async {

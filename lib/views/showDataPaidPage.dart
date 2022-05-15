@@ -193,7 +193,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
               child: IconButton(
                 icon: Icon(Icons.phone), 
                 color: colorLogo,
-                onPressed: () => launchUrl(Uri.parse("tel://${myProvider.dataCommerce.phone}")),
+                onPressed: () => launch("tel://${myProvider.dataCommerce.phone}"),
               ),
             ),
             Padding(
@@ -446,7 +446,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                 child: IconButton(
                   icon: Icon(Icons.phone), 
                   color: colorLogo,
-                  onPressed: () => launchUrl(Uri.parse("tel://${myProvider.selectPaid.numberShipping}")),
+                  onPressed: () => launch("tel://${myProvider.selectPaid.numberShipping}"),
                 ),
               ),
             ),
@@ -797,7 +797,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
     _onLoading();
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     Navigator.pop(context);
-    launchUrl(Uri.parse("https://www.google.com/maps/dir/?api=1&origin=${position.latitude}+${position.longitude}&destination=${destination.replaceAll(' ','%20')}&travelmode=driving&dir_action=navigat"));
+    launch("https://www.google.com/maps/dir/?api=1&origin=${position.latitude}+${position.longitude}&destination=${destination.replaceAll(' ','%20')}&travelmode=driving&dir_action=navigat");
   }
 
   showTotal(coin, price){

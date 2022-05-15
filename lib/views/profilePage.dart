@@ -7,8 +7,8 @@ import 'package:delivery_ctpaga/env.dart';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:search_choices/search_choices.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -718,7 +718,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
               Padding(
                 padding: const EdgeInsets.fromLTRB(30.0, 5.0, 30.0, 0.0),
-                child: SearchableDropdown.single(
+                child: SearchChoices.single(
                   displayClearIcon: false,
                   items: listColors.map((result) {
                       return (DropdownMenuItem(
@@ -753,12 +753,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   }).toList(),
                   closeButton: "Cerrar",
                   hint: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.colorName,
-                  searchHint: "Color",
+                  searchHint: _colorName,
                   keyboardType: TextInputType.text,
-                  onChanged: (value){
+                  onChanged: (value) => setState((){
                     _colorName = value['name'];
                     _colorHex = value['hex'];
-                  },
+                  }),
                   isExpanded: true,
                   validator: (value) => _colorName == null && _statusClickColors? "Ingrese el color correctamente": null,
                 ),

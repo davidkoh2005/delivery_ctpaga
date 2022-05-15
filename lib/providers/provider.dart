@@ -298,7 +298,6 @@ class MyProvider with ChangeNotifier {
           if(jsonResponse['scheduleInitial'] != null && jsonResponse['scheduleFinal'] != null){
             schedule.add(jsonResponse['scheduleInitial']);
             schedule.add(jsonResponse['scheduleFinal']);
-
             dbctpaga.createOrUpdateSettings(schedule);
           }
 
@@ -343,7 +342,7 @@ class MyProvider with ChangeNotifier {
 
           dataDocumentsDelivery = listDocumentsDelivery;
 
-          //verifySchedule();
+          verifySchedule();
 
           updateDataDelivery();
 

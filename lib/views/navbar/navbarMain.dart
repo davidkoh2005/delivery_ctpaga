@@ -55,7 +55,7 @@ class _NavbarMainState extends State<NavbarMain> {
         ),
 
         GestureDetector(
-          onTap: () => launchUrl(Uri.parse("http://$url")),
+          onTap: () => launch("http://$url"),
           child: Padding(
             padding: EdgeInsets.only(top: 50, left: 30),
             child: Container(
