@@ -14,14 +14,11 @@ import 'dart:async';
 
 class DBctpaga{
 
-  static Database dbInstance;
+  static Database? dbInstance;
   static int versionDB = 9;
 
   Future<Database> get db async{
-    if(dbInstance == null)
-      dbInstance = await initDB();
-
-    return dbInstance;
+    return dbInstance ??= await initDB();
   }
 
   initDB() async {

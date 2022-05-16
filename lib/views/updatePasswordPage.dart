@@ -11,7 +11,6 @@ import 'dart:convert';
 import 'dart:io';
 
 class UpdatePasswordPage extends StatefulWidget {
-  
   @override
   _UpdatePasswordPageState createState() => _UpdatePasswordPageState();
 }
@@ -19,7 +18,7 @@ class UpdatePasswordPage extends StatefulWidget {
 class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
   final _formKeyChangePassword = new GlobalKey<FormState>();
   bool _statusButtonSave = false, passwordVisible = true;
-  String _passwordCurrent, _password;
+  String? _passwordCurrent, _password;
 
   void initState() {
     super.initState();
@@ -107,7 +106,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
                   ),
               ),
               validator: _validatePassword,
-              onSaved: (String value) => _passwordCurrent = value,
+              onSaved: (String? value) => _passwordCurrent = value,
               textInputAction: TextInputAction.next,
               cursorColor: colorLogo,
               style: TextStyle(
@@ -150,7 +149,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
                   ),
               ),
               validator: _validatePassword,
-              onSaved: (String value) => _password = value,
+              onSaved: (String? value) => _password = value,
               textInputAction: TextInputAction.next,
               cursorColor: colorLogo,
               style: TextStyle(
@@ -251,8 +250,8 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
     setState(() => _statusButtonSave = true);
     await Future.delayed(Duration(milliseconds: 150));
     setState(() => _statusButtonSave = false);
-    if (_formKeyChangePassword.currentState.validate()) {
-      _formKeyChangePassword.currentState.save();
+    if (_formKeyChangePassword.currentState!.validate()) {
+      _formKeyChangePassword.currentState!.save();
       try
       {
         _onLoading();
@@ -389,9 +388,9 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
   }
 
 
-  String _validatePassword(String value) {
+  String? _validatePassword(String? value) {
     String errorValidate = 'La contraseña es inválida, debe tener:';
-    if (value.isEmpty) {
+    if (value!.isEmpty) {
       // The form is empty
       return 'Ingrese una contraseña válido';
     }
@@ -432,8 +431,8 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
 
   }
 
-  String _validatePasswordConfirm(String value) {
-    if(value.isNotEmpty){
+  String? _validatePasswordConfirm(String? value) {
+    if(value!.isNotEmpty){
       if (_password == value){
         return null;
       }

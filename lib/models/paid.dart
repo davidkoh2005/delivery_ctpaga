@@ -1,8 +1,8 @@
 class Paid{
   // ignore: non_constant_identifier_names
-  int user_id, commerce_id, coin, percentage, statusShipping;
+  int? user_id, commerce_id, coin, percentage, statusShipping;
   // ignore: non_constant_identifier_names
-  String codeUrl, nameClient,total, email, nameShipping, numberShipping, addressShipping, detailsShipping, selectShipping, priceShipping, nameCompanyPayments, date;
+  String? codeUrl, nameClient,total, email, nameShipping, numberShipping, addressShipping, detailsShipping, selectShipping, priceShipping, nameCompanyPayments, date;
   // ignore: non_constant_identifier_names
   Paid({this.user_id, this.commerce_id, this.codeUrl, this.nameClient, this.total, this.coin, this.email, this.nameShipping, this.numberShipping, this.addressShipping, this.detailsShipping, this.statusShipping, this.selectShipping, this.priceShipping, this.percentage, this.nameCompanyPayments, this.date});
 

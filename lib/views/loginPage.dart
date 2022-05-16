@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   final FocusNode _emailFocus = FocusNode();  
   final FocusNode _passwordFocus = FocusNode();
   final _passwordController = TextEditingController();
-  String _email, _password, _messageError;
+  String? _email, _password, _messageError;
   bool passwordVisible = true, _statusError = false;
   var jsonResponse;
 
@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               validator: _validateEmail,
-              onSaved: (value) => _email = value.toLowerCase().trim(),
+              onSaved: (value) => _email = value!.toLowerCase().trim(),
               textInputAction: TextInputAction.next,
               cursorColor: colorLogo,
               style: TextStyle(
@@ -137,8 +137,8 @@ class _LoginPageState extends State<LoginPage> {
                     borderSide: BorderSide(color: colorLogo),
                   ),
                 ),
-              validator: (value) => value.isEmpty? 'Ingrese una contraseña válida': null,
-              onSaved: (value) => _password = value.trim(),
+              validator: (value) => value!.isEmpty? 'Ingrese una contraseña válida': null,
+              onSaved: (value) => _password = value!.trim(),
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (term){
                 FocusScope.of(context).requestFocus(new FocusNode()); //save the keyboard
@@ -157,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
                 child: AutoSizeText(
-                  _messageError == null? '' : _messageError,
+                  _messageError == null? '' : _messageError!,
                   style: TextStyle(
                     color: Colors.red,
                     fontFamily: 'MontserratSemiBold',
@@ -293,8 +293,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  String _validateEmail(String value) {
-    value = value.trim().toLowerCase();
+  String? _validateEmail(String? value) {
+    value = value!.trim().toLowerCase();
     // This is just a regular expression for email addresses
     String p = "[a-zA-Z0-9\+\.\_\%\-\+]{1,256}" +
         "\\@" +
@@ -317,8 +317,8 @@ class _LoginPageState extends State<LoginPage> {
      setState(() {
        _statusError = false;
      });
-    if (_formKeyLogin.currentState.validate()) {
-      _formKeyLogin.currentState.save();
+    if (_formKeyLogin.currentState!.validate()) {
+      _formKeyLogin.currentState!.save();
       _onLoading(); // show Loading
 
       var result, response;
@@ -354,7 +354,7 @@ class _LoginPageState extends State<LoginPage> {
             myProvider.statusInitGoogle = false;
             myProvider.statusShedule = false;
             _passwordController.clear();
-            myProvider.getTokenFCM = null;
+            myProvider.getTokenFCM = '';
             myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context);
 

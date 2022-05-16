@@ -5,7 +5,7 @@ import 'package:delivery_ctpaga/models/paid.dart';
 import 'package:delivery_ctpaga/database.dart';
 import 'package:delivery_ctpaga/env.dart';
 
-import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -26,7 +26,7 @@ class ShowDataPaidPage extends StatefulWidget {
 
 class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
   var dbctpaga = DBctpaga();
-  String codeUrl;
+  String? codeUrl;
   final elements = [
     "PRODUCTOS NO RETIRADO",
     "PRODUCTOS RETIRADO",
@@ -370,7 +370,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.numberShipping : "Disponible cuando retire el producto",
+                          text: myProvider.selectPaid.statusShipping! >=1? myProvider.selectPaid.numberShipping : "Disponible cuando retire el producto",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.normal,
@@ -397,7 +397,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.addressShipping : "Disponible cuando retire el producto",
+                          text: myProvider.selectPaid.statusShipping! >=1? myProvider.selectPaid.addressShipping : "Disponible cuando retire el producto",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.normal,
@@ -424,7 +424,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: myProvider.selectPaid.statusShipping >=1? myProvider.selectPaid.detailsShipping : "Disponible cuando retire el producto",
+                          text: myProvider.selectPaid.statusShipping! >=1? myProvider.selectPaid.detailsShipping : "Disponible cuando retire el producto",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.normal,
@@ -440,7 +440,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
               ],
             ),
             Visibility(
-              visible: myProvider.selectPaid.statusShipping >=1? true : false,
+              visible: myProvider.selectPaid.statusShipping! >=1? true : false,
               child: Padding(
                 padding: EdgeInsets.only(right:0),
                 child: IconButton(
@@ -451,7 +451,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
               ),
             ),
             Visibility(
-              visible: myProvider.selectPaid.statusShipping >=1? true : false,
+              visible: myProvider.selectPaid.statusShipping! >=1? true : false,
               child: Padding(
                 padding: EdgeInsets.only(right:10),
                 child: IconButton(
@@ -527,7 +527,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   maxFontSize: 14,
                   minFontSize: 14,
                 ),
-                value: myProvider.selectPaid.statusShipping >=0? true: false,
+                value: myProvider.selectPaid.statusShipping! >=0? true: false,
                 activeColor: colorLogo,
                 onChanged: (newValue) { 
                   verifyUpdate(0);
@@ -546,7 +546,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   maxFontSize: 14,
                   minFontSize: 14,
                 ),
-                value:myProvider.selectPaid.statusShipping >=1? true: false,
+                value:myProvider.selectPaid.statusShipping! >=1? true: false,
                 activeColor: colorLogo,
                 onChanged: (newValue) { 
                   verifyUpdate(1);
@@ -565,7 +565,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
                   maxFontSize: 14,
                   minFontSize: 14,
                 ),
-                value:myProvider.selectPaid.statusShipping >= 2? true: false,
+                value:myProvider.selectPaid.statusShipping! >= 2? true: false,
                 activeColor: colorLogo,
                 onChanged: (newValue) { 
                   verifyUpdate(2);
@@ -832,7 +832,7 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
 
   verifyUpdate(index){
     var myProvider = Provider.of<MyProvider>(context, listen: false);
-    if(myProvider.selectPaid.statusShipping < index && myProvider.selectPaid.statusShipping == index-1)
+    if(myProvider.selectPaid.statusShipping! < index && myProvider.selectPaid.statusShipping == index-1)
       showDialog(
         barrierDismissible: false,
         context: context,
@@ -1081,10 +1081,10 @@ class _ShowDataPaidPageState extends State<ShowDataPaidPage> {
 
 
 class MySelectionItem extends StatelessWidget {
-  final String title;
+  final String? title;
   final bool isForList;
 
-  const MySelectionItem({Key key, this.title, this.isForList = true}) : super(key: key);
+  const MySelectionItem({Key? key, this.title, this.isForList = true}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1116,7 +1116,7 @@ class MySelectionItem extends StatelessWidget {
       alignment: Alignment.center,
       child: FittedBox(
           child: AutoSizeText(
-        title,
+        title!,
       )),
     );
   }

@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 
 class PolicyPrivacy extends StatelessWidget {
   PolicyPrivacy({
-    Key key,
+    Key? key,
     this.radius = 8,
-    @required this.mdFileName,
+    required this.mdFileName,
   })  : assert(mdFileName.contains('.md'), 'The file must contain the .md extension'),
         super(key: key);
 
@@ -32,7 +32,7 @@ class PolicyPrivacy extends StatelessWidget {
                     styleSheet: MarkdownStyleSheet(
                       textAlign: WrapAlignment.spaceBetween,
                     ),
-                    data: snapshot.data,
+                    data: snapshot.data as String,
                   );
                 }
                 return Center(
@@ -70,7 +70,7 @@ class PolicyPrivacy extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.button.color,
+                  color: Theme.of(context).textTheme.button!.color,
                 ),
               ),
             ),

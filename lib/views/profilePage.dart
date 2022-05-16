@@ -40,7 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final FocusNode _drivingLicenseFocus = FocusNode();
   final FocusNode _civilLiabilityFocus = FocusNode();
   
-  String _name, _phone, _email, _statusDropdown = "", 
+  String? _name, _phone, _email, _statusDropdown = "", 
         _model, _mark, _colorName, _colorHex, _licensePlate,
         urlFile, fileName;
 
@@ -323,7 +323,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if(picture != null){
       if(description == 'Profile')
-        cropped = await ImageCropper.cropImage(
+        cropped = await ImageCropper().cropImage(
           sourcePath: picture.path,
           aspectRatio:  CropAspectRatio(
             ratioX: 1, ratioY: 1
@@ -333,30 +333,34 @@ class _ProfilePageState extends State<ProfilePage> {
           maxHeight: 700,
           cropStyle: CropStyle.circle,
           compressFormat: ImageCompressFormat.jpg,
-          androidUiSettings: AndroidUiSettings(
-            toolbarTitle: "Editar Foto",
-            backgroundColor: Colors.black,
-            toolbarWidgetColor: Colors.black,
-          ),
-          iosUiSettings: IOSUiSettings(
-            title: 'Editar Foto',
-          )
+          uiSettings:[
+            AndroidUiSettings(
+              toolbarTitle: "Editar Foto",
+              backgroundColor: Colors.black,
+              toolbarWidgetColor: Colors.black,
+            ),
+            IOSUiSettings(
+              title: 'Editar Foto',
+            )
+          ],
         );
       else
-        cropped = await ImageCropper.cropImage(
+        cropped = await ImageCropper().cropImage(
           sourcePath: picture.path,
           compressQuality: 100,
           maxWidth: 700,
           maxHeight: 700,
           compressFormat: ImageCompressFormat.jpg,
-          androidUiSettings: AndroidUiSettings(
-            toolbarTitle: "Editar Foto",
-            backgroundColor: Colors.black,
-            toolbarWidgetColor: Colors.black,
-          ),
-          iosUiSettings: IOSUiSettings(
-            title: 'Editar Foto',
-          )
+          uiSettings:[
+            AndroidUiSettings(
+              toolbarTitle: "Editar Foto",
+              backgroundColor: Colors.black,
+              toolbarWidgetColor: Colors.black,
+            ),
+            IOSUiSettings(
+              title: 'Editar Foto',
+            )
+          ],
         );
 
       if(cropped != null){
@@ -392,7 +396,7 @@ class _ProfilePageState extends State<ProfilePage> {
             if(description == 'Profile'){
               DefaultCacheManager().emptyCache();
               prefs.remove("urlProfile");
-              myProvider.urlProfile = null;
+              myProvider.urlProfile = '';
             }
             await myProvider.getDataDelivery(false, true, context);
             setState(() {
@@ -410,13 +414,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   _getFile(String description)async{
-    FilePickerResult result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
     );
 
     if(result != null) {
-      File file = File(result.files.single.path);
+      File file = File(result.files.single.path!);
       
       FileDocuments classFile = new FileDocuments();
 
@@ -525,7 +529,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 0.0),
                 child: new TextFormField(
-                  initialValue: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.name,
+                  initialValue: myProvider.dataDelivery.name == null ? '' : myProvider.dataDelivery.name,
                   autofocus: false,
                   textCapitalization:TextCapitalization.sentences, 
                   decoration: InputDecoration(
@@ -538,7 +542,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderSide: BorderSide(color: colorLogo),
                     ),
                   ),
-                  onSaved: (String value) => _name = value,
+                  onSaved: (String? value) => _name = value,
                   validator: _validateName,
                   textInputAction: TextInputAction.next,
                   focusNode: _nameFocus,
@@ -553,7 +557,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 0.0),
                 child: new TextFormField(
-                  initialValue: myProvider.dataDelivery == null? '' : myProvider.dataDelivery.phone,
+                  initialValue: myProvider.dataDelivery.phone == null? '' : myProvider.dataDelivery.phone,
                   autofocus: false,
                   keyboardType: TextInputType.phone,
                   maxLength: 20,
@@ -567,7 +571,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderSide: BorderSide(color: colorLogo),
                     ),
                   ),
-                  onSaved: (String value) => _phone = value,
+                  onSaved: (String? value) => _phone = value,
                   validator: _validatePhone,
                   focusNode: _phoneFocus,
                   textInputAction: TextInputAction.done,
@@ -581,7 +585,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 10.0),
                 child: new TextFormField(
-                  initialValue: myProvider.dataDelivery == null? '' : myProvider.dataDelivery.email,
+                  initialValue: myProvider.dataDelivery.email == null? '' : myProvider.dataDelivery.email,
                   autofocus: false,
                   maxLines: 1,
                   focusNode: _emailFocus,
@@ -597,7 +601,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                   ),
                   validator: _validateEmail,
-                  onSaved: (String value) => _email = value.toLowerCase().trim(),
+                  onSaved: (String? value) => _email = value!.toLowerCase().trim(),
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (term){
                     FocusScope.of(context).requestFocus(new FocusNode());
@@ -651,7 +655,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 0.0),
                 child: new TextFormField(
-                  initialValue: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.mark,
+                  initialValue: myProvider.dataDelivery.mark == null ? '' : myProvider.dataDelivery.mark,
                   autofocus: false,
                   textCapitalization:TextCapitalization.sentences, 
                   decoration: InputDecoration(
@@ -664,7 +668,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderSide: BorderSide(color: colorLogo),
                     ),
                   ),
-                  onSaved: (String value) => _mark = value,
+                  onSaved: (String? value) => _mark = value,
                   validator: _validateName,
                   textInputAction: TextInputAction.next,
                   focusNode: _markFocus,
@@ -679,7 +683,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 0.0),
                 child: new TextFormField(
-                  initialValue: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.model,
+                  initialValue: myProvider.dataDelivery.model == null ? '' : myProvider.dataDelivery.model,
                   autofocus: false,
                   textCapitalization:TextCapitalization.sentences, 
                   decoration: InputDecoration(
@@ -692,7 +696,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderSide: BorderSide(color: colorLogo),
                     ),
                   ),
-                  onSaved: (String value) => _model = value,
+                  onSaved: (String? value) => _model = value,
                   validator: _validateName,
                   textInputAction: TextInputAction.next,
                   focusNode: _modelFocus,
@@ -752,7 +756,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     );
                   }).toList(),
                   closeButton: "Cerrar",
-                  hint: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.colorName,
+                  hint: myProvider.dataDelivery.colorName == null ? '' : myProvider.dataDelivery.colorName,
                   searchHint: _colorName,
                   keyboardType: TextInputType.text,
                   onChanged: (value) => setState((){
@@ -767,7 +771,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 40.0),
                 child: new TextFormField(
-                  initialValue: myProvider.dataDelivery == null ? '' : myProvider.dataDelivery.licensePlate,
+                  initialValue: myProvider.dataDelivery.licensePlate == null ? '' : myProvider.dataDelivery.licensePlate,
                   autofocus: false,
                   textCapitalization:TextCapitalization.characters, 
                   decoration: InputDecoration(
@@ -780,7 +784,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderSide: BorderSide(color: colorLogo),
                     ),
                   ),
-                  onSaved: (String value) => _licensePlate = value,
+                  onSaved: (String? value) => _licensePlate = value,
                   validator: _validateName,
                   textInputAction: TextInputAction.done,
                   focusNode: _licensePlateFocus,
@@ -1007,8 +1011,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void buttonClickSave()async{
-    if (_formKeyContact.currentState.validate()) {
-      _formKeyContact.currentState.save();
+    if (_formKeyContact.currentState!.validate()) {
+      _formKeyContact.currentState!.save();
       _onLoading();
       var result, response, jsonResponse;
        try {
@@ -1049,8 +1053,8 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       _statusClickColors = true;
     });
-    if (_formKeyVehicle.currentState.validate()) {
-      _formKeyVehicle.currentState.save();
+    if (_formKeyVehicle.currentState!.validate()) {
+      _formKeyVehicle.currentState!.save();
       _onLoading();
       var result, response, jsonResponse;
        try {
@@ -1257,12 +1261,12 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.push(context, SlideLeftRoute(page: UpdatePasswordPage()));
   }
 
-  String _validateName(String value) {
+  String? _validateName(String? value) {
     // This is just a regular expression for name
     String p = '[a-zA-Z]';
     RegExp regExp = new RegExp(p);
 
-    if (value.isNotEmpty && regExp.hasMatch(value) && value.length >=3) {
+    if (value!.isNotEmpty && regExp.hasMatch(value) && value.length >=3) {
       // So, the name is valid
       return null;
     }
@@ -1271,13 +1275,13 @@ class _ProfilePageState extends State<ProfilePage> {
     return 'Ingrese nombre y apellido válido';
   }
 
-  String _validatePhone(String value) {
+  String? _validatePhone(String? value) {
     // This is just a regular expression for phone*$
     //String p = r'^(?:(\+)58|0)(?:2(?:12|4[0-9]|5[1-9]|6[0-9]|7[0-8]|8[1-35-8]|9[1-5]|3[45789])|4(?:1[246]|2[46]))\d{7}$';
     String p = r'^(0414|0424|0412|0416|0426)[0-9]{7}$';
     RegExp regExp = new RegExp(p);
 
-    if (value.isNotEmpty && regExp.hasMatch(value) && value.length >=9) {
+    if (value!.isNotEmpty && regExp.hasMatch(value) && value.length >=9) {
       // So, the phone is valid
       return null;
     }
@@ -1286,8 +1290,8 @@ class _ProfilePageState extends State<ProfilePage> {
     return 'Ingrese un número de teléfono válido';
   }
 
-  String _validateEmail(String value) {
-    value = value.trim().toLowerCase();
+  String? _validateEmail(String? value) {
+    value = value!.trim().toLowerCase();
     // This is just a regular expression for email addresses
     String p = "[a-zA-Z0-9\+\.\_\%\-\+]{1,256}" +
         "\\@" +

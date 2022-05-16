@@ -28,7 +28,7 @@ void main() async {
 
 Future<void> messageHandler(RemoteMessage message) async {
   print('onMessage: $message');
-  showNotification(message.notification.title, message.notification.body);
+  showNotification(message.notification!.title, message.notification!.body);
   return;
 }
 
@@ -47,11 +47,11 @@ void initialNotification() {
 }
 
  Future onDidReceiveLocalNotification(
-      int id, String title, String body, String payload) async {
+      int? id, String? title, String? body, String? payload) async {
     print('onDidReceiveLocalNotification');
   }
 
-Future selectNotification(String payload) async {
+Future selectNotification(String? payload) async {
     
 }
 
@@ -107,9 +107,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -253,12 +253,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // timeout and then shows login and registration or main page
     await Future.delayed(Duration(seconds: 2));
     if(prefs.containsKey('access_token')){
-      myProvider.accessTokenDelivery = prefs.getString('access_token');
-      myProvider.addressDelivery = prefs.containsKey('addressDelivery')? prefs.getString('addressDelivery') : '';
+      myProvider.accessTokenDelivery = prefs.getString('access_token')!;
+      myProvider.addressDelivery = (prefs.containsKey('addressDelivery')? prefs.getString('addressDelivery') : '')!;
       myProvider.statusButton = 2;
       myProvider.statusInitGoogle = false;
       myProvider.statusShedule = false;
-      myProvider.getTokenFCM = prefs.containsKey('tokenFCM')? prefs.getString('tokenFCM') : null;
+      myProvider.getTokenFCM = (prefs.containsKey('tokenFCM')? prefs.getString('tokenFCM') : null)!;
       myProvider.getDataDelivery(true, false, context);
       myProvider.getDataAllPaids(context, false);
     }else{

@@ -25,7 +25,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final FocusNode _emailFocus = FocusNode();  
   final FocusNode _passwordFocus = FocusNode();
   final FocusNode _passwordConfirmFocus = FocusNode();
-  String _name, _phone, _email, _password, _passwordConfirm, _messageError;
+  String? _name, _phone, _email, _password, _passwordConfirm, _messageError;
   bool passwordVisible = true, _statusError = false;
   var jsonResponse;
 
@@ -85,7 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   borderSide: BorderSide(color: colorLogo),
                 ),
               ),
-              onSaved: (String value) => _name = value,
+              onSaved: (String? value) => _name = value,
               validator: _validateName,
               textInputAction: TextInputAction.next,
               cursorColor: colorLogo,
@@ -115,7 +115,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   borderSide: BorderSide(color: colorLogo),
                 ),
               ),
-              onSaved: (String value) => _phone = value,
+              onSaved: (String? value) => _phone = value,
               validator: _validatePhone,
               textInputAction: TextInputAction.next,
               cursorColor: colorLogo,
@@ -149,7 +149,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
               ),
               validator: _validateEmail,
-              onSaved: (String value) => _email = value.toLowerCase().trim(),
+              onSaved: (String? value) => _email = value!.toLowerCase().trim(),
               textInputAction: TextInputAction.next,
               cursorColor: colorLogo,
               style: TextStyle(
@@ -196,7 +196,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
               ),
               validator: _validatePassword,
-              onSaved: (String value) => _password = value,
+              onSaved: (String? value) => _password = value,
               textInputAction: TextInputAction.next,
               cursorColor: colorLogo,
               style: TextStyle(
@@ -242,7 +242,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
               validator: _validatePasswordConfirm,
-              onSaved: (String value) => _passwordConfirm = value,
+              onSaved: (String? value) => _passwordConfirm = value,
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (term){
                 FocusScope.of(context).requestFocus(new FocusNode()); //save the keyboard
@@ -260,7 +260,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(10.0, 15.0, 0.0, 20.0),
                 child: AutoSizeText(
-                  _messageError == null? '' : _messageError,
+                  _messageError == null? '' : _messageError!,
                   style: TextStyle(
                     color: Colors.red,
                     fontFamily: 'MontserratSemiBold',
@@ -375,8 +375,8 @@ class _RegisterPageState extends State<RegisterPage> {
     setState(() {
       _statusError = false;
     });
-    if (_formKeyRegister.currentState.validate()) {
-      _formKeyRegister.currentState.save();
+    if (_formKeyRegister.currentState!.validate()) {
+      _formKeyRegister.currentState!.save();
       
       _onLoading();
 
@@ -415,7 +415,7 @@ class _RegisterPageState extends State<RegisterPage> {
             myProvider.statusButton = 2;
             myProvider.addressDelivery = "";
             myProvider.statusInitGoogle = false;
-            myProvider.getTokenFCM = null; 
+            myProvider.getTokenFCM = ''; 
             myProvider.getDataAllPaids(context, false);
             myProvider.getDataDelivery(true, true, context); 
 
@@ -538,12 +538,12 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  String _validateName(String value) {
+  String? _validateName(String? value) {
     // This is just a regular expression for name
     String p = '[a-zA-Z]';
     RegExp regExp = new RegExp(p);
 
-    if (value.isNotEmpty && regExp.hasMatch(value) && value.length >=3) {
+    if (value!.isNotEmpty && regExp.hasMatch(value) && value.length >=3) {
       // So, the name is valid
       return null;
     }
@@ -552,13 +552,13 @@ class _RegisterPageState extends State<RegisterPage> {
     return 'Ingrese nombre y apellido válido';
   }
 
-  String _validatePhone(String value) {
+  String? _validatePhone(String? value) {
     // This is just a regular expression for phone
     //String p = r'^(?:(\+)58|0)(?:2(?:12|4[0-9]|5[1-9]|6[0-9]|7[0-8]|8[1-35-8]|9[1-5]|3[45789])|4(?:1[246]|2[46]))\d{7}$';
     String p = r'^(0414|0424|0412|0416|0426)[0-9]{7}$';
     RegExp regExp = new RegExp(p);
 
-    if (value.isNotEmpty && regExp.hasMatch(value) && value.length >=9) {
+    if (value!.isNotEmpty && regExp.hasMatch(value) && value.length >=9) {
       // So, the phone is valid
       return null;
     }
@@ -567,8 +567,8 @@ class _RegisterPageState extends State<RegisterPage> {
     return 'Ingrese un número de teléfono válido';
   }
 
-  String _validateEmail(String value) {
-    value = value.trim().toLowerCase();
+  String? _validateEmail(String? value) {
+    value = value!.trim().toLowerCase();
     // This is just a regular expression for email addresses
     String p = "[a-zA-Z0-9\+\.\_\%\-\+]{1,256}" +
         "\\@" +
@@ -588,9 +588,9 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
 
-  String _validatePassword(String value) {
+  String? _validatePassword(String? value) {
     String errorValidate = 'La contraseña es inválida, debe tener:';
-    if (value.isEmpty) {
+    if (value!.isEmpty) {
       // The form is empty
       return 'Ingrese una contraseña válido';
     }
@@ -631,8 +631,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   }
 
-  String _validatePasswordConfirm(String value) {
-    if(value.isNotEmpty){
+  String? _validatePasswordConfirm(String? value) {
+    if(value!.isNotEmpty){
       if (_password == value){
         return null;
       }

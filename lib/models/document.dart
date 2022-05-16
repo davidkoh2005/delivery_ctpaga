@@ -1,7 +1,7 @@
 class Document{
   // ignore: non_constant_identifier_names
-  int id;
-  String description, url;
+  int? id;
+  String? description, url;
 
   // ignore: non_constant_identifier_names
   Document({this.id, this.description, this.url, });

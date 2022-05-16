@@ -20,8 +20,8 @@ class MyProvider with ChangeNotifier {
   //call function BD    
   var dbctpaga = DBctpaga();
 
-  String _accessToken;
-  String get accessTokenDelivery =>_accessToken; 
+  String? _accessToken;
+  String get accessTokenDelivery =>_accessToken!; 
   
   set accessTokenDelivery(String newToken) {
     _accessToken = newToken; 
@@ -36,7 +36,7 @@ class MyProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List _codeUrl;
+  late List _codeUrl;
   List get codeUrl =>_codeUrl; 
   
   set codeUrl(List newcode) {
@@ -44,24 +44,24 @@ class MyProvider with ChangeNotifier {
     notifyListeners(); 
   }
 
-  String _addressDelivery;
-  String get addressDelivery =>_addressDelivery; 
+  String? _addressDelivery;
+  String get addressDelivery =>_addressDelivery!; 
   
   set addressDelivery(String newAddress) {
     _addressDelivery = newAddress; 
     notifyListeners(); 
   }
 
-  int _statusButton;
-  int get statusButton =>_statusButton; 
+  int? _statusButton;
+  int get statusButton =>_statusButton!; 
   
   set statusButton(int newStatus) {
     _statusButton = newStatus; 
     notifyListeners(); 
   }
 
-  bool _statusInitGoogle;
-  bool get statusInitGoogle =>_statusInitGoogle; 
+  bool? _statusInitGoogle;
+  bool get statusInitGoogle =>_statusInitGoogle!; 
   
   set statusInitGoogle(bool newStatus) {
     _statusInitGoogle = newStatus; 
@@ -108,56 +108,56 @@ class MyProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  bool _statusShedule;
-  bool get statusShedule =>_statusShedule; 
+  bool? _statusShedule;
+  bool get statusShedule =>_statusShedule!; 
   
   set statusShedule(bool newStatus) {
     _statusShedule = newStatus; 
     notifyListeners(); 
   }
 
-  String _tokenFCM;
-  String get getTokenFCM =>_tokenFCM; 
+  String? _tokenFCM;
+  String get getTokenFCM =>_tokenFCM!; 
   
   set getTokenFCM(String newValue) {
     _tokenFCM = newValue; 
     notifyListeners(); 
   }
 
-  String _statusDropdown;
-  String get statusDropdown =>_statusDropdown; 
+  String? _statusDropdown;
+  String get statusDropdown =>_statusDropdown!; 
   
   set statusDropdown(String newValue) {
     _statusDropdown = newValue; 
     notifyListeners(); 
   }
 
-  String _urlLicense;
-  String get urlLicense =>_urlLicense; 
+  String? _urlLicense;
+  String get urlLicense =>_urlLicense!; 
   
   set urlLicense(String newValue) {
     _urlLicense = newValue; 
     notifyListeners(); 
   }
 
-  String _urlDrivingLicense;
-  String get urlDrivingLicense =>_urlDrivingLicense; 
+  String? _urlDrivingLicense;
+  String get urlDrivingLicense =>_urlDrivingLicense!; 
   
   set urlDrivingLicense(String newValue) {
     _urlDrivingLicense = newValue; 
     notifyListeners(); 
   }
 
-  String _urlCivilLiability;
-  String get urlCivilLiability =>_urlCivilLiability; 
+  String? _urlCivilLiability;
+  String get urlCivilLiability =>_urlCivilLiability!; 
   
   set urlCivilLiability(String newValue) {
     _urlCivilLiability = newValue; 
     notifyListeners(); 
   }
 
-  String _urlSelfie;
-  String get urlSelfie =>_urlSelfie; 
+  String? _urlSelfie;
+  String get urlSelfie =>_urlSelfie!; 
   
   set urlSelfie(String newValue) {
     _urlSelfie = newValue; 
@@ -180,40 +180,40 @@ class MyProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  bool _statusLicense;
-  bool get statusLicense =>_statusLicense; 
+  bool? _statusLicense;
+  bool get statusLicense =>_statusLicense!; 
   
   set statusLicense(bool newStatus) {
     _statusLicense = newStatus; 
     notifyListeners(); 
   }
 
-  bool _statusDrivingLicense;
-  bool get statusDrivingLicense =>_statusDrivingLicense; 
+  bool? _statusDrivingLicense;
+  bool get statusDrivingLicense =>_statusDrivingLicense!; 
   
   set statusDrivingLicense(bool newStatus) {
     _statusDrivingLicense = newStatus; 
     notifyListeners(); 
   }
 
-  bool _statusCivilLiability;
-  bool get statusCivilLiability =>_statusCivilLiability; 
+  bool? _statusCivilLiability;
+  bool get statusCivilLiability =>_statusCivilLiability!; 
   
   set statusCivilLiability(bool newStatus) {
     _statusCivilLiability = newStatus; 
     notifyListeners(); 
   }
 
-  bool _statusSelfie;
-  bool get statusSelfie =>_statusSelfie; 
+  bool? _statusSelfie;
+  bool get statusSelfie =>_statusSelfie!; 
   
   set statusSelfie(bool newStatus) {
     _statusSelfie = newStatus; 
     notifyListeners(); 
   }
 
-  String _urlProfile;
-  String get urlProfile =>_urlProfile; 
+  String? _urlProfile;
+  String get urlProfile =>_urlProfile!; 
   
   set urlProfile(String newUrl) {
     _urlProfile = newUrl; 
@@ -236,8 +236,8 @@ class MyProvider with ChangeNotifier {
     pictureDelivery = Picture();
     documentDelivery = Document();
 
-    dataPicturesDelivery = null;
-    dataDocumentsDelivery = null;
+    dataPicturesDelivery = [];
+    dataDocumentsDelivery = [];
 
     listPicturesDelivery = [];
     listDocumentsDelivery = [];
@@ -257,8 +257,6 @@ class MyProvider with ChangeNotifier {
         jsonResponse = jsonDecode(response.body);
         print(jsonResponse);
         if (jsonResponse['statusCode'] == 201) {
-          delivery = Delivery();
-          dataDelivery = null;
           delivery = Delivery(
             id: jsonResponse['data']['id'],
             email: jsonResponse['data']['email'],
@@ -272,7 +270,6 @@ class MyProvider with ChangeNotifier {
             mark: jsonResponse['data']['mark'],
             colorName: jsonResponse['data']['colorName'],
             licensePlate: jsonResponse['data']['licensePlate'],
-
           );
 
           dataDelivery = delivery;
@@ -316,7 +313,7 @@ class MyProvider with ChangeNotifier {
 
           dataPicturesDelivery = listPicturesDelivery;
 
-          if(dataPicturesDelivery != null && dataPicturesDelivery.length != 0){
+          if(dataPicturesDelivery.length != 0 && dataPicturesDelivery.length != 0){
 
             for (var item in dataPicturesDelivery) {
 
@@ -360,7 +357,7 @@ class MyProvider with ChangeNotifier {
         }
       }
     } on SocketException catch (_) {
-      if(accessTokenDelivery != null){
+      if(accessTokenDelivery != ''){
         dataDelivery = await dbctpaga.getDelivery();
         dataPicturesDelivery = await dbctpaga.getPicturesDelivery();
         dataDocumentsDelivery = await dbctpaga.getDocumentsDelivery();
@@ -368,7 +365,7 @@ class MyProvider with ChangeNotifier {
         updateDataDelivery();
 
         if(dataDelivery.codeUrlPaid != "null"){
-            var codeUrlJson = jsonDecode(dataDelivery.codeUrlPaid);
+            var codeUrlJson = jsonDecode(dataDelivery.codeUrlPaid!);
             var _listCode = [];
             codeUrlJson.forEach((element) => _listCode.add(element));
             codeUrl = _listCode;
@@ -388,10 +385,10 @@ class MyProvider with ChangeNotifier {
     statusDrivingLicense = false;
     statusCivilLiability = false;
     statusSelfie = false;
-    urlLicense = null;
-    urlDrivingLicense = null;
-    urlCivilLiability = null;
-    urlSelfie = null;
+    urlLicense = '';
+    urlDrivingLicense = '';
+    urlCivilLiability = '';
+    urlSelfie = '';
     
     for (var item in dataDocumentsDelivery) {
       if(item != null && item.description == 'License'){
@@ -530,11 +527,11 @@ class MyProvider with ChangeNotifier {
     );
     dataDelivery = delivery;
     dbctpaga.deleteAll();
-    codeUrl = null;
-    urlLicense = null;
-    urlDrivingLicense = null;
-    urlCivilLiability = null;
-    urlSelfie = null;
+    codeUrl = [];
+    urlLicense = '';
+    urlDrivingLicense = '';
+    urlCivilLiability = '';
+    urlSelfie = '';
     
     Navigator.pushReplacement(context, SlideLeftRoute(page: LoginPage()));
   }

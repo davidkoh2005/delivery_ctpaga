@@ -1,6 +1,6 @@
 class Delivery{
-  int id, status, statusAvailability;
-  String email, name, phone, codeUrlPaid, tokenFCM, model, mark, colorName, licensePlate;
+  int? id, status, statusAvailability;
+  String? email, name, phone, codeUrlPaid, tokenFCM, model, mark, colorName, licensePlate;
 
   Delivery({this.id, this.email, this.name, this.phone, this.status, this.codeUrlPaid, this.statusAvailability, this.tokenFCM, this.model, this.mark, this.colorName, this.licensePlate});
 

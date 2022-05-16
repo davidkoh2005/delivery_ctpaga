@@ -15,7 +15,7 @@ class ForgotPassword extends StatefulWidget {
 class _ForgotPasswordState extends State<ForgotPassword> {
   final _formKeyForgotPassword = new GlobalKey<FormState>();
   final FocusNode _emailFocus = FocusNode(); 
-  String _email;
+  String? _email;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   )
               ),
               validator: _validateEmail ,
-              onSaved: (value) => _email = value.trim(),
+              onSaved: (value) => _email = value!.trim(),
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (term){
                 FocusScope.of(context).requestFocus(new FocusNode()); //save the keyboard
@@ -133,8 +133,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   void clickButtonSend()async{
-    if (_formKeyForgotPassword.currentState.validate()) {
-      _formKeyForgotPassword.currentState.save();
+    if (_formKeyForgotPassword.currentState!.validate()) {
+      _formKeyForgotPassword.currentState!.save();
       var response, result;
       try
       {
@@ -268,8 +268,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
 
 
-  String _validateEmail(String value) {
-    value = value.trim().toLowerCase();
+  String? _validateEmail(String? value) {
+    value = value!.trim().toLowerCase();
     // This is just a regular expression for email addresses
     String p = "[a-zA-Z0-9\+\.\_\%\-\+]{1,256}" +
         "\\@" +
@@ -280,7 +280,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         ")+";
     RegExp regExp = new RegExp(p);
 
-    if (value.isNotEmpty &&regExp.hasMatch(value)) {
+    if (value.isNotEmpty && regExp.hasMatch(value)) {
       return null;     
     }
 

@@ -35,9 +35,9 @@ class _MainPageState extends State<MainPage>{
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final _controllerSearch = TextEditingController();
-  ScrollController scrollController;
+  ScrollController? scrollController;
   var dbctpaga = DBctpaga();
-  DateTime currentBackPressTime;
+  DateTime? currentBackPressTime;
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
   List _listSales = [];
   int _positionButton = 0;
@@ -188,7 +188,7 @@ class _MainPageState extends State<MainPage>{
 
     _firebaseMessaging.getToken().then((token) {
       print("token: $token");
-      prefs.setString('tokenFCM', token);
+      prefs.setString('tokenFCM', token!);
       myProvider.getTokenFCM = token;
       if(token != myProvider.dataDelivery.tokenFCM || myProvider.getTokenFCM != token)
         myProvider.updateToken(token, context);
@@ -206,7 +206,7 @@ class _MainPageState extends State<MainPage>{
   // ignore: missing_return
   Future<bool> _onBackPressed(){
     DateTime now = DateTime.now();
-    if (currentBackPressTime == null || now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+    if (currentBackPressTime == null || now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
       currentBackPressTime = now;
       Fluttertoast.showToast(msg: "Presiona dos veces para salir de la aplicación");
       return Future.value(false);
@@ -678,8 +678,8 @@ class _MainPageState extends State<MainPage>{
     myProvider.dataCommerce = await dbctpaga.getCommerce();
     myProvider.dataListSales = await dbctpaga.getSales();
     if(myProvider.selectPaid.codeUrl != myProvider.codeUrl[0]){
-      myProvider.selectPaid = null;
-      myProvider.dataCommerce = null;
+      myProvider.selectPaid = Paid();
+      myProvider.dataCommerce = Commerce();
       myProvider.dataListSales = [];
       Navigator.pop(context);
       showMessage("Sin conexión a internet", false);

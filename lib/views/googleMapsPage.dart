@@ -16,18 +16,18 @@ class GoogleMapsPage extends StatefulWidget {
 
 class _GoogleMapsPageState extends State<GoogleMapsPage> {
   Completer<GoogleMapController> _controllerGoogleMap = Completer();
-  GoogleMapController newGoogleMapController;
+  GoogleMapController? newGoogleMapController;
 
-  Position currentPosition;
+  Position? currentPosition;
   var geoLocator = Geolocator(), _currentMapType = MapType.normal;
   final Set<Marker> _markers = Set();
 
-  String addressSearch;
+  String? addressSearch;
 
    @override
   void dispose() {
     super.dispose();
-    newGoogleMapController.dispose();
+    newGoogleMapController!.dispose();
   }
 
   void locatePosition() async {
@@ -37,7 +37,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
     LatLng latLatPosition = LatLng(position.latitude, position.longitude);
 
     CameraPosition cameraPosition = new CameraPosition(target: latLatPosition, zoom: 16);
-    newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
 
   Future<Position> _determinePosition() async {
@@ -200,10 +200,10 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   }
 
   searchNavigate() async {
-    List<Location> locations = await locationFromAddress(addressSearch);
+    List<Location> locations = await locationFromAddress(addressSearch!);
     
-    locationFromAddress(addressSearch).then((result) {
-      newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(
+    locationFromAddress(addressSearch!).then((result) {
+      newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           target: LatLng(locations[0].latitude, locations[0].longitude),
           zoom: 16.0,

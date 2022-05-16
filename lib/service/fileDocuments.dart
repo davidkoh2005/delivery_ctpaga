@@ -10,7 +10,7 @@ import 'dart:io';
 
 class FileDocuments {
     // Declaring instance variable
-    String fileName;
+    String? fileName;
   
     // Creating instance method name 
     // sum with two parameters
@@ -20,7 +20,7 @@ class FileDocuments {
         this.fileName = basename(file);
   
         // Printing the result
-        return fileName;
+        return fileName!;
     }
 
     uploadFile(context, file, urlPrevius, description)async{
@@ -56,8 +56,7 @@ class FileDocuments {
         var response = await request.send();
         // listen for response
         response.stream.transform(utf8.decoder).listen((value) {
-          print("print 1 $value");
-          return value;
+          print(value); //TODO: verificar
         });
     }
 }
